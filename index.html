@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MegaParty Arena — Richup Ruda Śląska & 10 Gier Online</title>
+    <title>MegaParty Arena — Multiplayer Online & Monopolia Ruda Śląska</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root {
@@ -42,7 +42,6 @@
             padding: 12px;
         }
 
-        /* NAGŁÓWEK */
         .main-logo {
             text-align: center;
             margin: 6px 0 14px;
@@ -62,7 +61,7 @@
 
         /* 1. EKRAN WEJŚCIOWY */
         .entry-box {
-            max-width: 660px;
+            max-width: 720px;
             margin: 20px auto;
             background: var(--bg-panel);
             border: 2px solid rgba(255, 255, 255, 0.1);
@@ -114,6 +113,48 @@
         .btn-bots { background: linear-gradient(135deg, #10b981, #059669); }
         .btn-lobby { background: linear-gradient(135deg, #6366f1, #9333ea); }
 
+        /* 1B. POCZEKALNIA MULTIPLAYER ONLINE */
+        .online-setup-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 15px;
+        }
+
+        .setup-card {
+            background: #14111f;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .room-waiting-box {
+            max-width: 900px;
+            margin: 15px auto;
+            background: var(--bg-panel);
+            border: 2px solid #4c436d;
+            border-radius: 22px;
+            padding: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.65);
+        }
+
+        .player-slot-card {
+            background: #14111f;
+            border: 2px solid #334155;
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .player-slot-card.connected {
+            border-color: var(--accent-green);
+            background: rgba(34, 197, 94, 0.08);
+        }
+
         /* PASEK LOBBY */
         .lobby-bar {
             background: var(--bg-panel);
@@ -130,23 +171,14 @@
 
         .code-pill {
             background: #090d16;
-            border: 1px solid var(--accent-blue);
+            border: 2px solid var(--accent-blue);
             padding: 6px 14px;
             border-radius: 10px;
             font-family: monospace;
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             color: var(--accent-yellow);
             font-weight: 900;
-        }
-
-        .join-inline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-        .join-inline input {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid #475569;
-            background: #090d16;
-            color: white;
-            font-family: monospace;
+            letter-spacing: 1px;
         }
 
         .btn {
@@ -167,7 +199,6 @@
         .btn-danger { background: var(--accent-red); }
         .btn-yellow { background: var(--accent-yellow); color: #090d16; }
 
-        /* PRZYCISK BANKRUPT JAK W RICHUP.IO */
         .btn-bankrupt {
             background: linear-gradient(135deg, #ea580c, #dc2626);
             color: #ffffff;
@@ -181,11 +212,8 @@
             align-items: center;
             gap: 6px;
             box-shadow: 0 4px 14px rgba(220, 38, 38, 0.45);
-            transition: transform 0.12s, opacity 0.15s;
         }
-        .btn-bankrupt:hover { transform: translateY(-2px); opacity: 0.95; }
 
-        /* ELEMENTY LISTY TRADES (DO KLIKNIĘCIA PRZEZ KAŻDEGO) */
         .trade-item-row {
             background: #14111f;
             border: 1px solid #4c436d;
@@ -197,15 +225,13 @@
             justify-content: space-between;
             cursor: pointer;
             font-size: 0.78rem;
-            transition: border-color 0.15s, background 0.15s, transform 0.12s;
+            transition: border-color 0.15s, background 0.15s;
         }
         .trade-item-row:hover {
             border-color: var(--accent-yellow);
             background: rgba(124, 58, 237, 0.2);
-            transform: translateX(3px);
         }
 
-        /* ZEGAR 3 MINUTY */
         .turn-timer-pill {
             display: inline-flex;
             align-items: center;
@@ -223,12 +249,6 @@
         .turn-timer-pill.low {
             border-color: var(--accent-red);
             color: var(--accent-red);
-            animation: pulseDebt 0.8s infinite alternate;
-        }
-
-        @keyframes pulseDebt {
-            from { transform: scale(1); }
-            to { transform: scale(1.06); }
         }
 
         /* SIATKA GIER */
@@ -317,7 +337,7 @@
         }
 
         /* =========================================================
-           POWIĘKSZONA PLANSZA I STOŻKI — RICHUP.IO RUDA ŚLĄSKA
+           PLANSZA I STOŻKI — RICHUP.IO RUDA ŚLĄSKA
            ========================================================= */
         .richup-layout {
             display: grid;
@@ -344,7 +364,6 @@
             align-items: center;
         }
 
-        /* Duża, wyraźna plansza 11x11 (do 860x860px) */
         .richup-board {
             display: grid;
             grid-template-columns: 1.32fr repeat(9, 1fr) 1.32fr;
@@ -424,7 +443,6 @@
             font-weight: 900;
         }
 
-        /* DUŻE, WYRAŹNE STOŻKI (PIONKI) NA POLACH */
         .r-tokens {
             display: flex;
             gap: 3px;
@@ -446,16 +464,9 @@
             justify-content: center;
             font-size: 1.15rem;
             border: 2.5px solid #ffffff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.9), 0 0 8px rgba(255,255,255,0.4);
-            animation: popIn 0.25s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.9);
         }
 
-        @keyframes popIn {
-            from { transform: scale(0.5); }
-            to { transform: scale(1); }
-        }
-
-        /* Środek planszy Richup.io */
         .richup-center {
             grid-column: 2 / 11;
             grid-row: 2 / 11;
@@ -487,11 +498,9 @@
             justify-content: center;
             font-size: 2.4rem;
             font-weight: 900;
-            box-shadow: 0 12px 25px rgba(0,0,0,0.6), inset 0 -4px 6px rgba(0,0,0,0.2);
-            transition: transform 0.25s ease;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.6);
         }
 
-        /* Przełączniki ustawień */
         .setting-row {
             display: flex;
             justify-content: space-between;
@@ -538,7 +547,6 @@
         input:checked + .slider { background-color: #7c3aed; }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* POWIĘKSZONY WYBÓR STOŻKA (PIONKA) I KOLORU PRZED STARTEM */
         .cone-picker {
             display: flex;
             gap: 10px;
@@ -558,16 +566,12 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.15s, border-color 0.15s;
         }
-
-        .cone-option:hover { transform: scale(1.08); }
 
         .cone-option.active {
             border-color: var(--accent-yellow);
             background: rgba(250, 204, 21, 0.22);
             transform: scale(1.12);
-            box-shadow: 0 0 18px rgba(250, 204, 21, 0.4);
         }
 
         .color-dot {
@@ -576,16 +580,13 @@
             border-radius: 50%;
             cursor: pointer;
             border: 3px solid transparent;
-            transition: transform 0.15s;
         }
 
         .color-dot.active {
             border-color: #ffffff;
             transform: scale(1.22);
-            box-shadow: 0 0 14px rgba(255,255,255,0.6);
         }
 
-        /* Modal Wymiany oraz Karty Dzielnicy */
         .modal-backdrop {
             position: fixed;
             inset: 0;
@@ -633,15 +634,8 @@
             border-bottom: 1px solid rgba(255,255,255,0.15);
         }
 
-        .prop-rent-table td {
-            padding: 6px 2px;
-            color: #f1f5f9;
-        }
-
-        .prop-rent-table td.val {
-            text-align: right;
-            font-weight: 700;
-        }
+        .prop-rent-table td { padding: 6px 2px; color: #f1f5f9; }
+        .prop-rent-table td.val { text-align: right; font-weight: 700; }
 
         .prop-bottom-stats {
             display: grid;
@@ -652,19 +646,9 @@
             margin-bottom: 14px;
         }
 
-        .prop-bottom-stats .stat-label {
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-bottom: 4px;
-        }
+        .prop-bottom-stats .stat-label { font-size: 0.85rem; color: #94a3b8; margin-bottom: 4px; }
+        .prop-bottom-stats .stat-price { font-size: 1.2rem; font-weight: 800; color: #ffffff; }
 
-        .prop-bottom-stats .stat-price {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        /* Pozostałe gry */
         .br-hotbar { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
         .hotbar-slot {
             width: 82px; height: 70px; background: rgba(15, 23, 42, 0.9);
@@ -683,7 +667,6 @@
         .cell-8x8 { display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; }
         .cell-light { background: #e2e8f0; color: #0f172a; }
         .cell-dark { background: #475569; color: #f8fafc; }
-        .cell-selected { outline: 4px solid var(--accent-yellow); z-index: 2; }
 
         .cards-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 18px 0; }
         .playing-card {
@@ -697,8 +680,8 @@
             .richup-layout { grid-template-columns: 1fr; }
             .richup-board { width: min(96vw, 780px); height: min(96vw, 780px); }
         }
-        @media (max-width: 640px) {
-            .entry-buttons { grid-template-columns: 1fr; }
+        @media (max-width: 680px) {
+            .entry-buttons, .online-setup-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -707,30 +690,125 @@
 <div class="container">
     <header class="main-logo">
         <h1>MegaParty Arena</h1>
-        <p>Monopolia Ruda Śląska (Richup.io Edition) • Battle Royale • Minigry Online</p>
+        <p>Prawdziwy Multiplayer Online P2P (GitHub Pages) • Monopolia Ruda Śląska • 10 Gier</p>
     </header>
 
-    <!-- 1. EKRAN WEJŚCIOWY -->
+    <!-- ==========================================================
+         1. EKRAN STARTOWY: GRAJ Z BOTAMI ALBO LOBBY ONLINE
+         ========================================================== -->
     <section id="screen-entry" class="entry-box">
         <h2>Wpisz swój nick i wybierz tryb</h2>
         <input type="text" id="player-nick" class="nick-input" value="Gracz_1" maxlength="14" placeholder="Twój nick...">
 
         <div class="entry-buttons">
-            <button class="big-mode-btn btn-bots" onclick="enterLobby('bots')">
+            <button class="big-mode-btn btn-bots" onclick="startBotsLobby()">
                 <span class="icon">🤖</span>
                 GRAJ Z BOTAMI
-                <small>Natychmiastowa gra z inteligentnymi botami</small>
+                <small>Szybka gra solo z botami na jednym komputerze</small>
             </button>
 
-            <button class="big-mode-btn btn-lobby" onclick="enterLobby('online')">
+            <button class="big-mode-btn btn-lobby" onclick="openOnlineMenu()">
                 <span class="icon">🌐</span>
-                STWÓRZ LOBBY
-                <small>Graj z ludźmi online przez kod pokoju (Multiplayer)</small>
+                LOBBY ONLINE Z ZIOMKAMI
+                <small>Stwórz pokój lub dołącz kodem z innego komputera!</small>
             </button>
+        </div>
+
+        <!-- Podmenu wyboru: Stwórz pokój jako Host ALBO Wpisz kod kolegi -->
+        <div id="online-sub-menu" class="online-setup-grid hidden">
+            <div class="setup-card">
+                <div style="font-size:2.4rem; margin-bottom:8px;">👑</div>
+                <h3>Stwórz Nowe Lobby</h3>
+                <p style="font-size:0.82rem; color:var(--text-dim); margin:8px 0 16px;">
+                    Zakładasz pokój i dostajesz kod oraz link do wysłania znajomym.
+                </p>
+                <button class="btn btn-green" style="width:100%; padding:13px;" onclick="createOnlineRoomAsHost()">
+                    👑 Stwórz Pokój (Host)
+                </button>
+            </div>
+
+            <div class="setup-card">
+                <div style="font-size:2.4rem; margin-bottom:8px;">🚀</div>
+                <h3>Dołącz do Ziomeczka</h3>
+                <p style="font-size:0.82rem; color:var(--text-dim); margin:8px 0 10px;">
+                    Wklej kod pokoju otrzymany od znajomego:
+                </p>
+                <input type="text" id="join-room-code-input" placeholder="NP. RUDA-7X2A" style="width:100%; padding:11px; border-radius:10px; border:2px solid var(--accent-blue); background:#090d16; color:white; text-align:center; font-family:monospace; font-size:1.1rem; font-weight:800; text-transform:uppercase; margin-bottom:10px;">
+                <button class="btn btn-blue" style="width:100%; padding:13px;" onclick="joinOnlineRoomAsGuest()">
+                    🔗 Połącz z Pokojem
+                </button>
+            </div>
         </div>
     </section>
 
-    <!-- 2. EKRAN LOBBY -->
+    <!-- ==========================================================
+         1B. POCZEKALNIA MULTIPLAYER ONLINE (WAITING ROOM)
+         ========================================================== -->
+    <section id="screen-waiting-room" class="room-waiting-box hidden">
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:16px; margin-bottom:18px;">
+            <div>
+                <span style="background:rgba(34,197,94,0.2); color:#4ade80; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:999px;">
+                    ● POŁĄCZONO Z SIECIĄ P2P WEBRTC
+                </span>
+                <h2 style="margin-top:6px;">Poczekalnia Lobby Online</h2>
+                <p id="waiting-room-status" style="font-size:0.85rem; color:var(--text-dim);">Oczekiwanie na graczy z innych komputerów...</p>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <div>
+                    <div style="font-size:0.72rem; color:var(--text-dim);">KOD POKOJU:</div>
+                    <span id="room-code-badge" class="code-pill">ŁADOWANIE...</span>
+                </div>
+                <button class="btn btn-yellow" onclick="copyLobbyCode()">📋 Kopiuj Kod</button>
+                <button class="btn btn-blue" onclick="copyInviteLink()">🔗 Kopiuj Link Zaproszenia</button>
+            </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:20px;">
+            <!-- Lista połączonych graczy -->
+            <div>
+                <h3 style="margin-bottom:10px; font-size:1rem;">Gracze w Lobby (<span id="lobby-count-num">1</span>/4):</h3>
+                <div id="waiting-players-list"></div>
+
+                <div id="host-bot-toggle-box" style="margin-top:12px; padding:12px; background:#14111f; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <strong style="font-size:0.85rem;">Uzupełnij wolne miejsca botami</strong>
+                        <small style="display:block; font-size:0.72rem; color:var(--text-dim);">Jeśli gracie np. we dwóch, resztę miejsc mogą zająć boty lub możecie grać tylko sami.</small>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="fill-bots-checkbox" onchange="toggleFillBots(this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Czat w poczekalni -->
+            <div style="display:flex; flex-direction:column;">
+                <h3 style="margin-bottom:10px; font-size:1rem;">Czat w Lobby:</h3>
+                <div id="lobby-chat-messages" style="flex:1; min-height:170px; max-height:210px; overflow-y:auto; background:#0f0d17; border:1px solid #334155; border-radius:12px; padding:10px; font-size:0.82rem; margin-bottom:10px;">
+                    <div style="color:#64748b;">Wyślij kod lub link znajomemu! Gdy dołączy, pojawi się na liście po lewej stronie.</div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="lobby-chat-input" placeholder="Napisz do ziomków w lobby..." style="flex:1; padding:10px; border-radius:10px; border:1px solid #475569; background:#090d16; color:white;" onkeydown="if(event.key==='Enter') sendLobbyChatMessage();">
+                    <button class="btn btn-blue" onclick="sendLobbyChatMessage()">Wyślij</button>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:22px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1);">
+            <button class="btn btn-danger" onclick="leaveOnlineRoom()">⬅ Opuszczam Pokój</button>
+            <button id="host-go-games-btn" class="btn btn-green" style="font-size:1.1rem; padding:12px 28px;" onclick="hostProceedToGameSelect()">
+                🎮 Przejdź do wyboru gry (Dla wszystkich) ➔
+            </button>
+            <div id="guest-wait-host-msg" class="hidden" style="color:var(--accent-yellow); font-weight:700;">
+                ⏳ Czekaj, aż Host wybierze grę dla całego pokoju...
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================
+         2. EKRAN WYBORU GRY (SIATKA 10 GIER)
+         ========================================================== -->
     <section id="screen-lobby" class="hidden">
         <div class="lobby-bar">
             <div>
@@ -738,92 +816,78 @@
                 <div id="connected-players-text" style="font-size:0.85rem; color:var(--text-dim); margin-top:3px;"></div>
             </div>
 
-            <div id="online-controls" class="join-inline hidden">
-                <span>Kod:</span>
-                <span id="my-peer-id" class="code-pill">Ładowanie...</span>
-                <button class="btn btn-yellow" onclick="copyRoomCode()">Kopiuj</button>
-                <input type="text" id="join-peer-input" placeholder="Wklej kod kolegi">
-                <button class="btn btn-blue" onclick="connectToFriend()">Dołącz</button>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span id="active-room-pill" class="code-pill hidden"></span>
+                <button id="back-to-waiting-btn" class="btn btn-blue hidden" onclick="showWaitingRoom()">👥 Poczekalnia Graczy</button>
+                <button class="btn btn-danger" onclick="leaveOnlineRoom()">Wyjdź do Menu</button>
             </div>
-
-            <button class="btn btn-danger" onclick="backToEntry()">Zmień tryb</button>
         </div>
 
         <div class="games-grid">
-            <!-- 1. MONOPOLIA RUDA ŚLĄSKA (RICHUP.IO STYLE) -->
-            <div class="game-tile t-mono1" onclick="launchGame('mono_fast')">
+            <div class="game-tile t-mono1" onclick="requestLaunchGame('mono_fast')">
                 <span class="tile-icon">🎲</span>
                 <div class="tile-title">Monopolia Ruda Śl.</div>
-                <div class="tile-desc">40 pól dzielnic Rudy Śląskiej! Duże stożki, 2 kostki, Więzienie, Sprzedaż -25%, Bankrupt, Zegar 3 min i Wymiany!</div>
-                <span class="tile-tag">⭐ RICHUP.IO EDITION</span>
+                <div class="tile-desc">40 pól dzielnic Rudy Śląskiej! Pełny Multiplayer Online z ziomkami, Trades, Sprzedaż -25%, Bankrupt i Zegar 3:00!</div>
+                <span class="tile-tag">⭐ MULTIPLAYER ONLINE</span>
             </div>
 
-            <!-- 2. BATTLE ROYALE FORTNITE -->
-            <div class="game-tile t-br" onclick="launchGame('br')">
+            <div class="game-tile t-br" onclick="requestLaunchGame('br')">
                 <span class="tile-icon">🪂</span>
                 <div class="tile-title">Battle Royale 2D</div>
                 <div class="tile-desc">Lobby, Autobus Bojowy, Skok na wielką mapę! HP, Armor, AK-47, AWP, Pompa, Pistolet i RPG.</div>
                 <span class="tile-tag">🔥 FORTNITE STYLE</span>
             </div>
 
-            <!-- 3. 1234 PLAYER PARTY MINIGAMES -->
-            <div class="game-tile t-party" onclick="launchGame('party')">
+            <div class="game-tile t-party" onclick="requestLaunchGame('party')">
                 <span class="tile-icon">🕹️</span>
                 <div class="tile-title">1-2-3-4 Minigry</div>
                 <div class="tile-desc">Szybkie rundy zręcznościowe na jednej arenie! Zbieraj gwiazdki, unikaj bomb i zdobywaj punkty.</div>
                 <span class="tile-tag">🏆 TURNIEJ PUNKTOWY</span>
             </div>
 
-            <!-- 4. LIAR'S BAR -->
-            <div class="game-tile t-liar" onclick="launchGame('liar')">
+            <div class="game-tile t-liar" onclick="requestLaunchGame('liar')">
                 <span class="tile-icon">🃏</span>
                 <div class="tile-title">Liar's Bar</div>
                 <div class="tile-desc">Rzucaj zakryte karty na stół, blefuj i sprawdzaj kłamców!</div>
                 <span class="tile-tag">💀 BLEF I RYZYKO</span>
             </div>
 
-            <!-- 5. AMONG US 2D -->
-            <div class="game-tile t-among" onclick="launchGame('among')">
+            <div class="game-tile t-among" onclick="requestLaunchGame('among')">
                 <span class="tile-icon">🚀</span>
                 <div class="tile-title">Among Us 2D</div>
                 <div class="tile-desc">Naprawiaj statek kosmiczny, obserwuj graczy i zwołaj głosowanie na Impostora!</div>
                 <span class="tile-tag">🔪 IMPOSTOR</span>
             </div>
 
-            <!-- 6. DUŻA MONOPOLIA -->
-            <div class="game-tile t-mono2" onclick="launchGame('mono_big')">
+            <div class="game-tile t-mono2" onclick="requestLaunchGame('mono_big')">
                 <span class="tile-icon">🏙️</span>
                 <div class="tile-title">Duża Monopolia</div>
                 <div class="tile-desc">Tryb wysokich stawek na pełnej planszy 40 pól Rudy Śląskiej ($2000 na start!).</div>
                 <span class="tile-tag">🏦 WYSOKIE STAWKI</span>
             </div>
 
-            <!-- 7. WARCABY -->
-            <div class="game-tile t-checkers" onclick="launchGame('checkers')">
+            <div class="game-tile t-checkers" onclick="requestLaunchGame('checkers')">
                 <span class="tile-icon">🔴</span>
                 <div class="tile-title">Warcaby Arena</div>
                 <div class="tile-desc">Klasyczne warcaby na planszy 8x8 z biciem pionków.</div>
                 <span class="tile-tag">♟️ PLANSZOWA</span>
             </div>
 
-            <!-- 8. SZACHY -->
-            <div class="game-tile t-chess" onclick="launchGame('chess')">
+            <div class="game-tile t-chess" onclick="requestLaunchGame('chess')">
                 <span class="tile-icon">♚</span>
                 <div class="tile-title">Szachy Królewskie</div>
                 <div class="tile-desc">Pełna szachownica 8x8. Zbij króla przeciwnika!</div>
                 <span class="tile-tag">👑 STRATEGIA</span>
             </div>
 
-            <!-- 9. KASYNO & POKER -->
-            <div class="game-tile t-casino" onclick="launchGame('casino')">
+            <div class="game-tile t-casino" onclick="requestLaunchGame('casino')">
                 <span class="tile-icon">🎰</span>
                 <div class="tile-title">Kasyno & Poker</div>
                 <div class="tile-desc">Symulator kasyna: graj w Pokera, kręć Ruletką oraz testuj Automaty Slotowe.</div>
                 <span class="tile-tag">💎 JACKPOT</span>
             </div>
 
-            <!-- 10. TETRIS BATTLE -->
-            <div class="game-tile t-tetris" onclick="launchGame('tetris')">
+            <div class="game-tile t-tetris" onclick="requestLaunchGame('tetris')">
                 <span class="tile-icon">🧱</span>
                 <div class="tile-title">Tetris Battle</div>
                 <div class="tile-desc">Układaj spadające bloki i czyść linie na czas!</div>
@@ -832,7 +896,9 @@
         </div>
     </section>
 
-    <!-- 3. EKRAN ROZGRYWKI -->
+    <!-- ==========================================================
+         3. EKRAN ROZGRYWKI
+         ========================================================== -->
     <section id="screen-game" class="hidden">
         <div class="game-hud">
             <div>
@@ -842,7 +908,7 @@
 
             <div id="global-scoreboard" class="scoreboard"></div>
 
-            <button class="btn btn-danger" onclick="returnToLobby()">⬅ Wróć do Lobby</button>
+            <button class="btn btn-danger" onclick="returnToLobby()">⬅ Wróć do Wyboru Gier</button>
         </div>
 
         <div class="stage-wrapper">
@@ -858,27 +924,42 @@
 
 <script>
 /* =========================================================================
-   STAN GLOBALNY PLATFORMY I MULTIPLAYER (PeerJS)
+   STAN GLOBALNY PLATFORMY I PRAWDZIWY MULTIPLAYER P2P (PeerJS WebRTC)
    ========================================================================= */
 const state = {
-    mode: 'bots',
+    mode: 'bots',        // 'bots' albo 'online'
+    isHost: true,        // true jeśli gracz założył pokój lub gra z botami
+    mySlot: 0,           // Indeks gracza w tablicy (0 = Host, 1..3 = Koledzy online)
     nick: 'Gracz_1',
+    roomCode: '',
+    fillWithBots: false, // W trybie online domyślnie gramy tylko z ludźmi, chyba że Host włączy boty
     players: [
-        { name: 'Gracz_1', points: 0, isBot: false },
-        { name: 'Krait', points: 0, isBot: true },
-        { name: 'Nameless', points: 0, isBot: true },
-        { name: 'Pls4koff', points: 0, isBot: true }
+        { name: 'Gracz_1', points: 0, isBot: false, peerId: 'local' }
     ],
+    lobbyChat: [],
     currentGame: null,
     loopId: null,
     peer: null,
-    connections: []
+    hostConn: null,      // Połączenie Gościa do Hosta
+    guestConns: []       // Lista połączeń u Hosta do wszystkich Gości
 };
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
 const keys = {};
 let mouse = { x: 450, y: 270, down: false };
+let richupInterval = null;
+let tetrisTimer = null;
+
+// Automatyczne wykrycie linku z zaproszeniem ?room=KOD na GitHub Pages
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const roomParam = params.get('room');
+    if (roomParam) {
+        document.getElementById('online-sub-menu').classList.remove('hidden');
+        document.getElementById('join-room-code-input').value = roomParam.toUpperCase();
+    }
+});
 
 window.addEventListener('keydown', e => {
     keys[e.key.toLowerCase()] = true;
@@ -899,36 +980,352 @@ canvas.addEventListener('mousemove', e => {
 canvas.addEventListener('mousedown', () => mouse.down = true);
 window.addEventListener('mouseup', () => mouse.down = false);
 
-function enterLobby(mode) {
-    const nickVal = document.getElementById('player-nick').value.trim() || 'Gracz_1';
-    state.nick = nickVal;
-    state.mode = mode;
-    state.players[0].name = nickVal;
+/* --- WEJŚCIE W TRYB BOTÓW LUB ONLINE --- */
+function startBotsLobby() {
+    state.nick = document.getElementById('player-nick').value.trim() || 'Gracz_1';
+    state.mode = 'bots';
+    state.isHost = true;
+    state.mySlot = 0;
+    state.fillWithBots = true;
+    state.players = [
+        { name: state.nick, points: 0, isBot: false },
+        { name: 'Krait (Bot)', points: 0, isBot: true },
+        { name: 'Nameless (Bot)', points: 0, isBot: true },
+        { name: 'Pls4koff (Bot)', points: 0, isBot: true }
+    ];
 
     document.getElementById('screen-entry').classList.add('hidden');
+    document.getElementById('screen-waiting-room').classList.add('hidden');
     document.getElementById('screen-lobby').classList.remove('hidden');
-
-    if (mode === 'bots') {
-        document.getElementById('lobby-mode-label').textContent = '🤖 TRYB OFFLINE Z BOTAMI';
-        document.getElementById('online-controls').classList.add('hidden');
-        updatePlayersBanner();
-    } else {
-        document.getElementById('lobby-mode-label').textContent = '🌐 LOBBY MULTIPLAYER ONLINE';
-        document.getElementById('online-controls').classList.remove('hidden');
-        initPeerMultiplayer();
-    }
+    document.getElementById('lobby-mode-label').textContent = '🤖 TRYB OFFLINE Z BOTAMI';
+    document.getElementById('active-room-pill').classList.add('hidden');
+    document.getElementById('back-to-waiting-btn').classList.add('hidden');
     renderScoreboard();
 }
 
-function backToEntry() {
+function openOnlineMenu() {
+    document.getElementById('online-sub-menu').classList.toggle('hidden');
+}
+
+/* --- TWORZENIE POKOJU ONLINE JAKO HOST --- */
+function createOnlineRoomAsHost() {
+    state.nick = document.getElementById('player-nick').value.trim() || 'Host_1';
+    state.mode = 'online';
+    state.isHost = true;
+    state.mySlot = 0;
+    state.fillWithBots = document.getElementById('fill-bots-checkbox').checked;
+    state.players = [
+        { name: state.nick, points: 0, isBot: false, peerId: 'HOST', icon: '🏎️', color: '#ec4899' }
+    ];
+
+    document.getElementById('screen-entry').classList.add('hidden');
+    document.getElementById('screen-waiting-room').classList.remove('hidden');
+    document.getElementById('host-go-games-btn').classList.remove('hidden');
+    document.getElementById('host-bot-toggle-box').classList.remove('hidden');
+    document.getElementById('guest-wait-host-msg').classList.add('hidden');
+
+    if (state.peer) state.peer.destroy();
+    const code = 'RUDA-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    state.roomCode = code;
+    document.getElementById('room-code-badge').textContent = 'ŁĄCZENIE...';
+
+    state.peer = new Peer(code);
+    state.peer.on('open', id => {
+        state.roomCode = id;
+        document.getElementById('room-code-badge').textContent = id;
+        document.getElementById('waiting-room-status').textContent = 'Pokój aktywny! Wyślij kod lub link znajomym, aby dołączyli.';
+        renderWaitingRoom();
+    });
+
+    state.peer.on('connection', conn => {
+        state.guestConns.push(conn);
+        conn.on('data', data => handleHostIncomingData(conn, data));
+        conn.on('close', () => {
+            state.guestConns = state.guestConns.filter(c => c !== conn);
+            const idx = state.players.findIndex(p => p.peerId === conn.peer);
+            if (idx !== -1) {
+                const leftName = state.players[idx].name;
+                state.players.splice(idx, 1);
+                addLobbyChat('SYSTEM', `Gracz ${leftName} opuścił pokój.`);
+                hostBroadcastLobby();
+            }
+        });
+    });
+
+    state.peer.on('error', err => {
+        alert('Komunikat sieci WebRTC: ' + err.type);
+    });
+
+    renderWaitingRoom();
+}
+
+/* --- DOŁĄCZANIE DO POKOJU KOLEGI JAKO GOŚĆ --- */
+function joinOnlineRoomAsGuest() {
+    const code = document.getElementById('join-room-code-input').value.trim().toUpperCase();
+    if (!code) {
+        alert('Wpisz kod pokoju od kolegi (np. RUDA-XXXX)!');
+        return;
+    }
+
+    state.nick = document.getElementById('player-nick').value.trim() || 'Ziomek';
+    state.mode = 'online';
+    state.isHost = false;
+    state.roomCode = code;
+
+    document.getElementById('screen-entry').classList.add('hidden');
+    document.getElementById('screen-waiting-room').classList.remove('hidden');
+    document.getElementById('host-go-games-btn').classList.add('hidden');
+    document.getElementById('host-bot-toggle-box').classList.add('hidden');
+    document.getElementById('guest-wait-host-msg').classList.remove('hidden');
+    document.getElementById('room-code-badge').textContent = code;
+    document.getElementById('waiting-room-status').textContent = 'Łączenie z pokojem Hosta ' + code + '...';
+
+    if (state.peer) state.peer.destroy();
+    state.peer = new Peer();
+
+    state.peer.on('open', myId => {
+        const conn = state.peer.connect(code, { reliable: true });
+        state.hostConn = conn;
+
+        conn.on('open', () => {
+            document.getElementById('waiting-room-status').textContent = 'Połączono z pokojem! Oczekiwanie na start przez Hosta.';
+            conn.send({ type: 'HELLO_JOIN', name: state.nick, peerId: myId });
+        });
+
+        conn.on('data', data => handleGuestIncomingData(data));
+        conn.on('close', () => {
+            alert('Host zamknął pokój lub połączenie zostało przerwane.');
+            leaveOnlineRoom();
+        });
+    });
+
+    state.peer.on('error', () => {
+        alert('Nie udało się połączyć z kodem: ' + code + '. Sprawdź czy kolega ma otwarte Lobby!');
+        leaveOnlineRoom();
+    });
+}
+
+/* --- OBSŁUGA PAKIETÓW SIECIOWYCH U HOSTA --- */
+function handleHostIncomingData(conn, data) {
+    if (data.type === 'HELLO_JOIN') {
+        if (state.players.length >= 4) {
+            conn.send({ type: 'ROOM_FULL' });
+            return;
+        }
+        const slotIndex = state.players.length;
+        const icons = ['🏎️', '🐕', '🦊', '🐸', '🦁', '🐼'];
+        const colors = ['#ec4899', '#38bdf8', '#22c55e', '#facc15'];
+        state.players.push({
+            name: data.name,
+            points: 0,
+            isBot: false,
+            peerId: conn.peer,
+            icon: icons[slotIndex % icons.length],
+            color: colors[slotIndex % colors.length]
+        });
+        addLobbyChat('SYSTEM', `🎉 ${data.name} dołączył do lobby z innego komputera!`);
+        hostBroadcastLobby();
+
+        // Jeśli gra jest już uruchomiona, wyślij pełny stan gry nowemu graczowi
+        if (state.currentGame) {
+            conn.send({ type: 'LAUNCH_GAME', game: state.currentGame });
+            if (rm && rm.tiles) setTimeout(() => hostBroadcastRichupState(), 300);
+        }
+    }
+    else if (data.type === 'LOBBY_CHAT') {
+        addLobbyChat(data.user, data.text);
+        hostBroadcastLobby();
+    }
+    else if (data.type === 'RM_ACTION') {
+        // Akcja z Monopolii przysłana przez kolegę (Gościa) do Hosta
+        executeGuestRichupAction(data.slot, data.action, data.payload);
+    }
+}
+
+/* --- OBSŁUGA PAKIETÓW SIECIOWYCH U GOŚCIA --- */
+function handleGuestIncomingData(data) {
+    if (data.type === 'ROOM_FULL') {
+        alert('Ten pokój ma już maksymalną liczbę 4 graczy!');
+        leaveOnlineRoom();
+    }
+    else if (data.type === 'LOBBY_SYNC') {
+        state.players = data.players;
+        state.lobbyChat = data.lobbyChat;
+        state.fillWithBots = data.fillWithBots;
+        // Wyznacz mój własny numer slotu (0..3) po peerId
+        const myIdx = state.players.findIndex(p => p.peerId === state.peer.id);
+        if (myIdx !== -1) state.mySlot = myIdx;
+        renderWaitingRoom();
+        renderScoreboard();
+    }
+    else if (data.type === 'OPEN_GAME_SELECT') {
+        document.getElementById('screen-waiting-room').classList.add('hidden');
+        document.getElementById('screen-game').classList.add('hidden');
+        document.getElementById('screen-lobby').classList.remove('hidden');
+        document.getElementById('lobby-mode-label').textContent = `🌐 POKÓJ ONLINE: ${state.roomCode} (Gracz #${state.mySlot + 1})`;
+        renderScoreboard();
+    }
+    else if (data.type === 'LAUNCH_GAME') {
+        launchGame(data.game, true);
+    }
+    else if (data.type === 'RM_SYNC') {
+        // Odebranie pełnego stanu Monopolii od Hosta
+        rm = data.rmState;
+        renderRichupScreen();
+    }
+}
+
+function hostBroadcastLobby() {
+    renderWaitingRoom();
+    renderScoreboard();
+    const packet = {
+        type: 'LOBBY_SYNC',
+        players: state.players,
+        lobbyChat: state.lobbyChat,
+        fillWithBots: state.fillWithBots
+    };
+    state.guestConns.forEach(c => { if (c.open) c.send(packet); });
+}
+
+function hostBroadcastRichupState() {
+    if (!state.isHost || state.mode !== 'online') return;
+    const packet = { type: 'RM_SYNC', rmState: rm };
+    state.guestConns.forEach(c => { if (c.open) c.send(packet); });
+}
+
+function sendRichupAction(action, payload = {}) {
+    if (state.mode === 'bots' || state.isHost) {
+        executeGuestRichupAction(state.mySlot, action, payload);
+    } else if (state.hostConn && state.hostConn.open) {
+        state.hostConn.send({
+            type: 'RM_ACTION',
+            slot: state.mySlot,
+            action,
+            payload
+        });
+    }
+}
+
+/* --- WIDOK POCZEKALNI ONLINE --- */
+function renderWaitingRoom() {
+    const list = document.getElementById('waiting-players-list');
+    document.getElementById('lobby-count-num').textContent = state.players.length;
+
+    let html = '';
+    for (let i = 0; i < 4; i++) {
+        const p = state.players[i];
+        if (p) {
+            html += `
+                <div class="player-slot-card connected">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-size:1.5rem;">${p.icon || '🎮'}</span>
+                        <div>
+                            <strong>${p.name} ${i === 0 ? '👑 (Host)' : ''} ${i === state.mySlot ? ' (Ty)' : ''}</strong>
+                            <div style="font-size:0.74rem; color:#4ade80;">Połączono online • Gotowy</div>
+                        </div>
+                    </div>
+                    <span style="font-weight:800; color:var(--accent-yellow);">${p.points} pkt</span>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="player-slot-card">
+                    <div style="display:flex; align-items:center; gap:10px; opacity:0.6;">
+                        <span style="font-size:1.4rem;">⏳</span>
+                        <div>
+                            <strong>Wolny slot #${i + 1}</strong>
+                            <div style="font-size:0.74rem; color:var(--text-dim);">
+                                ${state.fillWithBots ? 'Zostanie uzupełniony przez Bota' : 'Oczekiwanie na dołączenie znajomego...'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    list.innerHTML = html;
+
+    const chatBox = document.getElementById('lobby-chat-messages');
+    if (state.lobbyChat.length > 0) {
+        chatBox.innerHTML = state.lobbyChat.map(c =>
+            `<div style="margin-bottom:4px;"><strong style="color:var(--accent-blue);">${c.u}:</strong> ${c.t}</div>`
+        ).join('');
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+}
+
+function toggleFillBots(checked) {
+    state.fillWithBots = checked;
+    hostBroadcastLobby();
+}
+
+function addLobbyChat(u, t) {
+    state.lobbyChat.push({ u, t });
+    if (state.lobbyChat.length > 40) state.lobbyChat.shift();
+}
+
+function sendLobbyChatMessage() {
+    const inp = document.getElementById('lobby-chat-input');
+    const txt = inp.value.trim();
+    if (!txt) return;
+    inp.value = '';
+
+    if (state.isHost) {
+        addLobbyChat(state.nick, txt);
+        hostBroadcastLobby();
+    } else if (state.hostConn && state.hostConn.open) {
+        state.hostConn.send({ type: 'LOBBY_CHAT', user: state.nick, text: txt });
+    }
+}
+
+function copyLobbyCode() {
+    navigator.clipboard.writeText(state.roomCode);
+    alert('Skopiowano kod pokoju: ' + state.roomCode + '\nWyślij go znajomemu!');
+}
+
+function copyInviteLink() {
+    const url = window.location.origin + window.location.pathname + '?room=' + state.roomCode;
+    navigator.clipboard.writeText(url);
+    alert('Skopiowano bezpośredni link do pokoju:\n' + url + '\nWyślij go znajomym — po kliknięciu od razu połączą się z Twoim pokojem!');
+}
+
+function hostProceedToGameSelect() {
+    document.getElementById('screen-waiting-room').classList.add('hidden');
+    document.getElementById('screen-lobby').classList.remove('hidden');
+    document.getElementById('lobby-mode-label').textContent = `🌐 POKÓJ ONLINE: ${state.roomCode} (Jesteś Hostem)`;
+    document.getElementById('active-room-pill').textContent = state.roomCode;
+    document.getElementById('active-room-pill').classList.remove('hidden');
+    document.getElementById('back-to-waiting-btn').classList.remove('hidden');
+    renderScoreboard();
+
+    state.guestConns.forEach(c => { if (c.open) c.send({ type: 'OPEN_GAME_SELECT' }); });
+}
+
+function showWaitingRoom() {
     stopCurrentGame();
     document.getElementById('screen-lobby').classList.add('hidden');
+    document.getElementById('screen-game').classList.add('hidden');
+    document.getElementById('screen-waiting-room').classList.remove('hidden');
+    renderWaitingRoom();
+}
+
+function leaveOnlineRoom() {
+    stopCurrentGame();
+    if (state.peer) {
+        state.peer.destroy();
+        state.peer = null;
+    }
+    state.guestConns = [];
+    state.hostConn = null;
+    document.getElementById('screen-waiting-room').classList.add('hidden');
+    document.getElementById('screen-lobby').classList.add('hidden');
+    document.getElementById('screen-game').classList.add('hidden');
     document.getElementById('screen-entry').classList.remove('hidden');
 }
 
 function updatePlayersBanner() {
     const names = state.players.map(p => `${p.name} (${p.points} pkt)`).join(' • ');
-    document.getElementById('connected-players-text').textContent = 'Gracze w lobby: ' + names;
+    document.getElementById('connected-players-text').textContent = 'Gracze w pokoju: ' + names;
 }
 
 function renderScoreboard() {
@@ -943,57 +1340,9 @@ function addPoints(playerIndex, pts) {
     if (state.players[playerIndex]) {
         state.players[playerIndex].points += pts;
         renderScoreboard();
-        broadcastState();
+        if (state.isHost && state.mode === 'online') hostBroadcastLobby();
     }
 }
-
-function initPeerMultiplayer() {
-    if (state.peer) return;
-    const randomCode = 'RUDA-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-    try {
-        state.peer = new Peer(randomCode);
-        state.peer.on('open', id => document.getElementById('my-peer-id').textContent = id);
-        state.peer.on('connection', conn => setupConnection(conn));
-    } catch (err) {
-        document.getElementById('my-peer-id').textContent = 'Offline';
-    }
-}
-
-function connectToFriend() {
-    const code = document.getElementById('join-peer-input').value.trim().toUpperCase();
-    if (!code || !state.peer) return;
-    setupConnection(state.peer.connect(code));
-}
-
-function setupConnection(conn) {
-    state.connections.push(conn);
-    conn.on('open', () => conn.send({ type: 'join', name: state.nick }));
-    conn.on('data', data => {
-        if (data.type === 'join') {
-            const emptyBot = state.players.find(p => p.isBot);
-            if (emptyBot) { emptyBot.name = data.name; emptyBot.isBot = false; }
-            renderScoreboard();
-            broadcastState();
-        } else if (data.type === 'sync') {
-            state.players = data.players;
-            renderScoreboard();
-        } else if (data.type === 'launch') {
-            launchGame(data.game, true);
-        }
-    });
-}
-
-function broadcastState() {
-    state.connections.forEach(c => { if (c.open) c.send({ type: 'sync', players: state.players }); });
-}
-
-function copyRoomCode() {
-    const code = document.getElementById('my-peer-id').textContent;
-    navigator.clipboard.writeText(code);
-    alert('Skopiowano kod pokoju: ' + code);
-}
-
-let richupInterval = null;
 
 function stopCurrentGame() {
     if (state.loopId) cancelAnimationFrame(state.loopId);
@@ -1008,16 +1357,28 @@ function returnToLobby() {
     document.getElementById('screen-game').classList.add('hidden');
     document.getElementById('screen-lobby').classList.remove('hidden');
     renderScoreboard();
+    if (state.isHost && state.mode === 'online') {
+        state.guestConns.forEach(c => { if (c.open) c.send({ type: 'OPEN_GAME_SELECT' }); });
+    }
+}
+
+function requestLaunchGame(gameId) {
+    if (state.mode === 'online' && !state.isHost) {
+        alert('Tylko Host pokoju może uruchomić wybraną grę dla całego lobby!');
+        return;
+    }
+    launchGame(gameId, false);
 }
 
 function launchGame(gameId, fromNetwork = false) {
     stopCurrentGame();
     state.currentGame = gameId;
 
-    if (!fromNetwork) {
-        state.connections.forEach(c => { if (c.open) c.send({ type: 'launch', game: gameId }); });
+    if (!fromNetwork && state.isHost && state.mode === 'online') {
+        state.guestConns.forEach(c => { if (c.open) c.send({ type: 'LAUNCH_GAME', game: gameId }); });
     }
 
+    document.getElementById('screen-waiting-room').classList.add('hidden');
     document.getElementById('screen-lobby').classList.add('hidden');
     document.getElementById('screen-game').classList.remove('hidden');
     canvas.classList.add('hidden');
@@ -1039,21 +1400,14 @@ function launchGame(gameId, fromNetwork = false) {
 }
 
 /* =========================================================================
-   GRA 1: MONOPOLIA RUDA ŚLĄSKA — PEŁNA WERSJA RICHUP.IO
-   (Bankrupt, Lista Trades do kliknięcia, Sprzedaż -25%, Dług na minusie, Zegar 3:00)
+   GRA 1: MONOPOLIA RUDA ŚLĄSKA — PEŁNA SYNCHRONIZACJA MULTIPLAYER ONLINE
    ========================================================================= */
 const CONE_ICONS = ['🏎️', '🐕', '🦊', '🐸', '🦁', '🐼', '🐧', '🦖'];
 const CONE_COLORS = ['#ec4899', '#38bdf8', '#22c55e', '#facc15', '#f97316', '#a855f7'];
 
 const SET_COLORS = {
-    1: '#84cc16', // Pola 1, 3
-    2: '#38bdf8', // Pola 6, 7, 9
-    3: '#f43f5e', // Pola 11, 13, 14
-    4: '#fb923c', // Pola 16, 18, 19
-    5: '#ef4444', // Pola 21, 23, 24
-    6: '#eab308', // Pola 26, 28, 29
-    7: '#10b981', // Pola 31, 32, 34
-    8: '#6366f1'  // Pola 37, 39
+    1: '#84cc16', 2: '#38bdf8', 3: '#f43f5e', 4: '#fb923c',
+    5: '#ef4444', 6: '#eab308', 7: '#10b981', 8: '#6366f1'
 };
 
 function createRudaSlaskaTiles() {
@@ -1109,53 +1463,62 @@ let rm = {};
 function startRichupRuda(defaultCash = 1500) {
     const ui = document.getElementById('custom-game-ui');
     ui.classList.remove('hidden');
-    document.getElementById('active-game-title').textContent = '🎲 Monopolia Ruda Śląska (Richup.io Edition)';
-    document.getElementById('active-game-status').textContent = 'Sprzedaż do banku -25% • Oferty Trades (Akceptuj/Odrzuć) • Przycisk Bankrupt • Licznik 3:00 min!';
+    document.getElementById('active-game-title').textContent = '🎲 Monopolia Ruda Śląska (Multiplayer Online & Boty)';
+    document.getElementById('active-game-status').textContent = `Jesteś Graczem #${state.mySlot + 1} (${state.nick}) • Synchronizacja Online na żywo!`;
 
     if (richupInterval) clearInterval(richupInterval);
 
-    rm = {
-        started: false,
-        chosenIcon: '🏎️',
-        chosenColor: '#ec4899',
-        settings: {
-            maxPlayers: 4,
-            vacationCash: true,
-            doubleFullSet: false,
-            noRentInPrison: false,
-            mortgage: true,
-            evenBuild: true,
-            auction: false,
-            startingCash: defaultCash,
-            randomizeOrder: true
-        },
-        tiles: createRudaSlaskaTiles(),
-        players: [],
-        trades: [],
-        nextTradeId: 1,
-        turn: 0,
-        turnTimeLeft: 180, // 3 minuty (180 sekund)
-        dice: [6, 5],
-        rolledThisTurn: false,
-        lastDiceSum: 11,
-        logs: ['Witaj w Monopolii Ruda Śląska! Wybierz duży stożek, kolor, kasę startową i kliknij Start Game.'],
-        chat: []
-    };
-
-    setupRichupPlayers();
+    if (state.isHost) {
+        rm = {
+            started: false,
+            settings: {
+                vacationCash: true,
+                doubleFullSet: false,
+                noRentInPrison: false,
+                mortgage: true,
+                startingCash: defaultCash
+            },
+            tiles: createRudaSlaskaTiles(),
+            players: [],
+            trades: [],
+            nextTradeId: 1,
+            turn: 0,
+            turnTimeLeft: 180,
+            dice: [6, 5],
+            rolledThisTurn: false,
+            lastDiceSum: 11,
+            logs: ['Wybierz swój stożek i kolor! Gdy wszyscy będą gotowi, Host klika Start Game.'],
+            chat: []
+        };
+        setupRichupPlayers();
+        hostBroadcastRichupState();
+    }
     renderRichupScreen();
 }
 
 function setupRichupPlayers() {
     rm.players = [];
-    const count = rm.settings.maxPlayers;
-    for (let i = 0; i < count; i++) {
+    const baseList = [...state.players];
+
+    // Jeśli włączono uzupełnianie botami (lub jesteśmy w trybie botów), dopełnij do 4 graczy
+    if (state.mode === 'bots' || state.fillWithBots) {
+        const botNames = ['Bot_Krait', 'Bot_Nameless', 'Bot_Pls4koff'];
+        while (baseList.length < 4) {
+            baseList.push({
+                name: botNames[baseList.length - 1] || `Bot_${baseList.length}`,
+                points: 0,
+                isBot: true
+            });
+        }
+    }
+
+    baseList.forEach((p, i) => {
         rm.players.push({
             id: i,
-            name: i === 0 ? state.nick : state.players[i].name,
-            isBot: i === 0 ? false : state.players[i].isBot,
-            icon: i === 0 ? rm.chosenIcon : CONE_ICONS[(i + 1) % CONE_ICONS.length],
-            color: i === 0 ? rm.chosenColor : CONE_COLORS[(i + 1) % CONE_COLORS.length],
+            name: p.name,
+            isBot: !!p.isBot,
+            icon: p.icon || CONE_ICONS[i % CONE_ICONS.length],
+            color: p.color || CONE_COLORS[i % CONE_COLORS.length],
             cash: Number(rm.settings.startingCash),
             pos: 0,
             inPrison: false,
@@ -1164,7 +1527,99 @@ function setupRichupPlayers() {
             pardonCards: 0,
             bankrupt: false
         });
+    });
+}
+
+/* CENTRALNYPROCESOR AKCJI MONOPOLII (DLA HOSTA I GOŚCI ONLINE) */
+function executeGuestRichupAction(slot, action, payload) {
+    if (!state.isHost) return;
+    const player = rm.players[slot];
+
+    if (action === 'PICK_CONE' && !rm.started && player) {
+        if (payload.icon) player.icon = payload.icon;
+        if (payload.color) player.color = payload.color;
+        if (state.players[slot]) {
+            state.players[slot].icon = player.icon;
+            state.players[slot].color = player.color;
+        }
     }
+    else if (action === 'CHANGE_CASH' && !rm.started && slot === 0) {
+        rm.settings.startingCash = Number(payload.cash);
+        rm.players.forEach(p => p.cash = rm.settings.startingCash);
+    }
+    else if (action === 'START_MATCH' && slot === 0) {
+        beginRichupMatch();
+        return;
+    }
+    else if (action === 'ROLL_DICE' && rm.turn === slot && !rm.rolledThisTurn) {
+        rollRichupDice();
+        return;
+    }
+    else if (action === 'PAY_BAIL' && rm.turn === slot) {
+        payPrisonBail();
+        return;
+    }
+    else if (action === 'USE_PARDON' && rm.turn === slot) {
+        usePrisonPardon();
+        return;
+    }
+    else if (action === 'BUY_PROP' && rm.turn === slot) {
+        buyRichupProperty();
+        return;
+    }
+    else if (action === 'BUILD_TILE') {
+        buildOnTile(slot, payload.tileId);
+        return;
+    }
+    else if (action === 'SELL_BUILDING') {
+        sellBuildingOnTile(slot, payload.tileId);
+        return;
+    }
+    else if (action === 'SELL_PROP') {
+        sellPropertyToBank(slot, payload.tileId);
+        return;
+    }
+    else if (action === 'MORTGAGE_TILE') {
+        toggleMortgageTile(slot, payload.tileId);
+        return;
+    }
+    else if (action === 'END_TURN' && rm.turn === slot) {
+        endRichupTurn();
+        return;
+    }
+    else if (action === 'BANKRUPT') {
+        declareBankruptcy(slot, false);
+        return;
+    }
+    else if (action === 'CREATE_TRADE') {
+        const newTrade = {
+            id: rm.nextTradeId++,
+            from: slot,
+            to: payload.to,
+            giveCash: payload.giveCash,
+            takeCash: payload.takeCash,
+            givePardon: payload.givePardon,
+            takePardon: payload.takePardon,
+            giveProps: payload.giveProps,
+            takeProps: payload.takeProps
+        };
+        rm.trades.push(newTrade);
+        addRichupLog(`🤝 ${rm.players[slot].name} wystawił ofertę wymiany dla ${rm.players[payload.to].name}! Kliknij na nią w sekcji Trades.`);
+    }
+    else if (action === 'ACCEPT_TRADE') {
+        acceptTradeOfferHost(slot, payload.tradeId);
+        return;
+    }
+    else if (action === 'DECLINE_TRADE') {
+        declineTradeOfferHost(payload.tradeId);
+        return;
+    }
+    else if (action === 'CHAT') {
+        rm.chat.push({ u: payload.user, t: payload.text });
+    }
+
+    renderRichupScreen();
+    hostBroadcastRichupState();
 }
 
 function formatTimer(sec) {
@@ -1174,28 +1629,24 @@ function formatTimer(sec) {
 }
 
 function startTurnClock() {
+    if (!state.isHost) return;
     if (richupInterval) clearInterval(richupInterval);
     richupInterval = setInterval(() => {
-        if (!rm.started || state.currentGame !== 'mono_fast' && state.currentGame !== 'mono_big') return;
+        if (!rm.started || (state.currentGame !== 'mono_fast' && state.currentGame !== 'mono_big')) return;
         rm.turnTimeLeft--;
         const badge = document.getElementById('richup-timer-display');
         if (badge) {
             badge.textContent = `⏱️ Czas na ruch: ${formatTimer(Math.max(0, rm.turnTimeLeft))}`;
-            if (rm.turnTimeLeft <= 30) badge.classList.add('low');
-            else badge.classList.remove('low');
         }
+
+        if (rm.turnTimeLeft % 3 === 0) hostBroadcastRichupState();
 
         if (rm.turnTimeLeft <= 0) {
             const curP = rm.players[rm.turn];
             addRichupLog(`⏰ Minęły 3 minuty! Czas gracza ${curP.name} dobiegł końca.`);
-            if (!rm.rolledThisTurn) {
-                rollRichupDice();
-            }
-            if (curP.cash < 0) {
-                declareBankruptcy(curP.id, true);
-            } else {
-                endRichupTurn();
-            }
+            if (!rm.rolledThisTurn) rollRichupDice();
+            if (curP.cash < 0) declareBankruptcy(curP.id, true);
+            else endRichupTurn();
         }
     }, 1000);
 }
@@ -1218,9 +1669,11 @@ function addRichupLog(msg) {
 }
 
 function renderRichupScreen() {
+    if (!rm || !rm.players || rm.players.length === 0) return;
     const ui = document.getElementById('custom-game-ui');
     const curP = rm.players[rm.turn] || rm.players[0];
-    const me = rm.players[0];
+    const me = rm.players[state.mySlot] || rm.players[0];
+    const isMyTurn = (rm.turn === state.mySlot && !me.bankrupt);
     const curTile = rm.tiles[curP.pos];
 
     let tilesHtml = '';
@@ -1247,7 +1700,7 @@ function renderRichupScreen() {
 
         const tokensHere = rm.players.filter(p => !p.bankrupt && p.pos === t.id);
         const tokensHtml = tokensHere.map(p => `
-            <div class="r-token" style="background:${p.color}" title="${p.name}${p.inPrison && t.id===10 ? ' (W KLATCE)' : ''}">
+            <div class="r-token" style="background:${p.color}" title="${p.name}">
                 ${p.icon}
             </div>
         `).join('');
@@ -1270,23 +1723,25 @@ function renderRichupScreen() {
     if (!rm.started) {
         centerHtml = `
             <div style="width:100%; max-width:480px; margin:auto;">
-                <h3 style="color:var(--accent-yellow); font-size:1.25rem; margin-bottom:8px;">Wybierz swój Stożek (Pionek) i Kolor</h3>
+                <h3 style="color:var(--accent-yellow); font-size:1.2rem; margin-bottom:8px;">
+                    Wybierz swój Stożek i Kolor (${me.name})
+                </h3>
                 <div class="cone-picker">
                     ${CONE_ICONS.map(ic => `
-                        <div class="cone-option ${rm.chosenIcon === ic ? 'active' : ''}" onclick="rm.chosenIcon='${ic}'; setupRichupPlayers(); renderRichupScreen();">
+                        <div class="cone-option ${me.icon === ic ? 'active' : ''}" onclick="sendRichupAction('PICK_CONE', {icon:'${ic}'})">
                             ${ic}
                         </div>
                     `).join('')}
                 </div>
-                <div class="cone-picker" style="margin-bottom:16px;">
+                <div class="cone-picker" style="margin-bottom:14px;">
                     ${CONE_COLORS.map(col => `
-                        <div class="color-dot ${rm.chosenColor === col ? 'active' : ''}" style="background:${col}" onclick="rm.chosenColor='${col}'; setupRichupPlayers(); renderRichupScreen();"></div>
+                        <div class="color-dot ${me.color === col ? 'active' : ''}" style="background:${col}" onclick="sendRichupAction('PICK_CONE', {color:'${col}'})"></div>
                     `).join('')}
                 </div>
 
                 <div style="margin-bottom:14px; font-size:0.95rem;">
                     <strong>Kasa na start:</strong>
-                    <select style="background:#1d192b; color:var(--accent-yellow); font-weight:900; font-size:1rem; border:2px solid #7c3aed; padding:6px 14px; border-radius:10px; margin-left:8px;" onchange="rm.settings.startingCash=Number(this.value); setupRichupPlayers(); renderRichupScreen();">
+                    <select ${!state.isHost ? 'disabled' : ''} style="background:#1d192b; color:var(--accent-yellow); font-weight:900; font-size:1rem; border:2px solid #7c3aed; padding:6px 14px; border-radius:10px; margin-left:8px;" onchange="sendRichupAction('CHANGE_CASH', {cash: Number(this.value)})">
                         <option value="500"  ${rm.settings.startingCash===500?'selected':''}>$500</option>
                         <option value="750"  ${rm.settings.startingCash===750?'selected':''}>$750</option>
                         <option value="1000" ${rm.settings.startingCash===1000?'selected':''}>$1000</option>
@@ -1300,61 +1755,65 @@ function renderRichupScreen() {
                     <div class="die-3d">⚅</div>
                 </div>
 
-                <button class="btn btn-green" style="font-size:1.2rem; padding:14px 32px; margin-top:10px;" onclick="beginRichupMatch()">
-                    ▶ Start Game (Rozpocznij Grę)
-                </button>
+                ${state.isHost ? `
+                    <button class="btn btn-green" style="font-size:1.2rem; padding:14px 32px; margin-top:10px;" onclick="sendRichupAction('START_MATCH')">
+                        ▶ Start Game (Rozpocznij dla wszystkich)
+                    </button>
+                ` : `
+                    <div style="color:var(--accent-yellow); font-weight:800; margin-top:12px;">
+                        ⏳ Wybrałeś pionek! Czekamy aż Host kliknie Start Game...
+                    </div>
+                `}
             </div>
         `;
     } else {
         let actionsHtml = '';
 
-        if (me.bankrupt && rm.turn === 0) {
+        if (me.bankrupt) {
             actionsHtml = `<div style="color:#ef4444; font-weight:800;">👁️ Zbankrutowałeś — oglądasz grę jako widz.</div>`;
-        } else if (!curP.isBot) {
-            // Sprawdzenie, czy gracz jest na minusie (np. po wejściu na drogi hotel)
-            if (curP.cash < 0) {
+        } else if (isMyTurn) {
+            if (me.cash < 0) {
                 actionsHtml += `
                     <div style="background:rgba(239,68,68,0.22); border:2px solid #ef4444; padding:10px 14px; border-radius:12px; margin-bottom:10px; font-size:0.84rem; color:#fecaca;">
-                        🚨 <strong>MASZ DŁUG (${curP.cash}$)!</strong> Aby grać dalej i zakończyć turę, musisz wyjść na minimum <strong>$0</strong>!<br>
-                        Kliknij na swoje pola na planszy (lub z listy po prawej), aby sprzedać Domy, Hotele, Dzielnice, Airporty lub Wodociągi za <strong>-25%</strong> ceny, wyślij <strong>Trade</strong> albo kliknij <strong>Bankrupt</strong>!
+                        🚨 <strong>MASZ DŁUG (${me.cash}$)!</strong> Aby grać dalej, musisz wyjść na minimum <strong>$0</strong>!<br>
+                        Kliknij na swoje pola, aby sprzedać Domy, Hotele, Dzielnice, Airporty lub Wodociągi za <strong>-25%</strong> ceny albo kliknij <strong>Bankrupt</strong>!
                     </div>
                 `;
             }
 
-            if (curP.inPrison && !rm.rolledThisTurn) {
+            if (me.inPrison && !rm.rolledThisTurn) {
                 actionsHtml += `
                     <div style="background:rgba(239,68,68,0.15); border:1px solid #ef4444; padding:8px 12px; border-radius:10px; margin-bottom:8px; font-size:0.84rem;">
-                        ⛓️ Jesteś w KLATCE (Próba ${curP.prisonTries}/3). Wyrzuć sumę > 10 (11 lub 12), zapłać 50$ lub użyj Pardon Card!
+                        ⛓️ Jesteś w KLATCE (Próba ${me.prisonTries}/3). Wyrzuć sumę > 10 (11 lub 12), zapłać 50$ lub użyj Pardon Card!
                     </div>
                     <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
-                        <button class="btn btn-yellow" onclick="rollRichupDice()">🎲 Rzuć (>10 wychodzi)</button>
-                        ${curP.cash >= 50 ? `<button class="btn btn-blue" onclick="payPrisonBail()">💵 Zapłać 50$</button>` : ''}
-                        ${curP.pardonCards > 0 ? `<button class="btn btn-green" onclick="usePrisonPardon()">🃏 Użyj Pardon Card (${curP.pardonCards})</button>` : ''}
+                        <button class="btn btn-yellow" onclick="sendRichupAction('ROLL_DICE')">🎲 Rzuć (>10 wychodzi)</button>
+                        ${me.cash >= 50 ? `<button class="btn btn-blue" onclick="sendRichupAction('PAY_BAIL')">💵 Zapłać 50$</button>` : ''}
+                        ${me.pardonCards > 0 ? `<button class="btn btn-green" onclick="sendRichupAction('USE_PARDON')">🃏 Użyj Pardon Card (${me.pardonCards})</button>` : ''}
                     </div>
                 `;
             } else if (!rm.rolledThisTurn) {
-                actionsHtml += `<button class="btn btn-yellow" style="font-size:1.15rem; padding:12px 26px;" onclick="rollRichupDice()">🎲 Rzuć dwiema kostkami</button>`;
+                actionsHtml += `<button class="btn btn-yellow" style="font-size:1.15rem; padding:12px 26px;" onclick="sendRichupAction('ROLL_DICE')">🎲 Rzuć dwiema kostkami (Twoja tura!)</button>`;
             } else {
-                const canBuy = (curTile.price && curTile.owner === null && curP.cash >= curTile.price);
-                const canBuild = canBuildOnTile(curP, curTile);
+                const canBuy = (curTile.price && curTile.owner === null && me.cash >= curTile.price);
+                const canBuild = canBuildOnTile(me, curTile);
                 actionsHtml += `<div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">`;
                 if (canBuy) {
-                    actionsHtml += `<button class="btn btn-green" onclick="buyRichupProperty()">🏠 Kup ${curTile.name} (${curTile.price}$)</button>`;
+                    actionsHtml += `<button class="btn btn-green" onclick="sendRichupAction('BUY_PROP')">🏠 Kup ${curTile.name} (${curTile.price}$)</button>`;
                 }
                 if (canBuild) {
                     const nextLabel = curTile.level === 4 ? `🏨 Kup Hotel (${curTile.houseCost}$)` : `🏠 Dokup Dom #${curTile.level + 1} (${curTile.houseCost}$)`;
-                    actionsHtml += `<button class="btn btn-blue" onclick="buildOnTile(${curTile.id})">${nextLabel}</button>`;
+                    actionsHtml += `<button class="btn btn-blue" onclick="sendRichupAction('BUILD_TILE', {tileId:${curTile.id}})">${nextLabel}</button>`;
                 }
-                // Przycisk zakończenia tury aktywny tylko gdy gracz ma >= 0$
-                if (curP.cash >= 0) {
-                    actionsHtml += `<button class="btn" onclick="endRichupTurn()">✅ Zakończ turę</button>`;
+                if (me.cash >= 0) {
+                    actionsHtml += `<button class="btn" onclick="sendRichupAction('END_TURN')">✅ Zakończ turę</button>`;
                 } else {
-                    actionsHtml += `<button class="btn btn-danger" onclick="alert('Masz minus na koncie (' + curP.cash + '$)! Sprzedaj nieruchomości/domy (-25%) albo kliknij Bankrupt po prawej stronie!')">🔒 Spłać dług aby zakończyć turę</button>`;
+                    actionsHtml += `<button class="btn btn-danger" onclick="alert('Masz minus na koncie (' + ${me.cash} + '$)! Sprzedaj nieruchomości/domy (-25%) albo kliknij Bankrupt!')">🔒 Spłać dług aby zakończyć turę</button>`;
                 }
                 actionsHtml += `</div>`;
             }
         } else {
-            actionsHtml = `<div style="color:var(--accent-yellow); font-weight:700;">🤖 ${curP.name} wykonuje ruch...</div>`;
+            actionsHtml = `<div style="color:var(--accent-yellow); font-weight:700;">⏳ Teraz rzuca gracz: ${curP.icon} ${curP.name}...</div>`;
         }
 
         centerHtml = `
@@ -1380,29 +1839,30 @@ function renderRichupScreen() {
         `;
     }
 
-    const myProps = rm.tiles.filter(t => t.owner === 0);
+    const myProps = rm.tiles.filter(t => t.owner === state.mySlot);
+    const inviteLink = window.location.origin + window.location.pathname + (state.roomCode ? '?room=' + state.roomCode : '');
 
     ui.innerHTML = `
         <div class="richup-layout">
             <!-- LEWA KOLUMNA -->
             <div>
                 <div class="richup-panel">
-                    <h4>Share this game</h4>
+                    <h4>Zaproś znajomych online</h4>
                     <div style="display:flex; gap:6px;">
-                        <input type="text" readonly value="https://twoj-github.io/#ruda" style="width:100%; background:#0f0d17; border:1px solid #334155; color:#cbd5e1; padding:6px 8px; border-radius:8px; font-size:0.75rem;">
-                        <button class="btn btn-blue" style="padding:6px 10px; font-size:0.75rem;" onclick="navigator.clipboard.writeText(window.location.href); alert('Skopiowano link!');">Copy</button>
+                        <input type="text" readonly value="${inviteLink}" style="width:100%; background:#0f0d17; border:1px solid #334155; color:#cbd5e1; padding:6px 8px; border-radius:8px; font-size:0.75rem;">
+                        <button class="btn btn-blue" style="padding:6px 10px; font-size:0.75rem;" onclick="navigator.clipboard.writeText('${inviteLink}'); alert('Skopiowano link do pokoju!');">Copy</button>
                     </div>
                 </div>
 
                 <div class="richup-panel">
                     <h4>Sprzedaż do banku (-25%)</h4>
                     <p style="font-size:0.76rem; color:var(--text-dim); line-height:1.45;">
-                        Kliknij na swoje pole na planszy lub z listy <strong>My properties</strong>, aby sprzedać dom, hotel, dzielnicę, airport lub wodociągi za <strong>-25% ceny</strong> (75% zwrotu gotówki)!
+                        Kliknij na swoje pole na planszy lub z listy <strong>My properties</strong>, aby sprzedać dom, hotel, dzielnicę, airport lub wodociągi za <strong>-25% ceny</strong>!
                     </p>
                 </div>
 
                 <div class="richup-panel">
-                    <h4>Chat pokoju</h4>
+                    <h4>Chat w grze</h4>
                     <div id="richup-chat-box" style="height:170px; overflow-y:auto; font-size:0.76rem; color:#cbd5e1; margin-bottom:8px; background:#120f1d; padding:8px; border-radius:8px;">
                         ${rm.chat.length === 0 ? '<div style="color:#64748b;">Brak wiadomości...</div>' : rm.chat.map(c => `<div><strong>${c.u}:</strong> ${c.t}</div>`).join('')}
                     </div>
@@ -1413,7 +1873,7 @@ function renderRichupScreen() {
                 </div>
             </div>
 
-            <!-- ŚRODKOWA KOLUMNA: POWIĘKSZONA PLANSZA 11x11 -->
+            <!-- ŚRODKOWA KOLUMNA: PLANSZA 11x11 -->
             <div>
                 <div class="richup-board">
                     ${tilesHtml}
@@ -1426,15 +1886,15 @@ function renderRichupScreen() {
             <!-- PRAWA KOLUMNA -->
             <div>
                 <div class="richup-panel">
-                    <h4>Gracze w grze</h4>
+                    <h4>Gracze w grze (${rm.players.length})</h4>
                     ${rm.players.map((p, idx) => `
                         <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:12px; margin-bottom:6px; opacity:${p.bankrupt ? '0.45' : '1'}; background:${rm.turn === idx ? 'rgba(124,58,237,0.24)' : '#14111f'}; border:1px solid ${rm.turn === idx ? '#7c3aed' : 'transparent'};">
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <span style="width:36px; height:36px; border-radius:50%; background:${p.color}; border:2px solid #fff; display:inline-flex; align-items:center; justify-content:center; font-size:1.3rem;">${p.icon}</span>
                                 <div>
                                     <div style="font-size:0.88rem; font-weight:800;">
-                                        ${p.name} ${idx === 0 ? '👑' : ''}
-                                        ${p.bankrupt ? '<span style="color:#ef4444; font-size:0.7rem;">[WIDZ / BANKRUT]</span>' : ''}
+                                        ${p.name} ${idx === 0 ? '👑' : ''} ${idx === state.mySlot ? '(Ty)' : ''}
+                                        ${p.bankrupt ? '<span style="color:#ef4444; font-size:0.7rem;">[WIDZ]</span>' : ''}
                                         ${!p.bankrupt && p.inPrison ? '<span style="color:#ef4444; font-size:0.7rem;">[KLATKA]</span>' : ''}
                                         ${!p.bankrupt && p.skipTurns > 0 ? `<span style="color:#38bdf8; font-size:0.7rem;">[WAKACJE:${p.skipTurns}]</span>` : ''}
                                     </div>
@@ -1449,7 +1909,6 @@ function renderRichupScreen() {
                         </div>
                     `).join('')}
 
-                    <!-- PRZYCISK BANKRUPT DOKŁADNIE JAK W RICHUP.IO -->
                     ${rm.started && !me.bankrupt ? `
                         <div style="display:flex; justify-content:flex-end; margin-top:8px;">
                             <button class="btn-bankrupt" onclick="confirmPlayerBankrupt()">
@@ -1457,14 +1916,9 @@ function renderRichupScreen() {
                             </button>
                         </div>
                     ` : ''}
-                    ${me.bankrupt ? `
-                        <div style="margin-top:8px; padding:8px; background:rgba(239,68,68,0.12); border:1px solid #ef4444; border-radius:8px; font-size:0.76rem; text-align:center; color:#fca5a5;">
-                            👁️ Jesteś w trybie widza — nie bierzesz udziału w rzutach, ale możesz oglądać grę!
-                        </div>
-                    ` : ''}
                 </div>
 
-                <!-- SEKCJA TRADES (LISTA OFERT DO KLIKNIĘCIA PRZEZ KAŻDEGO) -->
+                <!-- SEKCJA TRADES -->
                 <div class="richup-panel">
                     <h4>
                         <span>Trades (${rm.trades.length})</span>
@@ -1474,7 +1928,7 @@ function renderRichupScreen() {
                     <div style="max-height:150px; overflow-y:auto;">
                         ${rm.trades.length === 0 ? `
                             <p style="font-size:0.74rem; color:var(--text-dim);">
-                                Brak aktywnych wymian. Kliknij <strong>+ Create</strong>, aby wysłać ofertę — każdy gracz będzie mógł w nią kliknąć i zobaczyć co oferujesz!
+                                Brak aktywnych wymian. Kliknij <strong>+ Create</strong>, aby wysłać ofertę — każdy gracz może w nią kliknąć i zobaczyć co oferujesz!
                             </p>
                         ` : rm.trades.map(tr => {
                             const fromP = rm.players[tr.from];
@@ -1487,7 +1941,7 @@ function renderRichupScreen() {
                                         <span>${toP.icon} <strong>${toP.name}</strong></span>
                                     </div>
                                     <span style="background:#7c3aed; color:white; padding:2px 8px; border-radius:6px; font-size:0.7rem; font-weight:800;">
-                                        👁️ Zobacz ofertę
+                                        👁️ Zobacz
                                     </span>
                                 </div>
                             `;
@@ -1500,74 +1954,11 @@ function renderRichupScreen() {
                     <h4>My properties (${myProps.length})</h4>
                     <div style="max-height:150px; overflow-y:auto; display:flex; flex-direction:column; gap:5px;">
                         ${myProps.length === 0 ? '<div style="font-size:0.75rem; color:#64748b;">Nie posiadasz jeszcze żadnych dzielnic.</div>' : myProps.map(t => `
-                            <div style="display:flex; justify-content:space-between; align-items:center; background:#14111f; padding:6px 8px; border-radius:8px; font-size:0.76rem; cursor:pointer; border:1px solid rgba(255,255,255,0.05);" onclick="inspectTile(${t.id})">
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#14111f; padding:6px 8px; border-radius:8px; font-size:0.76rem; cursor:pointer;" onclick="inspectTile(${t.id})">
                                 <span>#${t.id} <strong>${t.name}</strong> ${t.level > 0 ? (t.level===5 ? '🏨' : '🏠'.repeat(t.level)) : ''}</span>
                                 <span style="color:var(--accent-yellow);">Sprzedaj / Zarządzaj</span>
                             </div>
                         `).join('')}
-                    </div>
-                </div>
-
-                <!-- USTAWIENIA POKOJU -->
-                <div class="richup-panel">
-                    <h4>Gameplay rules (Ustawienia)</h4>
-
-                    <div class="setting-row">
-                        <div>
-                            <strong>Vacation cash (+300$)</strong>
-                            <small>Wejście na Wakacje (pole 20) daje 300$ premii</small>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" ${rm.settings.vacationCash ? 'checked' : ''} onchange="rm.settings.vacationCash=this.checked">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <strong>x2 rent on full-set</strong>
-                            <small>Podwójny czynsz bazowy za posiadanie całej dzielnicy</small>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" ${rm.settings.doubleFullSet ? 'checked' : ''} onchange="rm.settings.doubleFullSet=this.checked">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <strong>Don't collect rent in prison</strong>
-                            <small>Brak czynszu, gdy właściciel siedzi w klatce</small>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" ${rm.settings.noRentInPrison ? 'checked' : ''} onchange="rm.settings.noRentInPrison=this.checked">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <strong>Mortgage (Hipoteka 50%)</strong>
-                            <small>Zastawiaj pola za 50% ich wartości</small>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" ${rm.settings.mortgage ? 'checked' : ''} onchange="rm.settings.mortgage=this.checked">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="setting-row">
-                        <div>
-                            <strong>Starting cash</strong>
-                            <small>Gotówka na start (500$ - 2000$)</small>
-                        </div>
-                        <select style="background:#0f0d17; color:white; border:1px solid #334155; padding:4px 8px; border-radius:6px;" onchange="rm.settings.startingCash=Number(this.value); if(!rm.started){setupRichupPlayers(); renderRichupScreen();}">
-                            <option value="500"  ${rm.settings.startingCash===500?'selected':''}>$500</option>
-                            <option value="750"  ${rm.settings.startingCash===750?'selected':''}>$750</option>
-                            <option value="1000" ${rm.settings.startingCash===1000?'selected':''}>$1000</option>
-                            <option value="1500" ${rm.settings.startingCash===1500?'selected':''}>$1500</option>
-                            <option value="2000" ${rm.settings.startingCash===2000?'selected':''}>$2000</option>
-                        </select>
                     </div>
                 </div>
             </div>
@@ -1578,9 +1969,8 @@ function renderRichupScreen() {
 function sendRichupChat() {
     const inp = document.getElementById('richup-chat-input');
     if (!inp || !inp.value.trim()) return;
-    rm.chat.push({ u: state.nick, t: inp.value.trim() });
+    sendRichupAction('CHAT', { user: state.nick, text: inp.value.trim() });
     inp.value = '';
-    renderRichupScreen();
 }
 
 function beginRichupMatch() {
@@ -1589,15 +1979,15 @@ function beginRichupMatch() {
     rm.turn = 0;
     rm.turnTimeLeft = 180;
     rm.rolledThisTurn = false;
-    addRichupLog(`Gra rozpoczęta! Każdy gracz startuje z kwotą $${rm.settings.startingCash}. Czas na ruch: 3:00 min.`);
+    addRichupLog(`Gra rozpoczęta! Każdy gracz startuje z kwotą $${rm.settings.startingCash}.`);
     startTurnClock();
     renderRichupScreen();
+    hostBroadcastRichupState();
 }
 
-/* PRZYCISK BANKRUPT (PODDANIE SIĘ I PRZEJŚCIE W TRYB WIDZA) */
 function confirmPlayerBankrupt() {
-    if (!confirm('Czy na pewno chcesz ogłosić BANKRUCTWO (Poddajesz się)? Twoje pola wrócą do puli, a Ty będziesz tylko oglądać grę jako widz.')) return;
-    declareBankruptcy(0, false);
+    if (!confirm('Czy na pewno chcesz ogłosić BANKRUCTWO (Poddajesz się)? Twoje pola wrócą do puli, a Ty będziesz oglądać grę jako widz.')) return;
+    sendRichupAction('BANKRUPT');
 }
 
 function declareBankruptcy(playerId, byTimeout = false) {
@@ -1607,7 +1997,6 @@ function declareBankruptcy(playerId, byTimeout = false) {
     p.cash = 0;
     p.pardonCards = 0;
 
-    // Wszystkie pola tego gracza wracają do banku
     rm.tiles.forEach(t => {
         if (t.owner === playerId) {
             t.owner = null;
@@ -1616,44 +2005,37 @@ function declareBankruptcy(playerId, byTimeout = false) {
         }
     });
 
-    // Usuń otwarte oferty wymiany powiązane z tym graczem
     rm.trades = rm.trades.filter(tr => tr.from !== playerId && tr.to !== playerId);
-
-    addRichupLog(`🏳️ ${p.name} ogłosił BANKRUCTWO ${byTimeout ? '(przekroczony czas / niespłacony dług)' : '(poddał się)'} i przechodzi w tryb widza!`);
+    addRichupLog(`🏳️ ${p.name} ogłosił BANKRUCTWO ${byTimeout ? '(przekroczony czas / dług)' : '(poddał się)'} i przechodzi w tryb widza!`);
     closeRichupModal();
 
     if (rm.turn === playerId) {
         endRichupTurn();
     } else {
         renderRichupScreen();
+        hostBroadcastRichupState();
     }
 }
 
-/* Automatyczne odratowanie bota gdy wpadnie w dług (sprzedaje za -25%) */
 function botResolveDebt(bot) {
-    // 1. Najpierw sprzedaje domy i hotele (-25%)
     for (const t of rm.tiles) {
         while (bot.cash < 0 && t.owner === bot.id && t.level > 0) {
             const refund = Math.floor(t.houseCost * 0.75);
             t.level--;
             bot.cash += refund;
-            addRichupLog(`🤖 ${bot.name} sprzedał budynek na polu ${t.name} za ${refund}$ (-25%), aby spłacić dług.`);
+            addRichupLog(`🤖 ${bot.name} sprzedał budynek na polu ${t.name} za ${refund}$ (-25%).`);
         }
     }
-    // 2. Następnie sprzedaje działki, airporty i wodociągi (-25%)
     for (const t of rm.tiles) {
         if (bot.cash < 0 && t.owner === bot.id && t.level === 0) {
             const refund = Math.floor(t.price * 0.75);
             t.owner = null;
             t.mortgaged = false;
             bot.cash += refund;
-            addRichupLog(`🤖 ${bot.name} sprzedał ${t.name} do banku za ${refund}$ (-25%), aby wyjść z minusa!`);
+            addRichupLog(`🤖 ${bot.name} sprzedał ${t.name} do banku za ${refund}$ (-25%)!`);
         }
     }
-    // Jeśli nadal ma minus -> bankrutuje
-    if (bot.cash < 0) {
-        declareBankruptcy(bot.id, true);
-    }
+    if (bot.cash < 0) declareBankruptcy(bot.id, true);
 }
 
 function rollRichupDice() {
@@ -1675,11 +2057,12 @@ function rollRichupDice() {
         } else if (p.prisonTries >= 3) {
             p.inPrison = false;
             p.prisonTries = 0;
-            addRichupLog(`⛓️ ${p.name} wyrzucił ${d1}+${d2}=${sum}. Po 3 próbach staje OBOK KLATKI — w następnej turze idzie normalnie!`);
+            addRichupLog(`⛓️ ${p.name} wyrzucił ${d1}+${d2}=${sum}. Po 3 próbach staje OBOK KLATKI!`);
         } else {
-            addRichupLog(`⛓️ ${p.name} wyrzucił ${d1}+${d2}=${sum} (wymagane >10). Zostaje w klatce (próba ${p.prisonTries}/3).`);
+            addRichupLog(`⛓️ ${p.name} wyrzucił ${d1}+${d2}=${sum} (wymagane >10). Zostaje w klatce (${p.prisonTries}/3).`);
         }
         renderRichupScreen();
+        hostBroadcastRichupState();
         if (p.isBot) {
             setTimeout(() => {
                 if (p.cash < 0) botResolveDebt(p);
@@ -1692,6 +2075,7 @@ function rollRichupDice() {
     addRichupLog(`🎲 ${p.name} wyrzucił ${d1} + ${d2} = ${sum}.`);
     moveRichupPlayer(p, sum);
     renderRichupScreen();
+    hostBroadcastRichupState();
 
     if (p.isBot) {
         setTimeout(() => {
@@ -1710,8 +2094,9 @@ function payPrisonBail() {
     p.cash -= 50;
     p.inPrison = false;
     p.prisonTries = 0;
-    addRichupLog(`💵 ${p.name} zapłacił 50$ kaucji i wyszedł z klatki! Teraz może rzucić kostkami.`);
+    addRichupLog(`💵 ${p.name} zapłacił 50$ kaucji i wyszedł z klatki!`);
     renderRichupScreen();
+    hostBroadcastRichupState();
 }
 
 function usePrisonPardon() {
@@ -1720,8 +2105,9 @@ function usePrisonPardon() {
     p.pardonCards--;
     p.inPrison = false;
     p.prisonTries = 0;
-    addRichupLog(`🃏 ${p.name} użył Pardon Card i wyszedł z klatki! Teraz może rzucić kostkami.`);
+    addRichupLog(`🃏 ${p.name} użył Pardon Card i wyszedł z klatki!`);
     renderRichupScreen();
+    hostBroadcastRichupState();
 }
 
 function moveRichupPlayer(p, steps) {
@@ -1750,10 +2136,10 @@ function handleLandOnTile(p, tile) {
             addRichupLog(`🧰 Skarb (#${tile.id}): ${p.name} znajduje +100$!`);
         } else if (outcome === 2) {
             p.cash -= 100;
-            addRichupLog(`🧰 Skarb (#${tile.id}): ${p.name} płaci 100$ opłaty skarbowej!`);
+            addRichupLog(`🧰 Skarb (#${tile.id}): ${p.name} płaci 100$ opłaty!`);
         } else {
             p.pardonCards++;
-            addRichupLog(`🧰 Skarb (#${tile.id}): ${p.name} otrzymuje kartę PARDON CARD (wyjście z więzienia)!`);
+            addRichupLog(`🧰 Skarb (#${tile.id}): ${p.name} otrzymuje PARDON CARD!`);
         }
     }
     else if (tile.type === 'tax_flat') {
@@ -1770,71 +2156,61 @@ function handleLandOnTile(p, tile) {
         } else if (mode === 1) {
             const dest = Math.floor(Math.random() * 40);
             p.pos = dest;
-            addRichupLog(`❓ Surprise (#${tile.id}): ${p.name} zostaje przeniesiony na pole #${dest} (${rm.tiles[dest].name})!`);
+            addRichupLog(`❓ Surprise (#${tile.id}): ${p.name} przenosi się na pole #${dest} (${rm.tiles[dest].name})!`);
         } else {
             const others = rm.players.filter(o => o.id !== p.id && !o.bankrupt);
             if (others.length > 0) {
                 const target = others[Math.floor(Math.random() * others.length)];
                 const amt = (Math.floor(Math.random() * 4) + 1) * 50;
                 if (Math.random() < 0.5) {
-                    p.cash += amt;
-                    target.cash -= amt;
+                    p.cash += amt; target.cash -= amt;
                     addRichupLog(`❓ Surprise (#${tile.id}): ${p.name} zabiera ${amt}$ od gracza ${target.name}!`);
                 } else {
-                    p.cash -= amt;
-                    target.cash += amt;
+                    p.cash -= amt; target.cash += amt;
                     addRichupLog(`❓ Surprise (#${tile.id}): ${p.name} oddaje ${amt}$ graczowi ${target.name}!`);
                 }
             }
         }
     }
-    else if (tile.type === 'prison') {
-        addRichupLog(`⛓️ ${p.name} staje na polu #10 OBOK KLATKI (tylko odwiedziny).`);
-    }
     else if (tile.type === 'vacation') {
         p.skipTurns = 2;
         if (rm.settings.vacationCash) {
             p.cash += 300;
-            addRichupLog(`🏖️ ${p.name} staje na Wakacjach (#20)! Odpoczywa przez 2 tury i zgarnia +300$ z Vacation Cash!`);
+            addRichupLog(`🏖️ ${p.name} staje na Wakacjach (#20)! Odpoczywa 2 tury i dostaje +300$!`);
         } else {
-            addRichupLog(`🏖️ ${p.name} staje na Wakacjach (#20) i odpoczywa przez 2 tury.`);
+            addRichupLog(`🏖️ ${p.name} staje na Wakacjach (#20) i odpoczywa 2 tury.`);
         }
     }
     else if (tile.type === 'gotoprison') {
         p.pos = 10;
         p.inPrison = true;
         p.prisonTries = 0;
-        addRichupLog(`🚓 ${p.name} wszedł na pole #30 i zostaje przeteleportowany prosto do KLATKI w Więzieniu (#10)!`);
+        addRichupLog(`🚓 ${p.name} trafia do KLATKI w Więzieniu (#10)!`);
     }
     else if (tile.type === 'tax_hotel') {
         const myHotels = rm.tiles.filter(t => t.owner === p.id && t.level === 5).length;
         const tax = myHotels * 75;
         p.cash -= tax;
-        addRichupLog(`🚕 ${p.name} staje na polu #38 (Taksówka Hotelowa): posiada ${myHotels} hoteli i płaci ${tax}$ (75$ za każdy hotel).`);
+        addRichupLog(`🚕 ${p.name} płaci ${tax}$ na polu #38 (75$ za każdy posiadany hotel).`);
     }
     else if (tile.owner !== null && tile.owner !== p.id && !tile.mortgaged) {
         const owner = rm.players[tile.owner];
         if (rm.settings.noRentInPrison && owner.inPrison) {
-            addRichupLog(`⛓️ ${owner.name} siedzi w więzieniu — ${p.name} nie płaci czynszu za ${tile.name}!`);
+            addRichupLog(`⛓️ ${owner.name} siedzi w więzieniu — brak czynszu za ${tile.name}!`);
             return;
         }
-
         let rent = calculateTileRent(tile, rm.lastDiceSum);
         p.cash -= rent;
         owner.cash += rent;
-        if (owner.id === 0) addPoints(0, 15);
+        addPoints(owner.id, 15);
         addRichupLog(`💸 ${p.name} staje na ${tile.name} i płaci ${rent}$ czynszu graczowi ${owner.name}!`);
-        if (p.cash < 0) {
-            addRichupLog(`🚨 UWAGA! ${p.name} ma ujemne saldo (${p.cash}$) i musi sprzedać majątek (-25%), aby grać dalej!`);
-        }
     }
 }
 
 function calculateTileRent(tile, diceSum) {
     if (tile.type === 'airport') {
         const ownedAirports = rm.tiles.filter(t => t.type === 'airport' && t.owner === tile.owner && !t.mortgaged).length;
-        const table = [0, 25, 50, 100, 200];
-        return table[ownedAirports] || 25;
+        return [0, 25, 50, 100, 200][ownedAirports] || 25;
     }
     if (tile.type === 'utility') {
         const ownedUtils = rm.tiles.filter(t => t.type === 'utility' && t.owner === tile.owner && !t.mortgaged).length;
@@ -1842,9 +2218,7 @@ function calculateTileRent(tile, diceSum) {
     }
     if (tile.type === 'prop') {
         let base = tile.rents[tile.level];
-        if (tile.level === 0 && rm.settings.doubleFullSet && hasFullSet(tile.owner, tile.set)) {
-            base *= 2;
-        }
+        if (tile.level === 0 && rm.settings.doubleFullSet && hasFullSet(tile.owner, tile.set)) base *= 2;
         return base;
     }
     return 0;
@@ -1856,9 +2230,10 @@ function buyRichupProperty() {
     if (!tile.price || tile.owner !== null || p.cash < tile.price) return;
     p.cash -= tile.price;
     tile.owner = p.id;
-    if (p.id === 0) addPoints(0, 20);
+    addPoints(p.id, 20);
     addRichupLog(`🏠 ${p.name} kupił ${tile.name} za ${tile.price}$!`);
     renderRichupScreen();
+    hostBroadcastRichupState();
 }
 
 function canBuildOnTile(player, tile) {
@@ -1869,8 +2244,8 @@ function canBuildOnTile(player, tile) {
     return false;
 }
 
-function buildOnTile(tileId) {
-    const p = rm.players[0];
+function buildOnTile(slot, tileId) {
+    const p = rm.players[slot];
     const tile = rm.tiles[tileId];
     if (!canBuildOnTile(p, tile)) return;
     p.cash -= tile.houseCost;
@@ -1879,31 +2254,30 @@ function buildOnTile(tileId) {
     addRichupLog(`🏗️ ${p.name} wybudował ${label} w dzielnicy ${tile.name} (-${tile.houseCost}$).`);
     closeRichupModal();
     renderRichupScreen();
+    hostBroadcastRichupState();
 }
 
-/* SPRZEDAŻ DOMU / HOTELU DO BANKU ZA -25% (ZWROT 75% WARTOŚCI) */
-function sellBuildingOnTile(tileId) {
-    const p = rm.players[0];
+function sellBuildingOnTile(slot, tileId) {
+    const p = rm.players[slot];
     const tile = rm.tiles[tileId];
     if (!tile || tile.owner !== p.id || tile.level <= 0) return;
 
-    const refund = Math.floor(tile.houseCost * 0.75); // -25% od ceny zakupu
+    const refund = Math.floor(tile.houseCost * 0.75);
     const soldLabel = tile.level === 5 ? 'HOTEL 🏨' : `Dom #${tile.level} 🏠`;
     tile.level--;
     p.cash += refund;
 
-    addRichupLog(`💰 ${p.name} sprzedał ${soldLabel} w dzielnicy ${tile.name} za +${refund}$ (-25% ceny).`);
-    inspectTile(tileId);
+    addRichupLog(`💰 ${p.name} sprzedał ${soldLabel} w dzielnicy ${tile.name} za +${refund}$ (-25%).`);
+    closeRichupModal();
     renderRichupScreen();
+    hostBroadcastRichupState();
 }
 
-/* SPRZEDAŻ DZIELNICY / AIRPORTU / WODOCIĄGÓW DO BANKU ZA -25% (ZWROT 75% CENY) */
-function sellPropertyToBank(tileId) {
-    const p = rm.players[0];
+function sellPropertyToBank(slot, tileId) {
+    const p = rm.players[slot];
     const tile = rm.tiles[tileId];
     if (!tile || tile.owner !== p.id) return;
 
-    // Jeśli na polu stoją jeszcze domy lub hotel, policz za wszystko 75%
     const buildingsRefund = tile.level > 0 ? Math.floor((tile.level * tile.houseCost) * 0.75) : 0;
     const baseRefund = Math.floor(tile.price * 0.75);
     const totalRefund = baseRefund + buildingsRefund;
@@ -1913,14 +2287,15 @@ function sellPropertyToBank(tileId) {
     tile.mortgaged = false;
     p.cash += totalRefund;
 
-    addRichupLog(`🏦 ${p.name} sprzedał ${tile.name} do banku za +${totalRefund}$ (-25% od ceny)!`);
+    addRichupLog(`🏦 ${p.name} sprzedał ${tile.name} do banku za +${totalRefund}$ (-25%)!`);
     closeRichupModal();
     renderRichupScreen();
+    hostBroadcastRichupState();
 }
 
-function toggleMortgageTile(tileId) {
+function toggleMortgageTile(slot, tileId) {
     if (!rm.settings.mortgage) return;
-    const p = rm.players[0];
+    const p = rm.players[slot];
     const tile = rm.tiles[tileId];
     if (tile.owner !== p.id || tile.level > 0) return;
     const half = Math.floor(tile.price / 2);
@@ -1935,6 +2310,7 @@ function toggleMortgageTile(tileId) {
     }
     closeRichupModal();
     renderRichupScreen();
+    hostBroadcastRichupState();
 }
 
 function botHandlePostRoll(bot) {
@@ -1948,43 +2324,20 @@ function botHandlePostRoll(bot) {
         tile.level++;
         addRichupLog(`🤖 ${bot.name} rozbudował ${tile.name} do poziomu ${tile.level}!`);
     }
-
-    // Czasami bot wystawia ofertę Trade na listę, żeby gracze mogli w nią kliknąć!
-    const myProps = rm.tiles.filter(t => t.owner === 0 && t.level === 0);
-    if (myProps.length > 0 && rm.trades.length < 3 && Math.random() < 0.25 && bot.cash >= 250) {
-        const wanted = myProps[Math.floor(Math.random() * myProps.length)];
-        const offeredCash = Math.min(bot.cash - 50, Math.floor(wanted.price * 1.25));
-        rm.trades.push({
-            id: rm.nextTradeId++,
-            from: bot.id,
-            to: 0,
-            giveCash: offeredCash,
-            takeCash: 0,
-            givePardon: false,
-            takePardon: false,
-            giveProps: [],
-            takeProps: [wanted.id]
-        });
-        addRichupLog(`🤝 ${bot.name} wystawił nową ofertę wymiany (Trade) dla ${rm.players[0].name}! Kliknij na nią w panelu Trades.`);
-    }
 }
 
 function endRichupTurn() {
     const curP = rm.players[rm.turn];
-    if (!curP.bankrupt && curP.cash < 0) {
-        alert('Nie możesz zakończyć tury mając minus na koncie! Sprzedaj pola/domy (-25%) albo kliknij Bankrupt.');
-        return;
-    }
+    if (!curP.bankrupt && curP.cash < 0) return;
 
     rm.rolledThisTurn = false;
-    rm.turnTimeLeft = 180; // Reset licznika 3 minut dla następnego gracza
+    rm.turnTimeLeft = 180;
 
     const alivePlayers = rm.players.filter(p => !p.bankrupt);
     if (alivePlayers.length <= 1) {
-        if (alivePlayers.length === 1) {
-            addRichupLog(`🏆 KONIEC GRY! Zwycięża ${alivePlayers[0].name}!`);
-        }
+        if (alivePlayers.length === 1) addRichupLog(`🏆 KONIEC GRY! Zwycięża ${alivePlayers[0].name}!`);
         renderRichupScreen();
+        hostBroadcastRichupState();
         return;
     }
 
@@ -1994,7 +2347,7 @@ function endRichupTurn() {
         if (candidate.bankrupt) continue;
         if (candidate.skipTurns > 0) {
             candidate.skipTurns--;
-            addRichupLog(`🏖️ ${candidate.name} odpoczywa na Wakacjach (pozostało tur do pominięcia: ${candidate.skipTurns}).`);
+            addRichupLog(`🏖️ ${candidate.name} odpoczywa na Wakacjach (pozostało tur: ${candidate.skipTurns}).`);
             continue;
         }
         rm.turn = nextIdx;
@@ -2002,9 +2355,10 @@ function endRichupTurn() {
     }
 
     renderRichupScreen();
+    hostBroadcastRichupState();
 
     const activeP = rm.players[rm.turn];
-    if (activeP.isBot && !activeP.bankrupt) {
+    if (state.isHost && activeP.isBot && !activeP.bankrupt) {
         setTimeout(() => {
             if (activeP.inPrison && activeP.pardonCards > 0) {
                 activeP.pardonCards--;
@@ -2020,18 +2374,18 @@ function endRichupTurn() {
     }
 }
 
-/* KARTA DZIELNICY / AIRPORTU / WODOCIĄGÓW Z PRZYCISKAMI SPRZEDAŻY -25% */
 function inspectTile(tileId) {
     const t = rm.tiles[tileId];
     const modal = document.getElementById('richup-modal');
     modal.classList.remove('hidden');
 
     const ownerName = t.owner !== null ? rm.players[t.owner].name : 'Brak (Do kupienia)';
-    const isMine = (t.owner === 0);
+    const me = rm.players[state.mySlot] || rm.players[0];
+    const isMine = (t.owner === state.mySlot);
     let detailsHtml = '';
 
     if (t.type === 'prop') {
-        const canBuild = canBuildOnTile(rm.players[0], t);
+        const canBuild = canBuildOnTile(me, t);
         const propRefund = Math.floor(t.price * 0.75);
         const buildRefund = Math.floor(t.houseCost * 0.75);
 
@@ -2041,10 +2395,7 @@ function inspectTile(tileId) {
 
             <table class="prop-rent-table">
                 <thead>
-                    <tr>
-                        <th style="text-align:left;">when</th>
-                        <th style="text-align:right;">get</th>
-                    </tr>
+                    <tr><th style="text-align:left;">when</th><th style="text-align:right;">get</th></tr>
                 </thead>
                 <tbody>
                     <tr><td>with rent</td><td class="val">$ ${t.rents[0]}</td></tr>
@@ -2057,68 +2408,39 @@ function inspectTile(tileId) {
             </table>
 
             <div class="prop-bottom-stats">
-                <div>
-                    <div class="stat-label">Price</div>
-                    <div class="stat-price">$ ${t.price}</div>
-                </div>
-                <div>
-                    <div class="stat-label">🏠</div>
-                    <div class="stat-price">$ ${t.houseCost}</div>
-                </div>
-                <div>
-                    <div class="stat-label">🏨</div>
-                    <div class="stat-price">$ ${t.houseCost}</div>
-                </div>
+                <div><div class="stat-label">Price</div><div class="stat-price">$ ${t.price}</div></div>
+                <div><div class="stat-label">🏠</div><div class="stat-price">$ ${t.houseCost}</div></div>
+                <div><div class="stat-label">🏨</div><div class="stat-price">$ ${t.houseCost}</div></div>
             </div>
 
             <p style="font-size:0.8rem; color:#94a3b8; text-align:center; margin-bottom:12px;">
-                Pole #${t.id} • Właściciel: <strong style="color:white;">${ownerName}</strong> • Poziom: <strong>${t.level===5 ? 'HOTEL' : t.level + ' domów'}</strong>
+                Pole #${t.id} • Właściciel: <strong style="color:white;">${ownerName}</strong>
             </p>
 
             <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-                ${canBuild ? `<button class="btn btn-green" onclick="buildOnTile(${t.id})">🏗️ Wybuduj ($${t.houseCost})</button>` : ''}
-                ${isMine && t.level > 0 ? `<button class="btn btn-yellow" onclick="sellBuildingOnTile(${t.id})">🔨 Sprzedaj ${t.level===5?'Hotel':'Dom'} (+$${buildRefund} / -25%)</button>` : ''}
-                ${isMine ? `<button class="btn btn-danger" onclick="sellPropertyToBank(${t.id})">💵 Sprzedaj Dzielnicę (+$${propRefund + t.level * buildRefund} / -25%)</button>` : ''}
-                ${isMine && t.level === 0 && rm.settings.mortgage ? `<button class="btn btn-blue" onclick="toggleMortgageTile(${t.id})">${t.mortgaged ? 'Wykup z hipoteki' : 'Hipoteka (+50%)'}</button>` : ''}
+                ${canBuild ? `<button class="btn btn-green" onclick="sendRichupAction('BUILD_TILE', {tileId:${t.id}}); closeRichupModal();">🏗️ Wybuduj ($${t.houseCost})</button>` : ''}
+                ${isMine && t.level > 0 ? `<button class="btn btn-yellow" onclick="sendRichupAction('SELL_BUILDING', {tileId:${t.id}}); closeRichupModal();">🔨 Sprzedaj ${t.level===5?'Hotel':'Dom'} (+$${buildRefund})</button>` : ''}
+                ${isMine ? `<button class="btn btn-danger" onclick="sendRichupAction('SELL_PROP', {tileId:${t.id}}); closeRichupModal();">💵 Sprzedaj Dzielnicę (+$${propRefund + t.level * buildRefund})</button>` : ''}
+                ${isMine && t.level === 0 && rm.settings.mortgage ? `<button class="btn btn-blue" onclick="sendRichupAction('MORTGAGE_TILE', {tileId:${t.id}}); closeRichupModal();">${t.mortgaged ? 'Wykup z hipoteki' : 'Hipoteka (+50%)'}</button>` : ''}
                 <button class="btn" onclick="closeRichupModal()">Zamknij</button>
             </div>
         `;
         modal.innerHTML = `<div class="modal-card">${detailsHtml}</div>`;
         return;
-    } else if (t.type === 'airport') {
+    } else if (t.type === 'airport' || t.type === 'utility') {
         const refund = Math.floor(t.price * 0.75);
         detailsHtml = `
-            <div class="prop-card-title">✈️ ${t.name}</div>
-            <p style="margin:8px 0; text-align:center;">Cena: <strong>$ 200</strong> • Właściciel: <strong>${ownerName}</strong></p>
-            <table class="prop-rent-table">
-                <tr><td>1 Airport</td><td class="val">$ 25</td></tr>
-                <tr><td>2 Airporty</td><td class="val">$ 50</td></tr>
-                <tr><td>3 Airporty</td><td class="val">$ 100</td></tr>
-                <tr><td>4 Airporty</td><td class="val">$ 200</td></tr>
-            </table>
-            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-                ${isMine ? `<button class="btn btn-yellow" onclick="sellPropertyToBank(${t.id})">💵 Sprzedaj Airport do banku (+$${refund} / -25%)</button>` : ''}
-                <button class="btn btn-danger" onclick="closeRichupModal()">Zamknij</button>
-            </div>
-        `;
-    } else if (t.type === 'utility') {
-        const refund = Math.floor(t.price * 0.75);
-        detailsHtml = `
-            <div class="prop-card-title">🚰 ${t.name}</div>
-            <p style="margin:8px 0; text-align:center;">Cena: <strong>$ 150</strong> • Właściciel: <strong>${ownerName}</strong></p>
-            <p style="font-size:0.9rem; line-height:1.6; text-align:center; margin:12px 0;">
-                • If one company is owned: <strong>$4 × wyrzucona suma oczek</strong><br>
-                • If two companies are owned (pola 12 i 27): <strong>$10 × wyrzucona suma oczek</strong>
-            </p>
-            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-                ${isMine ? `<button class="btn btn-yellow" onclick="sellPropertyToBank(${t.id})">💵 Sprzedaj Wodociągi do banku (+$${refund} / -25%)</button>` : ''}
+            <div class="prop-card-title">${t.type === 'airport' ? '✈️' : '🚰'} ${t.name}</div>
+            <p style="margin:8px 0; text-align:center;">Cena: <strong>$ ${t.price}</strong> • Właściciel: <strong>${ownerName}</strong></p>
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
+                ${isMine ? `<button class="btn btn-yellow" onclick="sendRichupAction('SELL_PROP', {tileId:${t.id}}); closeRichupModal();">💵 Sprzedaj do banku (+$${refund} / -25%)</button>` : ''}
                 <button class="btn btn-danger" onclick="closeRichupModal()">Zamknij</button>
             </div>
         `;
     } else {
         detailsHtml = `
             <div class="prop-card-title">Pole #${t.id}: ${t.name}</div>
-            <p style="margin:12px 0; color:var(--text-dim); text-align:center;">${t.sub || 'Pole specjalne na planszy Rudy Śląskiej.'}</p>
+            <p style="margin:12px 0; color:var(--text-dim); text-align:center;">${t.sub || 'Pole specjalne.'}</p>
             <div style="text-align:center;"><button class="btn btn-danger" onclick="closeRichupModal()">Zamknij</button></div>
         `;
     }
@@ -2130,21 +2452,19 @@ function closeRichupModal() {
     document.getElementById('richup-modal').classList.add('hidden');
 }
 
-/* =========================================================================
-   SYSTEM WYMIAN (TRADES) — TWORZENIE, PODGLĄD DLA KAŻDEGO, AKCEPTUJ / ODRZUĆ
-   ========================================================================= */
-function openCreateTradeModal(targetIdx = 1) {
+/* --- SYSTEM TRADES ONLINE --- */
+function openCreateTradeModal(targetIdx = -1) {
     const modal = document.getElementById('richup-modal');
     modal.classList.remove('hidden');
 
-    const me = rm.players[0];
-    const availablePartners = rm.players.filter(p => p.id !== 0 && !p.bankrupt);
+    const me = rm.players[state.mySlot];
+    const availablePartners = rm.players.filter(p => p.id !== state.mySlot && !p.bankrupt);
     if (availablePartners.length === 0) {
-        modal.innerHTML = `<div class="modal-card"><p>Brak aktywnych graczy do wymiany.</p><button class="btn" onclick="closeRichupModal()">Zamknij</button></div>`;
+        modal.innerHTML = `<div class="modal-card"><p>Brak innych graczy do wymiany.</p><button class="btn" onclick="closeRichupModal()">Zamknij</button></div>`;
         return;
     }
-    const partner = rm.players.find(p => p.id === targetIdx && !p.bankrupt) || availablePartners[0];
-    const myProps = rm.tiles.filter(t => t.owner === 0);
+    const partner = availablePartners.find(p => p.id === targetIdx) || availablePartners[0];
+    const myProps = rm.tiles.filter(t => t.owner === state.mySlot);
     const partnerProps = rm.tiles.filter(t => t.owner === partner.id);
 
     modal.innerHTML = `
@@ -2164,12 +2484,10 @@ function openCreateTradeModal(targetIdx = 1) {
                         Gotówka ($): <input type="number" id="trade-give-cash" value="0" min="0" max="${Math.max(0, me.cash)}" style="width:90px; background:#090d16; color:white; border:1px solid #334155; padding:4px;">
                     </div>
                     <div style="margin:8px 0;">
-                        <label><input type="checkbox" id="trade-give-pardon" ${me.pardonCards <= 0 ? 'disabled' : ''}> Oddaj Pardon Card (masz: ${me.pardonCards})</label>
+                        <label><input type="checkbox" id="trade-give-pardon" ${me.pardonCards <= 0 ? 'disabled' : ''}> Oddaj Pardon Card (${me.pardonCards})</label>
                     </div>
                     <div style="max-height:130px; overflow-y:auto; margin-top:6px;">
-                        ${myProps.length === 0 ? '<small style="color:#64748b;">Brak pól</small>' : myProps.map(t => `
-                            <label style="display:block; margin:3px 0;"><input type="checkbox" class="trade-give-prop" value="${t.id}"> #${t.id} ${t.name} ($${t.price})</label>
-                        `).join('')}
+                        ${myProps.map(t => `<label style="display:block; margin:3px 0;"><input type="checkbox" class="trade-give-prop" value="${t.id}"> #${t.id} ${t.name} ($${t.price})</label>`).join('')}
                     </div>
                 </div>
 
@@ -2179,18 +2497,16 @@ function openCreateTradeModal(targetIdx = 1) {
                         Gotówka ($): <input type="number" id="trade-take-cash" value="0" min="0" max="${Math.max(0, partner.cash)}" style="width:90px; background:#090d16; color:white; border:1px solid #334155; padding:4px;">
                     </div>
                     <div style="margin:8px 0;">
-                        <label><input type="checkbox" id="trade-take-pardon" ${partner.pardonCards <= 0 ? 'disabled' : ''}> Weź Pardon Card (ma: ${partner.pardonCards})</label>
+                        <label><input type="checkbox" id="trade-take-pardon" ${partner.pardonCards <= 0 ? 'disabled' : ''}> Weź Pardon Card (${partner.pardonCards})</label>
                     </div>
                     <div style="max-height:130px; overflow-y:auto; margin-top:6px;">
-                        ${partnerProps.length === 0 ? '<small style="color:#64748b;">Brak pól</small>' : partnerProps.map(t => `
-                            <label style="display:block; margin:3px 0;"><input type="checkbox" class="trade-take-prop" value="${t.id}"> #${t.id} ${t.name} ($${t.price})</label>
-                        `).join('')}
+                        ${partnerProps.map(t => `<label style="display:block; margin:3px 0;"><input type="checkbox" class="trade-take-prop" value="${t.id}"> #${t.id} ${t.name} ($${t.price})</label>`).join('')}
                     </div>
                 </div>
             </div>
 
             <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:16px;">
-                <button class="btn btn-green" onclick="submitTradeToBoard(${partner.id})">📤 Wystaw ofertę na listę Trades</button>
+                <button class="btn btn-green" onclick="submitTradeToBoard(${partner.id})">📤 Wyślij Ofertę</button>
                 <button class="btn btn-danger" onclick="closeRichupModal()">Anuluj</button>
             </div>
         </div>
@@ -2198,43 +2514,19 @@ function openCreateTradeModal(targetIdx = 1) {
 }
 
 function submitTradeToBoard(partnerId) {
-    const me = rm.players[0];
-    const partner = rm.players[partnerId];
     const giveCash = Math.max(0, Number(document.getElementById('trade-give-cash').value) || 0);
     const takeCash = Math.max(0, Number(document.getElementById('trade-take-cash').value) || 0);
     const givePardon = document.getElementById('trade-give-pardon').checked;
     const takePardon = document.getElementById('trade-take-pardon').checked;
-
     const giveProps = Array.from(document.querySelectorAll('.trade-give-prop:checked')).map(el => Number(el.value));
     const takeProps = Array.from(document.querySelectorAll('.trade-take-prop:checked')).map(el => Number(el.value));
 
-    if (giveCash > me.cash) {
-        alert('Nie masz tyle gotówki!');
-        return;
-    }
-
-    const newTrade = {
-        id: rm.nextTradeId++,
-        from: 0,
-        to: partnerId,
-        giveCash,
-        takeCash,
-        givePardon,
-        takePardon,
-        giveProps,
-        takeProps
-    };
-
-    rm.trades.push(newTrade);
-    addRichupLog(`🤝 ${me.name} wystawił ofertę wymiany dla ${partner.name}! Każdy może kliknąć w nią w sekcji Trades.`);
+    sendRichupAction('CREATE_TRADE', {
+        to: partnerId, giveCash, takeCash, givePardon, takePardon, giveProps, takeProps
+    });
     closeRichupModal();
-    renderRichupScreen();
-
-    // Otwórz od razu podgląd tej oferty, żeby było widać jak wygląda i co odpowie druga strona
-    inspectTradeOffer(newTrade.id);
 }
 
-/* PODGLĄD OFERTY TRADE (KAŻDY MOŻE KLIKNĄĆ I ZOBACZYĆ CO KTO OFERUJE + AKCEPTUJ / ODRZUĆ) */
 function inspectTradeOffer(tradeId) {
     const tr = rm.trades.find(x => x.id === tradeId);
     if (!tr) return;
@@ -2244,78 +2536,54 @@ function inspectTradeOffer(tradeId) {
 
     const fromP = rm.players[tr.from];
     const toP = rm.players[tr.to];
-
     const giveNames = tr.giveProps.map(id => `#${id} ${rm.tiles[id].name} ($${rm.tiles[id].price})`);
     const takeNames = tr.takeProps.map(id => `#${id} ${rm.tiles[id].name} ($${rm.tiles[id].price})`);
+
+    const canAccept = (state.mySlot === tr.to || toP.isBot);
 
     modal.innerHTML = `
         <div class="modal-card wide">
             <h3 style="color:var(--accent-yellow); margin-bottom:10px; text-align:center;">
-                🔍 Podgląd Oferty Wymiany #${tr.id}
+                🔍 Oferta Wymiany #${tr.id}: ${fromP.name} ➔ ${toP.name}
             </h3>
-            <p style="text-align:center; font-size:0.86rem; margin-bottom:14px;">
-                Oferta od <strong>${fromP.icon} ${fromP.name}</strong> dla gracza <strong>${toP.icon} ${toP.name}</strong>
-            </p>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; font-size:0.84rem; margin-bottom:18px;">
                 <div style="background:#14111f; padding:14px; border-radius:12px; border:1px solid #22c55e;">
-                    <strong style="color:var(--accent-green); display:block; margin-bottom:8px;">
-                        ${fromP.icon} ${fromP.name} oferuje:
-                    </strong>
+                    <strong style="color:var(--accent-green); display:block; margin-bottom:8px;">${fromP.icon} ${fromP.name} daje:</strong>
                     <div>💵 Gotówka: <strong>$${tr.giveCash}</strong></div>
-                    <div>🃏 Pardon Card: <strong>${tr.givePardon ? 'TAK (1 szt.)' : 'Brak'}</strong></div>
-                    <div style="margin-top:6px;">🏠 Pola (${giveNames.length}):</div>
-                    <ul style="margin-left:18px; color:#cbd5e1; margin-top:4px;">
+                    <div>🃏 Pardon Card: <strong>${tr.givePardon ? 'TAK' : 'Brak'}</strong></div>
+                    <ul style="margin-left:18px; margin-top:6px;">
                         ${giveNames.length === 0 ? '<li>Brak pól</li>' : giveNames.map(n => `<li>${n}</li>`).join('')}
                     </ul>
                 </div>
 
                 <div style="background:#14111f; padding:14px; border-radius:12px; border:1px solid #38bdf8;">
-                    <strong style="color:var(--accent-blue); display:block; margin-bottom:8px;">
-                        W zamian od ${toP.icon} ${toP.name}:
-                    </strong>
+                    <strong style="color:var(--accent-blue); display:block; margin-bottom:8px;">Od ${toP.icon} ${toP.name}:</strong>
                     <div>💵 Gotówka: <strong>$${tr.takeCash}</strong></div>
-                    <div>🃏 Pardon Card: <strong>${tr.takePardon ? 'TAK (1 szt.)' : 'Brak'}</strong></div>
-                    <div style="margin-top:6px;">🏠 Pola (${takeNames.length}):</div>
-                    <ul style="margin-left:18px; color:#cbd5e1; margin-top:4px;">
+                    <div>🃏 Pardon Card: <strong>${tr.takePardon ? 'TAK' : 'Brak'}</strong></div>
+                    <ul style="margin-left:18px; margin-top:6px;">
                         ${takeNames.length === 0 ? '<li>Brak pól</li>' : takeNames.map(n => `<li>${n}</li>`).join('')}
                     </ul>
                 </div>
             </div>
 
             <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                <button class="btn btn-green" onclick="acceptTradeOffer(${tr.id})">✅ Akceptuj wymianę</button>
-                <button class="btn btn-danger" onclick="declineTradeOffer(${tr.id})">❌ Nie akceptuj (Odrzuć / Usuń)</button>
+                ${canAccept ? `<button class="btn btn-green" onclick="sendRichupAction('ACCEPT_TRADE', {tradeId:${tr.id}}); closeRichupModal();">✅ Akceptuj wymianę</button>` : ''}
+                <button class="btn btn-danger" onclick="sendRichupAction('DECLINE_TRADE', {tradeId:${tr.id}}); closeRichupModal();">❌ Nie akceptuj (Odrzuć)</button>
                 <button class="btn" onclick="closeRichupModal()">Zamknij podgląd</button>
             </div>
         </div>
     `;
 }
 
-function acceptTradeOffer(tradeId) {
+function acceptTradeOfferHost(actorSlot, tradeId) {
     const idx = rm.trades.findIndex(x => x.id === tradeId);
     if (idx === -1) return;
     const tr = rm.trades[idx];
     const fromP = rm.players[tr.from];
     const toP = rm.players[tr.to];
 
-    // Jeśli oferta była wysłana do Bota, sprawdź czy Bot zgadza się na warunki
-    if (toP.isBot && tr.from === 0) {
-        const giveVal = tr.giveCash + tr.giveProps.reduce((s, id) => s + rm.tiles[id].price, 0) + (tr.givePardon ? 100 : 0);
-        const takeVal = tr.takeCash + tr.takeProps.reduce((s, id) => s + rm.tiles[id].price, 0) + (tr.takePardon ? 100 : 0);
-        if (giveVal < takeVal * 0.75) {
-            rm.trades.splice(idx, 1);
-            addRichupLog(`❌ ${toP.name} NIE ZAAKCEPTOWAŁ (odrzucił) oferty wymiany od ${fromP.name} — zbyt niekorzystna!`);
-            closeRichupModal();
-            renderRichupScreen();
-            return;
-        }
-    }
-
-    if (fromP.cash < tr.giveCash || toP.cash < tr.takeCash) {
-        alert('Jeden z graczy nie ma już wystarczającej gotówki na tę wymianę!');
-        return;
-    }
+    if (fromP.cash < tr.giveCash || toP.cash < tr.takeCash) return;
 
     fromP.cash = fromP.cash - tr.giveCash + tr.takeCash;
     toP.cash = toP.cash - tr.takeCash + tr.giveCash;
@@ -2328,18 +2596,18 @@ function acceptTradeOffer(tradeId) {
 
     rm.trades.splice(idx, 1);
     addRichupLog(`✅ Wymiana #${tr.id} pomiędzy ${fromP.name} a ${toP.name} została ZAAKCEPTOWANA!`);
-    closeRichupModal();
     renderRichupScreen();
+    hostBroadcastRichupState();
 }
 
-function declineTradeOffer(tradeId) {
+function declineTradeOfferHost(tradeId) {
     const idx = rm.trades.findIndex(x => x.id === tradeId);
     if (idx === -1) return;
     const tr = rm.trades[idx];
     rm.trades.splice(idx, 1);
-    addRichupLog(`❌ Oferta wymiany #${tr.id} (${rm.players[tr.from].name} ➔ ${rm.players[tr.to].name}) została ODRZUCONA.`);
-    closeRichupModal();
+    addRichupLog(`❌ Oferta wymiany #${tr.id} została ODRZUCONA.`);
     renderRichupScreen();
+    hostBroadcastRichupState();
 }
 
 /* =========================================================================
@@ -2356,25 +2624,20 @@ const WEAPONS_DB = {
 };
 
 let br = {};
-
 function startBattleRoyale() {
     canvas.classList.remove('hidden');
     document.getElementById('br-hotbar').classList.remove('hidden');
     document.getElementById('active-game-title').textContent = '🪂 Battle Royale 2D (Fortnite Arena)';
-    document.getElementById('active-game-status').textContent = 'WASD = Ruch | Myszka = Strzał | 1-6 = Broń/Leczenie | SPACJA = Skok z Autobusu';
-
     br = {
-        phase: 'lobby', lobbyTimer: 210, mapSize: 2200,
-        bus: { x: 100, y: 300, vx: 4.5, vy: 3.5 }, stormRadius: 1500,
+        phase: 'lobby', lobbyTimer: 180, mapSize: 2200,
+        bus: { x: 100, y: 300, vx: 4.5, vy: 3.5 },
         player: { x: 450, y: 270, hp: 100, armor: 50, alive: true, cooldown: 0, slot: 0, inventory: ['pistol', null, null, null, 'medkit', 'shield'] },
         bots: [], groundLoot: [], bullets: [], trees: []
     };
-
-    for (let i = 0; i < 60; i++) br.trees.push({ x: 150 + Math.random() * 1900, y: 150 + Math.random() * 1900, r: 22 + Math.random() * 16 });
+    for (let i = 0; i < 55; i++) br.trees.push({ x: 150 + Math.random() * 1900, y: 150 + Math.random() * 1900, r: 24 });
     const types = ['pistol', 'pump', 'ak47', 'awp', 'rpg', 'medkit', 'shield'];
-    for (let i = 0; i < 85; i++) br.groundLoot.push({ x: 120 + Math.random() * 1960, y: 120 + Math.random() * 1960, type: types[Math.floor(Math.random() * types.length)] });
-    for (let i = 0; i < 14; i++) br.bots.push({ name: `Bot_${i+1}`, x: 300 + Math.random() * 300, y: 180 + Math.random() * 200, hp: 100, armor: 50, cd: 30, alive: true });
-
+    for (let i = 0; i < 80; i++) br.groundLoot.push({ x: 120 + Math.random() * 1960, y: 120 + Math.random() * 1960, type: types[Math.floor(Math.random() * types.length)] });
+    for (let i = 0; i < 12; i++) br.bots.push({ name: `Gracz_${i+2}`, x: 300 + Math.random() * 1400, y: 200 + Math.random() * 1400, hp: 100, alive: true });
     renderBrHotbar();
     loopBattleRoyale();
 }
@@ -2403,172 +2666,110 @@ function selectBrSlot(idx) {
 function loopBattleRoyale() {
     if (state.currentGame !== 'br') return;
     const p = br.player;
-
     if (br.phase === 'lobby') {
         br.lobbyTimer--;
-        if (keys['w']) p.y -= 4; if (keys['s']) p.y += 4; if (keys['a']) p.x -= 4; if (keys['d']) p.x += 4;
         ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(p.x, p.y, 16, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = '#fff'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center';
-        ctx.fillText(`🏝️ LOBBY — Odjazd Autobusu Bojowego za: ${Math.ceil(br.lobbyTimer / 60)}s`, 450, 90);
-        if (br.lobbyTimer <= 0) {
-            br.phase = 'bus';
-            br.bots.forEach(b => { b.x = 200 + Math.random() * 1800; b.y = 200 + Math.random() * 1800; });
-        }
+        ctx.fillText(`🏝️ LOBBY — Start Autobusu Bojowego za: ${Math.ceil(br.lobbyTimer / 60)}s`, 450, 260);
+        if (br.lobbyTimer <= 0) br.phase = 'bus';
         state.loopId = requestAnimationFrame(loopBattleRoyale);
         return;
     }
-
     if (br.phase === 'bus') {
         br.bus.x += br.bus.vx; br.bus.y += br.bus.vy; p.x = br.bus.x; p.y = br.bus.y;
         if (keys[' '] || mouse.down || br.bus.x > br.mapSize - 200) { br.phase = 'fight'; mouse.down = false; }
     }
-
-    if (br.phase === 'fight' && p.alive) {
-        if (keys['w']) p.y = Math.max(30, p.y - 4.2);
-        if (keys['s']) p.y = Math.min(br.mapSize - 30, p.y + 4.2);
-        if (keys['a']) p.x = Math.max(30, p.x - 4.2);
-        if (keys['d']) p.x = Math.min(br.mapSize - 30, p.x + 4.2);
-
+    if (br.phase === 'fight') {
+        if (keys['w']) p.y -= 4.2; if (keys['s']) p.y += 4.2; if (keys['a']) p.x -= 4.2; if (keys['d']) p.x += 4.2;
         for (let i = br.groundLoot.length - 1; i >= 0; i--) {
-            const item = br.groundLoot[i];
-            if (Math.hypot(p.x - item.x, p.y - item.y) < 34) {
+            if (Math.hypot(p.x - br.groundLoot[i].x, p.y - br.groundLoot[i].y) < 34) {
                 const emptySlot = p.inventory.indexOf(null);
-                if (emptySlot !== -1) { p.inventory[emptySlot] = item.type; br.groundLoot.splice(i, 1); renderBrHotbar(); }
+                if (emptySlot !== -1) { p.inventory[emptySlot] = br.groundLoot[i].type; br.groundLoot.splice(i, 1); renderBrHotbar(); }
             }
         }
-
         if (p.cooldown > 0) p.cooldown--;
-        const activeKey = p.inventory[p.slot];
-        const weapon = activeKey ? WEAPONS_DB[activeKey] : null;
+        const weapon = p.inventory[p.slot] ? WEAPONS_DB[p.inventory[p.slot]] : null;
         if (mouse.down && weapon && weapon.dmg && p.cooldown <= 0) {
             const camX = p.x - canvas.width / 2, camY = p.y - canvas.height / 2;
-            const baseAngle = Math.atan2((mouse.y + camY) - p.y, (mouse.x + camX) - p.x);
-            const count = weapon.pellets || 1;
-            for (let k = 0; k < count; k++) {
-                const angle = baseAngle + (Math.random() - 0.5) * weapon.spread;
-                br.bullets.push({ x: p.x, y: p.y, vx: Math.cos(angle) * weapon.speed, vy: Math.sin(angle) * weapon.speed, dmg: weapon.dmg, range: weapon.range });
-            }
+            const ang = Math.atan2((mouse.y + camY) - p.y, (mouse.x + camX) - p.x);
+            br.bullets.push({ x: p.x, y: p.y, vx: Math.cos(ang) * weapon.speed, vy: Math.sin(ang) * weapon.speed, dmg: weapon.dmg, range: weapon.range });
             p.cooldown = weapon.cd;
         }
     }
-
     const camX = p.x - canvas.width / 2, camY = p.y - canvas.height / 2;
     ctx.fillStyle = '#14532d'; ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.save(); ctx.translate(-camX, -camY);
-
     ctx.font = '20px sans-serif'; ctx.textAlign = 'center';
     br.groundLoot.forEach(item => ctx.fillText(WEAPONS_DB[item.type].icon, item.x, item.y));
-
-    let aliveBots = 0;
     br.bots.forEach(b => {
         if (!b.alive) return;
-        aliveBots++;
         const ang = Math.atan2(p.y - b.y, p.x - b.x);
-        b.x += Math.cos(ang) * 2; b.y += Math.sin(ang) * 2;
+        b.x += Math.cos(ang) * 1.8; b.y += Math.sin(ang) * 1.8;
         ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(b.x, b.y, 16, 0, Math.PI * 2); ctx.fill();
     });
-
     for (let i = br.bullets.length - 1; i >= 0; i--) {
-        const bul = br.bullets[i];
-        bul.x += bul.vx; bul.y += bul.vy; bul.range -= 12;
+        const bul = br.bullets[i]; bul.x += bul.vx; bul.y += bul.vy; bul.range -= 12;
         ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(bul.x, bul.y, 5, 0, Math.PI * 2); ctx.fill();
         br.bots.forEach(b => {
             if (b.alive && Math.hypot(bul.x - b.x, bul.y - b.y) < 20) {
                 b.hp -= bul.dmg; bul.range = 0;
-                if (b.hp <= 0) { b.alive = false; addPoints(0, 25); }
+                if (b.hp <= 0) { b.alive = false; addPoints(state.mySlot, 25); }
             }
         });
         if (bul.range <= 0) br.bullets.splice(i, 1);
     }
-
     if (br.phase === 'bus') {
         ctx.fillStyle = '#3b82f6'; ctx.fillRect(br.bus.x - 45, br.bus.y - 25, 90, 50);
         ctx.fillStyle = '#facc15'; ctx.fillText('🚌 AUTOBUS BOJOWY (SPACJA = SKOCZ!)', br.bus.x, br.bus.y - 35);
     } else {
         ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(p.x, p.y, 17, 0, Math.PI * 2); ctx.fill();
     }
-
     br.trees.forEach(t => { ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2); ctx.fill(); });
     ctx.restore();
-
-    ctx.fillStyle = '#fff'; ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'left';
-    ctx.fillText(`❤️ HP: ${p.hp} | 🛡️ ARMOR: ${p.armor} | Żywi: ${aliveBots + 1}`, 20, 32);
-
     state.loopId = requestAnimationFrame(loopBattleRoyale);
 }
 
-/* GRA 3: PARTY MINIGAMES */
+/* POZOSTAŁE MINIGRY */
 let partyState = {};
 function startPartyMinigames() {
     canvas.classList.remove('hidden');
-    document.getElementById('active-game-title').textContent = '🕹️ 1-2-3-4 Player Party Arena';
-    partyState = {
-        actors: [
-            { name: state.nick, x: 150, y: 150, color: '#38bdf8', score: 0, isBot: false },
-            { name: 'Bot_1', x: 750, y: 150, color: '#f97316', score: 0, isBot: true },
-            { name: 'Bot_2', x: 150, y: 400, color: '#22c55e', score: 0, isBot: true },
-            { name: 'Bot_3', x: 750, y: 400, color: '#eab308', score: 0, isBot: true }
-        ],
-        stars: [{ x: 450, y: 270 }, { x: 250, y: 200 }, { x: 650, y: 340 }]
-    };
+    partyState = { actors: [{ name: state.nick, x: 250, y: 250, color: '#38bdf8', score: 0 }], stars: [{ x: 450, y: 270 }] };
     loopPartyMinigames();
 }
 function loopPartyMinigames() {
     if (state.currentGame !== 'party') return;
     const p = partyState.actors[0];
-    if (keys['w'] || keys['arrowup']) p.y -= 5;
-    if (keys['s'] || keys['arrowdown']) p.y += 5;
-    if (keys['a'] || keys['arrowleft']) p.x -= 5;
-    if (keys['d'] || keys['arrowright']) p.x += 5;
-
+    if (keys['w'] || keys['arrowup']) p.y -= 5; if (keys['s'] || keys['arrowdown']) p.y += 5;
+    if (keys['a'] || keys['arrowleft']) p.x -= 5; if (keys['d'] || keys['arrowright']) p.x += 5;
     ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.font = '24px sans-serif'; ctx.textAlign = 'center';
     partyState.stars.forEach(s => {
         ctx.fillText('⭐', s.x, s.y);
-        partyState.actors.forEach((act, idx) => {
-            if (act.isBot) {
-                const ang = Math.atan2(s.y - act.y, s.x - act.x);
-                act.x += Math.cos(ang) * 1.2; act.y += Math.sin(ang) * 1.2;
-            }
-            if (Math.hypot(act.x - s.x, act.y - s.y) < 28) {
-                act.score += 10; addPoints(idx, 10);
-                s.x = 80 + Math.random() * 740; s.y = 80 + Math.random() * 380;
-            }
-        });
+        if (Math.hypot(p.x - s.x, p.y - s.y) < 28) { p.score += 10; addPoints(state.mySlot, 10); s.x = 100 + Math.random() * 700; s.y = 100 + Math.random() * 340; }
     });
-    partyState.actors.forEach(act => {
-        ctx.fillStyle = act.color; ctx.beginPath(); ctx.arc(act.x, act.y, 18, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.fillText(`${act.name}: ${act.score}`, act.x, act.y - 24);
-    });
+    ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 18, 0, Math.PI * 2); ctx.fill();
     state.loopId = requestAnimationFrame(loopPartyMinigames);
 }
 
-/* GRA 4: LIAR'S BAR */
 let liar = {};
 function startLiarsBar() {
-    const ui = document.getElementById('custom-game-ui');
-    ui.classList.remove('hidden');
-    document.getElementById('active-game-title').textContent = "🃏 Liar's Bar";
-    liar = { tableRank: 'KRÓL', hand: ['AS', 'KRÓL', 'DAMA', 'JOKER'], selectedIdx: 0, log: 'Bot rzucił kartę i mówi, że to KRÓL!' };
+    const ui = document.getElementById('custom-game-ui'); ui.classList.remove('hidden');
+    liar = { tableRank: 'KRÓL', hand: ['AS', 'KRÓL', 'DAMA', 'JOKER'], selectedIdx: 0, log: 'Zagraj kartę na stół lub sprawdź blef!' };
     renderLiarsBar();
 }
 function renderLiarsBar() {
     const ui = document.getElementById('custom-game-ui');
     ui.innerHTML = `<div style="background:#1e293b; padding:24px; border-radius:18px; text-align:center;">
-        <h2>KARTA STOŁU: ${liar.tableRank}</h2>
-        <p style="margin:10px 0;">${liar.log}</p>
+        <h2>KARTA STOŁU: ${liar.tableRank}</h2><p style="margin:10px 0;">${liar.log}</p>
         <div class="cards-row">${liar.hand.map((c, i) => `<div class="playing-card ${liar.selectedIdx===i?'selected':''}" onclick="liar.selectedIdx=${i};renderLiarsBar()">${c}</div>`).join('')}</div>
-        <button class="btn btn-green" onclick="liar.log='Zagrałeś kartę!'; addPoints(0,15); renderLiarsBar();">Zagraj kartę</button>
-        <button class="btn btn-danger" onclick="liar.log='Sprawdzono kłamcę! +30 pkt!'; addPoints(0,30); renderLiarsBar();">🔥 KŁAMIESZ!</button>
+        <button class="btn btn-green" onclick="liar.log='Zagrałeś kartę!'; addPoints(state.mySlot,15); renderLiarsBar();">Zagraj kartę</button>
+        <button class="btn btn-danger" onclick="liar.log='Sprawdzono kłamcę! +30 pkt!'; addPoints(state.mySlot,30); renderLiarsBar();">🔥 KŁAMIESZ!</button>
     </div>`;
 }
 
-/* GRA 5: AMONG US */
 let among = {};
 function startAmongUs() {
     canvas.classList.remove('hidden');
-    document.getElementById('active-game-title').textContent = '🚀 Among Us 2D';
     among = { px: 450, py: 270, tasks: [{ x: 150, y: 120, done: false }, { x: 750, y: 420, done: false }] };
     loopAmongUs();
 }
@@ -2577,18 +2778,16 @@ function loopAmongUs() {
     if (keys['w']) among.py -= 4; if (keys['s']) among.py += 4; if (keys['a']) among.px -= 4; if (keys['d']) among.px += 4;
     ctx.fillStyle = '#090d16'; ctx.fillRect(0, 0, canvas.width, canvas.height);
     among.tasks.forEach(t => {
-        if (!t.done && Math.hypot(among.px - t.x, among.py - t.y) < 30) { t.done = true; addPoints(0, 25); }
+        if (!t.done && Math.hypot(among.px - t.x, among.py - t.y) < 30) { t.done = true; addPoints(state.mySlot, 25); }
         ctx.fillStyle = t.done ? '#22c55e' : '#facc15'; ctx.fillRect(t.x - 15, t.y - 15, 30, 30);
     });
     ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(among.px, among.py, 18, 0, Math.PI * 2); ctx.fill();
     state.loopId = requestAnimationFrame(loopAmongUs);
 }
 
-/* GRA 7 i 8: WARCABY I SZACHY */
 let boardState = {};
 function startBoardGame(type) {
-    const ui = document.getElementById('custom-game-ui');
-    ui.classList.remove('hidden');
+    const ui = document.getElementById('custom-game-ui'); ui.classList.remove('hidden');
     const grid = Array(8).fill(null).map(() => Array(8).fill(null));
     for (let c = 0; c < 8; c++) {
         grid[1][c] = { owner: 'bot', icon: type === 'chess' ? '♟' : '⚫' };
@@ -2615,28 +2814,25 @@ function clickCell8x8(r, c) {
         boardState.grid[r][c] = boardState.grid[boardState.selected.r][boardState.selected.c];
         boardState.grid[boardState.selected.r][boardState.selected.c] = null;
         boardState.selected = null;
-        addPoints(0, 10);
+        addPoints(state.mySlot, 10);
         renderBoard8x8();
     }
 }
 
-/* GRA 9: KASYNO */
-let casino = { chips: 500, reels: ['🍒', '💎', '7️⃣'] };
+let casino = { chips: 500 };
 function startCasino() {
-    const ui = document.getElementById('custom-game-ui');
-    ui.classList.remove('hidden');
+    const ui = document.getElementById('custom-game-ui'); ui.classList.remove('hidden');
     ui.innerHTML = `<div style="text-align:center; padding:30px; background:#1e293b; border-radius:18px;">
         <h2>💰 Żetony: <span id="cas-chips">${casino.chips}</span></h2>
-        <div id="cas-reels" style="font-size:3.5rem; margin:20px;">🍒 💎 7️⃣</div>
-        <button class="btn btn-yellow" onclick="casino.chips+=50; addPoints(0,20); document.getElementById('cas-chips').textContent=casino.chips;">🎰 Zakręć Slotem / Zagraj Rozdanie</button>
+        <div style="font-size:3.5rem; margin:20px;">🍒 💎 7️⃣</div>
+        <button class="btn btn-yellow" onclick="casino.chips+=50; addPoints(state.mySlot,20); document.getElementById('cas-chips').textContent=casino.chips;">🎰 Zakręć Slotem</button>
     </div>`;
 }
 
-/* GRA 10: TETRIS */
-let tetris = {}, tetrisTimer = null;
+let tetris = {};
 function startTetris() {
     canvas.classList.remove('hidden');
-    tetris = { x: 4, y: 0, score: 0 };
+    tetris = { x: 4, y: 0 };
     if (tetrisTimer) clearInterval(tetrisTimer);
     tetrisTimer = setInterval(() => {
         tetris.y = (tetris.y + 1) % 16;

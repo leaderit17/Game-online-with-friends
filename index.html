@@ -1,0 +1,2654 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaParty Arena — Richup Ruda Śląska & 10 Gier Online</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #13111c;
+            --bg-panel: #1d192b;
+            --bg-card: #262138;
+            --accent-blue: #38bdf8;
+            --accent-purple: #7c3aed;
+            --accent-green: #22c55e;
+            --accent-yellow: #facc15;
+            --accent-red: #ef4444;
+            --text-light: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at top, #26203a 0%, var(--bg-dark) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        .container {
+            max-width: 1560px;
+            margin: 0 auto;
+            padding: 12px;
+        }
+
+        /* NAGŁÓWEK */
+        .main-logo {
+            text-align: center;
+            margin: 6px 0 14px;
+        }
+
+        .main-logo h1 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #38bdf8, #a855f7, #facc15);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-logo p { color: var(--text-dim); font-size: 0.95rem; }
+
+        /* 1. EKRAN WEJŚCIOWY */
+        .entry-box {
+            max-width: 660px;
+            margin: 20px auto;
+            background: var(--bg-panel);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+            text-align: center;
+        }
+
+        .nick-input {
+            width: 100%;
+            max-width: 380px;
+            padding: 14px 18px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 14px;
+            border: 2px solid var(--accent-blue);
+            background: #0f0d17;
+            color: white;
+            margin: 15px 0 25px;
+            outline: none;
+        }
+
+        .entry-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .big-mode-btn {
+            padding: 24px 18px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.18s ease;
+        }
+
+        .big-mode-btn:hover { transform: translateY(-4px) scale(1.02); }
+        .big-mode-btn span.icon { font-size: 3rem; }
+        .big-mode-btn small { font-size: 0.82rem; font-weight: 500; opacity: 0.9; }
+        .btn-bots { background: linear-gradient(135deg, #10b981, #059669); }
+        .btn-lobby { background: linear-gradient(135deg, #6366f1, #9333ea); }
+
+        /* PASEK LOBBY */
+        .lobby-bar {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 14px 20px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .code-pill {
+            background: #090d16;
+            border: 1px solid var(--accent-blue);
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 1.15rem;
+            color: var(--accent-yellow);
+            font-weight: 900;
+        }
+
+        .join-inline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .join-inline input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #090d16;
+            color: white;
+            font-family: monospace;
+        }
+
+        .btn {
+            padding: 9px 16px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 800;
+            cursor: pointer;
+            color: white;
+            background: var(--accent-purple);
+            transition: opacity 0.15s, transform 0.1s;
+        }
+
+        .btn:hover { opacity: 0.92; }
+        .btn:active { transform: scale(0.98); }
+        .btn-blue { background: var(--accent-blue); color: #090d16; }
+        .btn-green { background: var(--accent-green); color: #090d16; }
+        .btn-danger { background: var(--accent-red); }
+        .btn-yellow { background: var(--accent-yellow); color: #090d16; }
+
+        /* PRZYCISK BANKRUPT JAK W RICHUP.IO */
+        .btn-bankrupt {
+            background: linear-gradient(135deg, #ea580c, #dc2626);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 0.84rem;
+            padding: 9px 18px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.22);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.45);
+            transition: transform 0.12s, opacity 0.15s;
+        }
+        .btn-bankrupt:hover { transform: translateY(-2px); opacity: 0.95; }
+
+        /* ELEMENTY LISTY TRADES (DO KLIKNIĘCIA PRZEZ KAŻDEGO) */
+        .trade-item-row {
+            background: #14111f;
+            border: 1px solid #4c436d;
+            border-radius: 10px;
+            padding: 9px 11px;
+            margin-bottom: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            font-size: 0.78rem;
+            transition: border-color 0.15s, background 0.15s, transform 0.12s;
+        }
+        .trade-item-row:hover {
+            border-color: var(--accent-yellow);
+            background: rgba(124, 58, 237, 0.2);
+            transform: translateX(3px);
+        }
+
+        /* ZEGAR 3 MINUTY */
+        .turn-timer-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #1e1b2e;
+            border: 2px solid var(--accent-blue);
+            color: var(--accent-yellow);
+            font-family: monospace;
+            font-size: 1.05rem;
+            font-weight: 900;
+            padding: 4px 14px;
+            border-radius: 999px;
+            margin-top: 4px;
+        }
+        .turn-timer-pill.low {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+            animation: pulseDebt 0.8s infinite alternate;
+        }
+
+        @keyframes pulseDebt {
+            from { transform: scale(1); }
+            to { transform: scale(1.06); }
+        }
+
+        /* SIATKA GIER */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+            margin-top: 12px;
+        }
+
+        .game-tile {
+            border-radius: 18px;
+            padding: 18px 14px;
+            cursor: pointer;
+            border: 3px solid rgba(255, 255, 255, 0.16);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 6px;
+            transition: transform 0.18s ease, border-color 0.18s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+        }
+
+        .game-tile:hover { transform: translateY(-5px); border-color: #fff; }
+        .tile-icon { font-size: 3rem; }
+        .tile-title { font-size: 1.1rem; font-weight: 900; text-transform: uppercase; }
+        .tile-desc { font-size: 0.78rem; opacity: 0.92; line-height: 1.3; }
+        .tile-tag { font-size: 0.68rem; font-weight: 900; background: rgba(0,0,0,0.45); padding: 3px 9px; border-radius: 999px; }
+
+        .t-mono1 { background: linear-gradient(135deg, #7c3aed, #db2777); }
+        .t-br { background: linear-gradient(135deg, #2563eb, #7c3aed); }
+        .t-party { background: linear-gradient(135deg, #f97316, #db2777); }
+        .t-liar { background: linear-gradient(135deg, #991b1b, #450a0a); }
+        .t-among { background: linear-gradient(135deg, #dc2626, #ea580c); }
+        .t-mono2 { background: linear-gradient(135deg, #0d9488, #0284c7); }
+        .t-checkers { background: linear-gradient(135deg, #d97706, #b45309); }
+        .t-chess { background: linear-gradient(135deg, #4f46e5, #312e81); }
+        .t-casino { background: linear-gradient(135deg, #eab308, #ca8a04); color: #111; }
+        .t-tetris { background: linear-gradient(135deg, #06b6d4, #3b82f6); }
+
+        /* HUD GRY */
+        .game-hud {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 10px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scoreboard { display: flex; gap: 8px; flex-wrap: wrap; }
+        .score-badge {
+            background: #0f0d17;
+            border: 1px solid #334155;
+            padding: 5px 11px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        .score-badge span { color: var(--accent-yellow); margin-left: 5px; }
+
+        .stage-wrapper {
+            background: #13111c;
+            border: 2px solid #2e2846;
+            border-radius: 18px;
+            min-height: 680px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            position: relative;
+        }
+
+        canvas {
+            background: #111827;
+            border-radius: 12px;
+            max-width: 100%;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            cursor: crosshair;
+        }
+
+        /* =========================================================
+           POWIĘKSZONA PLANSZA I STOŻKI — RICHUP.IO RUDA ŚLĄSKA
+           ========================================================= */
+        .richup-layout {
+            display: grid;
+            grid-template-columns: 230px 1fr 310px;
+            gap: 14px;
+            width: 100%;
+            align-items: start;
+        }
+
+        .richup-panel {
+            background: #1d192b;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .richup-panel h4 {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Duża, wyraźna plansza 11x11 (do 860x860px) */
+        .richup-board {
+            display: grid;
+            grid-template-columns: 1.32fr repeat(9, 1fr) 1.32fr;
+            grid-template-rows: 1.32fr repeat(9, 1fr) 1.32fr;
+            width: min(88vw, 860px);
+            height: min(88vw, 860px);
+            margin: 0 auto;
+            background: #151221;
+            border: 4px solid #3b3358;
+            border-radius: 18px;
+            gap: 3px;
+            padding: 4px;
+            position: relative;
+            box-shadow: 0 22px 65px rgba(0,0,0,0.8);
+        }
+
+        .r-tile {
+            background: #252038;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 2px;
+            font-size: 0.72rem;
+            text-align: center;
+            cursor: pointer;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.09);
+            transition: transform 0.14s, border-color 0.14s;
+        }
+
+        .r-tile:hover {
+            z-index: 20;
+            transform: scale(1.12);
+            border-color: var(--accent-yellow);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+        }
+
+        .r-tile.corner {
+            background: #2d2744;
+            font-weight: 900;
+            font-size: 0.78rem;
+            justify-content: center;
+        }
+
+        .r-price-tag {
+            font-size: 0.68rem;
+            font-weight: 900;
+            background: rgba(0,0,0,0.55);
+            color: #f8fafc;
+            width: 100%;
+            padding: 2px 0;
+        }
+
+        .r-color-badge {
+            width: 100%;
+            height: 9px;
+            border-radius: 3px;
+        }
+
+        .r-name {
+            font-weight: 800;
+            font-size: 0.7rem;
+            line-height: 1.08;
+            color: #ffffff;
+            padding: 1px 2px;
+            word-break: break-word;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .r-buildings {
+            font-size: 0.72rem;
+            line-height: 1;
+            color: #facc15;
+            font-weight: 900;
+        }
+
+        /* DUŻE, WYRAŹNE STOŻKI (PIONKI) NA POLACH */
+        .r-tokens {
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .r-token {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.9), 0 0 8px rgba(255,255,255,0.4);
+            animation: popIn 0.25s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.5); }
+            to { transform: scale(1); }
+        }
+
+        /* Środek planszy Richup.io */
+        .richup-center {
+            grid-column: 2 / 11;
+            grid-row: 2 / 11;
+            background: #13101d;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        .dice-pair {
+            display: flex;
+            gap: 24px;
+            margin: 10px 0;
+        }
+
+        .die-3d {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(145deg, #ffffff, #cbd5e1);
+            color: #0f172a;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            font-weight: 900;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.6), inset 0 -4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.25s ease;
+        }
+
+        /* Przełączniki ustawień */
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.8rem;
+            text-align: left;
+        }
+
+        .setting-row small {
+            display: block;
+            color: var(--text-dim);
+            font-size: 0.7rem;
+        }
+
+        .switch {
+            position: relative;
+            width: 42px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: #3b3554;
+            transition: .2s;
+            border-radius: 22px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #7c3aed; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* POWIĘKSZONY WYBÓR STOŻKA (PIONKA) I KOLORU PRZED STARTEM */
+        .cone-picker {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .cone-option {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: #262138;
+            border: 3px solid rgba(255,255,255,0.12);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+
+        .cone-option:hover { transform: scale(1.08); }
+
+        .cone-option.active {
+            border-color: var(--accent-yellow);
+            background: rgba(250, 204, 21, 0.22);
+            transform: scale(1.12);
+            box-shadow: 0 0 18px rgba(250, 204, 21, 0.4);
+        }
+
+        .color-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform 0.15s;
+        }
+
+        .color-dot.active {
+            border-color: #ffffff;
+            transform: scale(1.22);
+            box-shadow: 0 0 14px rgba(255,255,255,0.6);
+        }
+
+        /* Modal Wymiany oraz Karty Dzielnicy */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.78);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 16px;
+        }
+
+        .modal-card {
+            background: #23293a;
+            border: 2px solid #4c5675;
+            border-radius: 18px;
+            max-width: 440px;
+            width: 100%;
+            padding: 22px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.85);
+        }
+
+        .modal-card.wide { max-width: 600px; }
+
+        .prop-card-title {
+            font-size: 1.65rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 14px;
+            color: #ffffff;
+        }
+
+        .prop-rent-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .prop-rent-table th {
+            color: #94a3b8;
+            font-weight: 600;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .prop-rent-table td {
+            padding: 6px 2px;
+            color: #f1f5f9;
+        }
+
+        .prop-rent-table td.val {
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .prop-bottom-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            padding-top: 12px;
+            margin-bottom: 14px;
+        }
+
+        .prop-bottom-stats .stat-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .prop-bottom-stats .stat-price {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        /* Pozostałe gry */
+        .br-hotbar { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
+        .hotbar-slot {
+            width: 82px; height: 70px; background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #475569; border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.75rem; font-weight: 800; position: relative;
+        }
+        .hotbar-slot.active { border-color: var(--accent-yellow); background: rgba(250, 204, 21, 0.15); }
+        .hotbar-slot .key-num { position: absolute; top: 4px; left: 6px; font-size: 0.65rem; color: var(--text-dim); }
+
+        .board-grid-8x8 {
+            display: grid; grid-template-columns: repeat(8, 1fr);
+            width: min(75vw, 440px); height: min(75vw, 440px);
+            margin: 15px auto; border: 4px solid #475569; border-radius: 8px; overflow: hidden;
+        }
+        .cell-8x8 { display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; }
+        .cell-light { background: #e2e8f0; color: #0f172a; }
+        .cell-dark { background: #475569; color: #f8fafc; }
+        .cell-selected { outline: 4px solid var(--accent-yellow); z-index: 2; }
+
+        .cards-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 18px 0; }
+        .playing-card {
+            width: 90px; height: 130px; background: white; color: #0f172a;
+            border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 1.8rem; font-weight: 900; cursor: pointer; border: 3px solid transparent;
+        }
+        .playing-card.selected { transform: translateY(-12px); border-color: var(--accent-yellow); }
+
+        @media (max-width: 1220px) {
+            .richup-layout { grid-template-columns: 1fr; }
+            .richup-board { width: min(96vw, 780px); height: min(96vw, 780px); }
+        }
+        @media (max-width: 640px) {
+            .entry-buttons { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="main-logo">
+        <h1>MegaParty Arena</h1>
+        <p>Monopolia Ruda Śląska (Richup.io Edition) • Battle Royale • Minigry Online</p>
+    </header>
+
+    <!-- 1. EKRAN WEJŚCIOWY -->
+    <section id="screen-entry" class="entry-box">
+        <h2>Wpisz swój nick i wybierz tryb</h2>
+        <input type="text" id="player-nick" class="nick-input" value="Gracz_1" maxlength="14" placeholder="Twój nick...">
+
+        <div class="entry-buttons">
+            <button class="big-mode-btn btn-bots" onclick="enterLobby('bots')">
+                <span class="icon">🤖</span>
+                GRAJ Z BOTAMI
+                <small>Natychmiastowa gra z inteligentnymi botami</small>
+            </button>
+
+            <button class="big-mode-btn btn-lobby" onclick="enterLobby('online')">
+                <span class="icon">🌐</span>
+                STWÓRZ LOBBY
+                <small>Graj z ludźmi online przez kod pokoju (Multiplayer)</small>
+            </button>
+        </div>
+    </section>
+
+    <!-- 2. EKRAN LOBBY -->
+    <section id="screen-lobby" class="hidden">
+        <div class="lobby-bar">
+            <div>
+                <strong id="lobby-mode-label" style="color:var(--accent-blue); font-size:1.05rem;">TRYB LOBBY</strong>
+                <div id="connected-players-text" style="font-size:0.85rem; color:var(--text-dim); margin-top:3px;"></div>
+            </div>
+
+            <div id="online-controls" class="join-inline hidden">
+                <span>Kod:</span>
+                <span id="my-peer-id" class="code-pill">Ładowanie...</span>
+                <button class="btn btn-yellow" onclick="copyRoomCode()">Kopiuj</button>
+                <input type="text" id="join-peer-input" placeholder="Wklej kod kolegi">
+                <button class="btn btn-blue" onclick="connectToFriend()">Dołącz</button>
+            </div>
+
+            <button class="btn btn-danger" onclick="backToEntry()">Zmień tryb</button>
+        </div>
+
+        <div class="games-grid">
+            <!-- 1. MONOPOLIA RUDA ŚLĄSKA (RICHUP.IO STYLE) -->
+            <div class="game-tile t-mono1" onclick="launchGame('mono_fast')">
+                <span class="tile-icon">🎲</span>
+                <div class="tile-title">Monopolia Ruda Śl.</div>
+                <div class="tile-desc">40 pól dzielnic Rudy Śląskiej! Duże stożki, 2 kostki, Więzienie, Sprzedaż -25%, Bankrupt, Zegar 3 min i Wymiany!</div>
+                <span class="tile-tag">⭐ RICHUP.IO EDITION</span>
+            </div>
+
+            <!-- 2. BATTLE ROYALE FORTNITE -->
+            <div class="game-tile t-br" onclick="launchGame('br')">
+                <span class="tile-icon">🪂</span>
+                <div class="tile-title">Battle Royale 2D</div>
+                <div class="tile-desc">Lobby, Autobus Bojowy, Skok na wielką mapę! HP, Armor, AK-47, AWP, Pompa, Pistolet i RPG.</div>
+                <span class="tile-tag">🔥 FORTNITE STYLE</span>
+            </div>
+
+            <!-- 3. 1234 PLAYER PARTY MINIGAMES -->
+            <div class="game-tile t-party" onclick="launchGame('party')">
+                <span class="tile-icon">🕹️</span>
+                <div class="tile-title">1-2-3-4 Minigry</div>
+                <div class="tile-desc">Szybkie rundy zręcznościowe na jednej arenie! Zbieraj gwiazdki, unikaj bomb i zdobywaj punkty.</div>
+                <span class="tile-tag">🏆 TURNIEJ PUNKTOWY</span>
+            </div>
+
+            <!-- 4. LIAR'S BAR -->
+            <div class="game-tile t-liar" onclick="launchGame('liar')">
+                <span class="tile-icon">🃏</span>
+                <div class="tile-title">Liar's Bar</div>
+                <div class="tile-desc">Rzucaj zakryte karty na stół, blefuj i sprawdzaj kłamców!</div>
+                <span class="tile-tag">💀 BLEF I RYZYKO</span>
+            </div>
+
+            <!-- 5. AMONG US 2D -->
+            <div class="game-tile t-among" onclick="launchGame('among')">
+                <span class="tile-icon">🚀</span>
+                <div class="tile-title">Among Us 2D</div>
+                <div class="tile-desc">Naprawiaj statek kosmiczny, obserwuj graczy i zwołaj głosowanie na Impostora!</div>
+                <span class="tile-tag">🔪 IMPOSTOR</span>
+            </div>
+
+            <!-- 6. DUŻA MONOPOLIA -->
+            <div class="game-tile t-mono2" onclick="launchGame('mono_big')">
+                <span class="tile-icon">🏙️</span>
+                <div class="tile-title">Duża Monopolia</div>
+                <div class="tile-desc">Tryb wysokich stawek na pełnej planszy 40 pól Rudy Śląskiej ($2000 na start!).</div>
+                <span class="tile-tag">🏦 WYSOKIE STAWKI</span>
+            </div>
+
+            <!-- 7. WARCABY -->
+            <div class="game-tile t-checkers" onclick="launchGame('checkers')">
+                <span class="tile-icon">🔴</span>
+                <div class="tile-title">Warcaby Arena</div>
+                <div class="tile-desc">Klasyczne warcaby na planszy 8x8 z biciem pionków.</div>
+                <span class="tile-tag">♟️ PLANSZOWA</span>
+            </div>
+
+            <!-- 8. SZACHY -->
+            <div class="game-tile t-chess" onclick="launchGame('chess')">
+                <span class="tile-icon">♚</span>
+                <div class="tile-title">Szachy Królewskie</div>
+                <div class="tile-desc">Pełna szachownica 8x8. Zbij króla przeciwnika!</div>
+                <span class="tile-tag">👑 STRATEGIA</span>
+            </div>
+
+            <!-- 9. KASYNO & POKER -->
+            <div class="game-tile t-casino" onclick="launchGame('casino')">
+                <span class="tile-icon">🎰</span>
+                <div class="tile-title">Kasyno & Poker</div>
+                <div class="tile-desc">Symulator kasyna: graj w Pokera, kręć Ruletką oraz testuj Automaty Slotowe.</div>
+                <span class="tile-tag">💎 JACKPOT</span>
+            </div>
+
+            <!-- 10. TETRIS BATTLE -->
+            <div class="game-tile t-tetris" onclick="launchGame('tetris')">
+                <span class="tile-icon">🧱</span>
+                <div class="tile-title">Tetris Battle</div>
+                <div class="tile-desc">Układaj spadające bloki i czyść linie na czas!</div>
+                <span class="tile-tag">⚡ ZRĘCZNOŚCIOWA</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. EKRAN ROZGRYWKI -->
+    <section id="screen-game" class="hidden">
+        <div class="game-hud">
+            <div>
+                <strong id="active-game-title" style="font-size:1.15rem; color:var(--accent-blue);">Nazwa Gry</strong>
+                <div id="active-game-status" style="font-size:0.82rem; color:var(--text-dim);">Status rozgrywki...</div>
+            </div>
+
+            <div id="global-scoreboard" class="scoreboard"></div>
+
+            <button class="btn btn-danger" onclick="returnToLobby()">⬅ Wróć do Lobby</button>
+        </div>
+
+        <div class="stage-wrapper">
+            <canvas id="game-canvas" width="900" height="540" class="hidden"></canvas>
+            <div id="br-hotbar" class="br-hotbar hidden"></div>
+            <div id="custom-game-ui" style="width:100%;" class="hidden"></div>
+        </div>
+    </section>
+</div>
+
+<!-- MODAL WYMIANY (TRADE) LUB KARTY DZIELNICY -->
+<div id="richup-modal" class="modal-backdrop hidden"></div>
+
+<script>
+/* =========================================================================
+   STAN GLOBALNY PLATFORMY I MULTIPLAYER (PeerJS)
+   ========================================================================= */
+const state = {
+    mode: 'bots',
+    nick: 'Gracz_1',
+    players: [
+        { name: 'Gracz_1', points: 0, isBot: false },
+        { name: 'Krait', points: 0, isBot: true },
+        { name: 'Nameless', points: 0, isBot: true },
+        { name: 'Pls4koff', points: 0, isBot: true }
+    ],
+    currentGame: null,
+    loopId: null,
+    peer: null,
+    connections: []
+};
+
+const canvas = document.getElementById('game-canvas');
+const ctx = canvas.getContext('2d');
+const keys = {};
+let mouse = { x: 450, y: 270, down: false };
+
+window.addEventListener('keydown', e => {
+    keys[e.key.toLowerCase()] = true;
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key) && state.currentGame) {
+        if (document.activeElement.tagName !== 'INPUT') e.preventDefault();
+    }
+    if (state.currentGame === 'br' && ['1','2','3','4','5','6'].includes(e.key)) {
+        selectBrSlot(parseInt(e.key) - 1);
+    }
+    if (state.currentGame === 'tetris') handleTetrisKey(e.key);
+});
+window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = (e.clientX - rect.left) * (canvas.width / rect.width);
+    mouse.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+});
+canvas.addEventListener('mousedown', () => mouse.down = true);
+window.addEventListener('mouseup', () => mouse.down = false);
+
+function enterLobby(mode) {
+    const nickVal = document.getElementById('player-nick').value.trim() || 'Gracz_1';
+    state.nick = nickVal;
+    state.mode = mode;
+    state.players[0].name = nickVal;
+
+    document.getElementById('screen-entry').classList.add('hidden');
+    document.getElementById('screen-lobby').classList.remove('hidden');
+
+    if (mode === 'bots') {
+        document.getElementById('lobby-mode-label').textContent = '🤖 TRYB OFFLINE Z BOTAMI';
+        document.getElementById('online-controls').classList.add('hidden');
+        updatePlayersBanner();
+    } else {
+        document.getElementById('lobby-mode-label').textContent = '🌐 LOBBY MULTIPLAYER ONLINE';
+        document.getElementById('online-controls').classList.remove('hidden');
+        initPeerMultiplayer();
+    }
+    renderScoreboard();
+}
+
+function backToEntry() {
+    stopCurrentGame();
+    document.getElementById('screen-lobby').classList.add('hidden');
+    document.getElementById('screen-entry').classList.remove('hidden');
+}
+
+function updatePlayersBanner() {
+    const names = state.players.map(p => `${p.name} (${p.points} pkt)`).join(' • ');
+    document.getElementById('connected-players-text').textContent = 'Gracze w lobby: ' + names;
+}
+
+function renderScoreboard() {
+    const box = document.getElementById('global-scoreboard');
+    box.innerHTML = state.players.map(p =>
+        `<div class="score-badge">${p.name}<span>${p.points} pkt</span></div>`
+    ).join('');
+    updatePlayersBanner();
+}
+
+function addPoints(playerIndex, pts) {
+    if (state.players[playerIndex]) {
+        state.players[playerIndex].points += pts;
+        renderScoreboard();
+        broadcastState();
+    }
+}
+
+function initPeerMultiplayer() {
+    if (state.peer) return;
+    const randomCode = 'RUDA-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+    try {
+        state.peer = new Peer(randomCode);
+        state.peer.on('open', id => document.getElementById('my-peer-id').textContent = id);
+        state.peer.on('connection', conn => setupConnection(conn));
+    } catch (err) {
+        document.getElementById('my-peer-id').textContent = 'Offline';
+    }
+}
+
+function connectToFriend() {
+    const code = document.getElementById('join-peer-input').value.trim().toUpperCase();
+    if (!code || !state.peer) return;
+    setupConnection(state.peer.connect(code));
+}
+
+function setupConnection(conn) {
+    state.connections.push(conn);
+    conn.on('open', () => conn.send({ type: 'join', name: state.nick }));
+    conn.on('data', data => {
+        if (data.type === 'join') {
+            const emptyBot = state.players.find(p => p.isBot);
+            if (emptyBot) { emptyBot.name = data.name; emptyBot.isBot = false; }
+            renderScoreboard();
+            broadcastState();
+        } else if (data.type === 'sync') {
+            state.players = data.players;
+            renderScoreboard();
+        } else if (data.type === 'launch') {
+            launchGame(data.game, true);
+        }
+    });
+}
+
+function broadcastState() {
+    state.connections.forEach(c => { if (c.open) c.send({ type: 'sync', players: state.players }); });
+}
+
+function copyRoomCode() {
+    const code = document.getElementById('my-peer-id').textContent;
+    navigator.clipboard.writeText(code);
+    alert('Skopiowano kod pokoju: ' + code);
+}
+
+let richupInterval = null;
+
+function stopCurrentGame() {
+    if (state.loopId) cancelAnimationFrame(state.loopId);
+    if (tetrisTimer) clearInterval(tetrisTimer);
+    if (richupInterval) clearInterval(richupInterval);
+    state.loopId = null;
+    state.currentGame = null;
+}
+
+function returnToLobby() {
+    stopCurrentGame();
+    document.getElementById('screen-game').classList.add('hidden');
+    document.getElementById('screen-lobby').classList.remove('hidden');
+    renderScoreboard();
+}
+
+function launchGame(gameId, fromNetwork = false) {
+    stopCurrentGame();
+    state.currentGame = gameId;
+
+    if (!fromNetwork) {
+        state.connections.forEach(c => { if (c.open) c.send({ type: 'launch', game: gameId }); });
+    }
+
+    document.getElementById('screen-lobby').classList.add('hidden');
+    document.getElementById('screen-game').classList.remove('hidden');
+    canvas.classList.add('hidden');
+    document.getElementById('br-hotbar').classList.add('hidden');
+    document.getElementById('custom-game-ui').classList.add('hidden');
+
+    renderScoreboard();
+
+    if (gameId === 'mono_fast') startRichupRuda(1500);
+    else if (gameId === 'mono_big') startRichupRuda(2000);
+    else if (gameId === 'br') startBattleRoyale();
+    else if (gameId === 'party') startPartyMinigames();
+    else if (gameId === 'liar') startLiarsBar();
+    else if (gameId === 'among') startAmongUs();
+    else if (gameId === 'checkers') startBoardGame('checkers');
+    else if (gameId === 'chess') startBoardGame('chess');
+    else if (gameId === 'casino') startCasino();
+    else if (gameId === 'tetris') startTetris();
+}
+
+/* =========================================================================
+   GRA 1: MONOPOLIA RUDA ŚLĄSKA — PEŁNA WERSJA RICHUP.IO
+   (Bankrupt, Lista Trades do kliknięcia, Sprzedaż -25%, Dług na minusie, Zegar 3:00)
+   ========================================================================= */
+const CONE_ICONS = ['🏎️', '🐕', '🦊', '🐸', '🦁', '🐼', '🐧', '🦖'];
+const CONE_COLORS = ['#ec4899', '#38bdf8', '#22c55e', '#facc15', '#f97316', '#a855f7'];
+
+const SET_COLORS = {
+    1: '#84cc16', // Pola 1, 3
+    2: '#38bdf8', // Pola 6, 7, 9
+    3: '#f43f5e', // Pola 11, 13, 14
+    4: '#fb923c', // Pola 16, 18, 19
+    5: '#ef4444', // Pola 21, 23, 24
+    6: '#eab308', // Pola 26, 28, 29
+    7: '#10b981', // Pola 31, 32, 34
+    8: '#6366f1'  // Pola 37, 39
+};
+
+function createRudaSlaskaTiles() {
+    return [
+        { id: 0,  type: 'start',    name: 'START', sub: '+300$' },
+        { id: 1,  type: 'prop',     name: 'Chebzie', set: 1, price: 60, houseCost: 50, rents: [2, 10, 30, 90, 150, 240] },
+        { id: 2,  type: 'treasure', name: 'Skarb', sub: 'Skrzynia' },
+        { id: 3,  type: 'prop',     name: 'Osiedle Kaufhaus', set: 1, price: 60, houseCost: 50, rents: [4, 20, 60, 180, 300, 450] },
+        { id: 4,  type: 'tax_flat', name: 'Taxi', sub: 'Płacisz 30$', amount: 30 },
+        { id: 5,  type: 'airport',  name: 'Airport Nowy Bytom', price: 200 },
+        { id: 6,  type: 'prop',     name: 'Nowy Bytom', set: 2, price: 100, houseCost: 50, rents: [6, 30, 90, 260, 380, 540] },
+        { id: 7,  type: 'prop',     name: 'Czarny Las', set: 2, price: 110, houseCost: 50, rents: [7, 35, 105, 280, 410, 570] },
+        { id: 8,  type: 'surprise', name: 'Surprise', sub: '?' },
+        { id: 9,  type: 'prop',     name: 'Wirek', set: 2, price: 120, houseCost: 50, rents: [8, 40, 115, 300, 450, 600] },
+        { id: 10, type: 'prison',   name: 'Więzienie', sub: 'Klatka / Obok' },
+
+        { id: 11, type: 'prop',     name: 'Bielszowice Kokota', set: 3, price: 130, houseCost: 100, rents: [10, 50, 140, 440, 600, 740] },
+        { id: 12, type: 'utility',  name: 'Wodociągi', price: 150 },
+        { id: 13, type: 'prop',     name: 'Bielszowice Na Piaski', set: 3, price: 140, houseCost: 100, rents: [11, 55, 150, 450, 625, 760] },
+        { id: 14, type: 'prop',     name: 'Bielszowice Kopalnia', set: 3, price: 160, houseCost: 100, rents: [12, 60, 180, 500, 700, 900] },
+        { id: 15, type: 'airport',  name: 'Airport Bielszowice', price: 200 },
+        { id: 16, type: 'prop',     name: 'Halemba Pętla', set: 4, price: 180, houseCost: 100, rents: [14, 70, 200, 550, 750, 950] },
+        { id: 17, type: 'treasure', name: 'Skarb', sub: 'Skrzynia' },
+        { id: 18, type: 'prop',     name: 'Halemba Energetyków', set: 4, price: 190, houseCost: 100, rents: [15, 75, 210, 575, 775, 975] },
+        { id: 19, type: 'prop',     name: 'Halemba Aquadrom', set: 4, price: 200, houseCost: 100, rents: [16, 80, 220, 600, 800, 1000] },
+        { id: 20, type: 'vacation', name: 'Wakacje', sub: 'Stoisz 2 tury' },
+
+        { id: 21, type: 'prop',     name: 'Ruda Południowa', set: 5, price: 210, houseCost: 150, rents: [18, 90, 250, 700, 875, 1050] },
+        { id: 22, type: 'surprise', name: 'Surprise', sub: '?' },
+        { id: 23, type: 'prop',     name: 'Orzegów', set: 5, price: 220, houseCost: 150, rents: [19, 95, 260, 725, 900, 1075] },
+        { id: 24, type: 'prop',     name: 'Godula', set: 5, price: 240, houseCost: 150, rents: [20, 100, 300, 750, 925, 1100] },
+        { id: 25, type: 'airport',  name: 'Airport Godula Paris', price: 200 },
+        { id: 26, type: 'prop',     name: 'Burloch Arena', set: 6, price: 260, houseCost: 150, rents: [22, 110, 330, 800, 975, 1150] },
+        { id: 27, type: 'utility',  name: 'Wodociągi', price: 150 },
+        { id: 28, type: 'prop',     name: 'Stare Osiedle', set: 6, price: 270, houseCost: 150, rents: [23, 115, 345, 825, 1000, 1175] },
+        { id: 29, type: 'prop',     name: 'Ruda Dworzec PKP', set: 6, price: 280, houseCost: 150, rents: [24, 120, 360, 850, 1025, 1200] },
+        { id: 30, type: 'gotoprison', name: 'Do Więzienia!', sub: 'Teleport -> 10' },
+
+        { id: 31, type: 'prop',     name: 'Bykowina Niedźwiedziniec', set: 7, price: 290, houseCost: 200, rents: [26, 130, 390, 900, 1100, 1275] },
+        { id: 32, type: 'prop',     name: 'Bykowina Gwarecka', set: 7, price: 300, houseCost: 200, rents: [27, 135, 405, 925, 1125, 1300] },
+        { id: 33, type: 'treasure', name: 'Skarb', sub: 'Skrzynia' },
+        { id: 34, type: 'prop',     name: 'Bykowina Górnośląska', set: 7, price: 320, houseCost: 200, rents: [28, 150, 450, 1000, 1200, 1400] },
+        { id: 35, type: 'airport',  name: 'Airport Bykowina Mianka', price: 200 },
+        { id: 36, type: 'surprise', name: 'Surprise', sub: '?' },
+        { id: 37, type: 'prop',     name: 'Kochłowice Kościół', set: 8, price: 360, houseCost: 200, rents: [35, 175, 500, 1100, 1300, 1700] },
+        { id: 38, type: 'tax_hotel', name: 'Taxi Hotelowe', sub: '75$ za każdy hotel' },
+        { id: 39, type: 'prop',     name: 'Kochłowice Rynek', set: 8, price: 400, houseCost: 200, rents: [50, 200, 600, 1400, 1700, 2000] }
+    ].map(t => ({ ...t, owner: null, level: 0, mortgaged: false }));
+}
+
+let rm = {};
+
+function startRichupRuda(defaultCash = 1500) {
+    const ui = document.getElementById('custom-game-ui');
+    ui.classList.remove('hidden');
+    document.getElementById('active-game-title').textContent = '🎲 Monopolia Ruda Śląska (Richup.io Edition)';
+    document.getElementById('active-game-status').textContent = 'Sprzedaż do banku -25% • Oferty Trades (Akceptuj/Odrzuć) • Przycisk Bankrupt • Licznik 3:00 min!';
+
+    if (richupInterval) clearInterval(richupInterval);
+
+    rm = {
+        started: false,
+        chosenIcon: '🏎️',
+        chosenColor: '#ec4899',
+        settings: {
+            maxPlayers: 4,
+            vacationCash: true,
+            doubleFullSet: false,
+            noRentInPrison: false,
+            mortgage: true,
+            evenBuild: true,
+            auction: false,
+            startingCash: defaultCash,
+            randomizeOrder: true
+        },
+        tiles: createRudaSlaskaTiles(),
+        players: [],
+        trades: [],
+        nextTradeId: 1,
+        turn: 0,
+        turnTimeLeft: 180, // 3 minuty (180 sekund)
+        dice: [6, 5],
+        rolledThisTurn: false,
+        lastDiceSum: 11,
+        logs: ['Witaj w Monopolii Ruda Śląska! Wybierz duży stożek, kolor, kasę startową i kliknij Start Game.'],
+        chat: []
+    };
+
+    setupRichupPlayers();
+    renderRichupScreen();
+}
+
+function setupRichupPlayers() {
+    rm.players = [];
+    const count = rm.settings.maxPlayers;
+    for (let i = 0; i < count; i++) {
+        rm.players.push({
+            id: i,
+            name: i === 0 ? state.nick : state.players[i].name,
+            isBot: i === 0 ? false : state.players[i].isBot,
+            icon: i === 0 ? rm.chosenIcon : CONE_ICONS[(i + 1) % CONE_ICONS.length],
+            color: i === 0 ? rm.chosenColor : CONE_COLORS[(i + 1) % CONE_COLORS.length],
+            cash: Number(rm.settings.startingCash),
+            pos: 0,
+            inPrison: false,
+            prisonTries: 0,
+            skipTurns: 0,
+            pardonCards: 0,
+            bankrupt: false
+        });
+    }
+}
+
+function formatTimer(sec) {
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = (sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+}
+
+function startTurnClock() {
+    if (richupInterval) clearInterval(richupInterval);
+    richupInterval = setInterval(() => {
+        if (!rm.started || state.currentGame !== 'mono_fast' && state.currentGame !== 'mono_big') return;
+        rm.turnTimeLeft--;
+        const badge = document.getElementById('richup-timer-display');
+        if (badge) {
+            badge.textContent = `⏱️ Czas na ruch: ${formatTimer(Math.max(0, rm.turnTimeLeft))}`;
+            if (rm.turnTimeLeft <= 30) badge.classList.add('low');
+            else badge.classList.remove('low');
+        }
+
+        if (rm.turnTimeLeft <= 0) {
+            const curP = rm.players[rm.turn];
+            addRichupLog(`⏰ Minęły 3 minuty! Czas gracza ${curP.name} dobiegł końca.`);
+            if (!rm.rolledThisTurn) {
+                rollRichupDice();
+            }
+            if (curP.cash < 0) {
+                declareBankruptcy(curP.id, true);
+            } else {
+                endRichupTurn();
+            }
+        }
+    }, 1000);
+}
+
+function getTileGridPos(idx) {
+    if (idx <= 10) return { row: 1, col: idx + 1 };
+    if (idx <= 20) return { row: (idx - 10) + 1, col: 11 };
+    if (idx <= 30) return { row: 11, col: 11 - (idx - 20) };
+    return { row: 11 - (idx - 30), col: 1 };
+}
+
+function hasFullSet(playerId, setNum) {
+    const setTiles = rm.tiles.filter(t => t.set === setNum);
+    return setTiles.length > 0 && setTiles.every(t => t.owner === playerId && !t.mortgaged);
+}
+
+function addRichupLog(msg) {
+    rm.logs.unshift(msg);
+    if (rm.logs.length > 30) rm.logs.pop();
+}
+
+function renderRichupScreen() {
+    const ui = document.getElementById('custom-game-ui');
+    const curP = rm.players[rm.turn] || rm.players[0];
+    const me = rm.players[0];
+    const curTile = rm.tiles[curP.pos];
+
+    let tilesHtml = '';
+    rm.tiles.forEach(t => {
+        const pos = getTileGridPos(t.id);
+        const isCorner = (t.id % 10 === 0);
+        const setColor = t.set ? SET_COLORS[t.set] : null;
+        const ownerP = t.owner !== null ? rm.players[t.owner] : null;
+
+        let iconHtml = '';
+        if (t.type === 'start') iconHtml = '<div style="font-size:1.5rem;">🏁</div>';
+        else if (t.type === 'treasure') iconHtml = '<div style="font-size:1.35rem;">🧰</div>';
+        else if (t.type === 'surprise') iconHtml = '<div style="font-size:1.45rem; color:#ec4899; font-weight:900;">❓</div>';
+        else if (t.type === 'airport') iconHtml = '<div style="font-size:1.3rem;">✈️</div>';
+        else if (t.type === 'utility') iconHtml = '<div style="font-size:1.3rem;">🚰</div>';
+        else if (t.type === 'prison') iconHtml = '<div style="font-size:1.4rem;">⛓️</div>';
+        else if (t.type === 'vacation') iconHtml = '<div style="font-size:1.45rem;">🏖️</div>';
+        else if (t.type === 'gotoprison') iconHtml = '<div style="font-size:1.45rem;">🚓</div>';
+        else if (t.type.startsWith('tax')) iconHtml = '<div style="font-size:1.25rem;">🚕</div>';
+
+        let buildBadge = '';
+        if (t.level > 0 && t.level <= 4) buildBadge = `<div class="r-buildings">${'🏠'.repeat(t.level)}</div>`;
+        else if (t.level === 5) buildBadge = `<div class="r-buildings">🏨 HOTEL</div>`;
+
+        const tokensHere = rm.players.filter(p => !p.bankrupt && p.pos === t.id);
+        const tokensHtml = tokensHere.map(p => `
+            <div class="r-token" style="background:${p.color}" title="${p.name}${p.inPrison && t.id===10 ? ' (W KLATCE)' : ''}">
+                ${p.icon}
+            </div>
+        `).join('');
+
+        tilesHtml += `
+            <div class="r-tile ${isCorner ? 'corner' : ''}"
+                 style="grid-row:${pos.row}; grid-column:${pos.col}; ${ownerP ? `box-shadow: inset 0 0 0 3px ${ownerP.color};` : ''}"
+                 onclick="inspectTile(${t.id})">
+                ${t.price ? `<div class="r-price-tag">${t.price}$</div>` : (t.sub ? `<div class="r-price-tag">${t.sub}</div>` : '')}
+                ${setColor ? `<div class="r-color-badge" style="background:${setColor}"></div>` : ''}
+                ${iconHtml}
+                <div class="r-name">${t.name}</div>
+                ${buildBadge}
+                <div class="r-tokens">${tokensHtml}</div>
+            </div>
+        `;
+    });
+
+    let centerHtml = '';
+    if (!rm.started) {
+        centerHtml = `
+            <div style="width:100%; max-width:480px; margin:auto;">
+                <h3 style="color:var(--accent-yellow); font-size:1.25rem; margin-bottom:8px;">Wybierz swój Stożek (Pionek) i Kolor</h3>
+                <div class="cone-picker">
+                    ${CONE_ICONS.map(ic => `
+                        <div class="cone-option ${rm.chosenIcon === ic ? 'active' : ''}" onclick="rm.chosenIcon='${ic}'; setupRichupPlayers(); renderRichupScreen();">
+                            ${ic}
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="cone-picker" style="margin-bottom:16px;">
+                    ${CONE_COLORS.map(col => `
+                        <div class="color-dot ${rm.chosenColor === col ? 'active' : ''}" style="background:${col}" onclick="rm.chosenColor='${col}'; setupRichupPlayers(); renderRichupScreen();"></div>
+                    `).join('')}
+                </div>
+
+                <div style="margin-bottom:14px; font-size:0.95rem;">
+                    <strong>Kasa na start:</strong>
+                    <select style="background:#1d192b; color:var(--accent-yellow); font-weight:900; font-size:1rem; border:2px solid #7c3aed; padding:6px 14px; border-radius:10px; margin-left:8px;" onchange="rm.settings.startingCash=Number(this.value); setupRichupPlayers(); renderRichupScreen();">
+                        <option value="500"  ${rm.settings.startingCash===500?'selected':''}>$500</option>
+                        <option value="750"  ${rm.settings.startingCash===750?'selected':''}>$750</option>
+                        <option value="1000" ${rm.settings.startingCash===1000?'selected':''}>$1000</option>
+                        <option value="1500" ${rm.settings.startingCash===1500?'selected':''}>$1500</option>
+                        <option value="2000" ${rm.settings.startingCash===2000?'selected':''}>$2000 (MAX)</option>
+                    </select>
+                </div>
+
+                <div class="dice-pair" style="justify-content:center;">
+                    <div class="die-3d">⚄</div>
+                    <div class="die-3d">⚅</div>
+                </div>
+
+                <button class="btn btn-green" style="font-size:1.2rem; padding:14px 32px; margin-top:10px;" onclick="beginRichupMatch()">
+                    ▶ Start Game (Rozpocznij Grę)
+                </button>
+            </div>
+        `;
+    } else {
+        let actionsHtml = '';
+
+        if (me.bankrupt && rm.turn === 0) {
+            actionsHtml = `<div style="color:#ef4444; font-weight:800;">👁️ Zbankrutowałeś — oglądasz grę jako widz.</div>`;
+        } else if (!curP.isBot) {
+            // Sprawdzenie, czy gracz jest na minusie (np. po wejściu na drogi hotel)
+            if (curP.cash < 0) {
+                actionsHtml += `
+                    <div style="background:rgba(239,68,68,0.22); border:2px solid #ef4444; padding:10px 14px; border-radius:12px; margin-bottom:10px; font-size:0.84rem; color:#fecaca;">
+                        🚨 <strong>MASZ DŁUG (${curP.cash}$)!</strong> Aby grać dalej i zakończyć turę, musisz wyjść na minimum <strong>$0</strong>!<br>
+                        Kliknij na swoje pola na planszy (lub z listy po prawej), aby sprzedać Domy, Hotele, Dzielnice, Airporty lub Wodociągi za <strong>-25%</strong> ceny, wyślij <strong>Trade</strong> albo kliknij <strong>Bankrupt</strong>!
+                    </div>
+                `;
+            }
+
+            if (curP.inPrison && !rm.rolledThisTurn) {
+                actionsHtml += `
+                    <div style="background:rgba(239,68,68,0.15); border:1px solid #ef4444; padding:8px 12px; border-radius:10px; margin-bottom:8px; font-size:0.84rem;">
+                        ⛓️ Jesteś w KLATCE (Próba ${curP.prisonTries}/3). Wyrzuć sumę > 10 (11 lub 12), zapłać 50$ lub użyj Pardon Card!
+                    </div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
+                        <button class="btn btn-yellow" onclick="rollRichupDice()">🎲 Rzuć (>10 wychodzi)</button>
+                        ${curP.cash >= 50 ? `<button class="btn btn-blue" onclick="payPrisonBail()">💵 Zapłać 50$</button>` : ''}
+                        ${curP.pardonCards > 0 ? `<button class="btn btn-green" onclick="usePrisonPardon()">🃏 Użyj Pardon Card (${curP.pardonCards})</button>` : ''}
+                    </div>
+                `;
+            } else if (!rm.rolledThisTurn) {
+                actionsHtml += `<button class="btn btn-yellow" style="font-size:1.15rem; padding:12px 26px;" onclick="rollRichupDice()">🎲 Rzuć dwiema kostkami</button>`;
+            } else {
+                const canBuy = (curTile.price && curTile.owner === null && curP.cash >= curTile.price);
+                const canBuild = canBuildOnTile(curP, curTile);
+                actionsHtml += `<div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">`;
+                if (canBuy) {
+                    actionsHtml += `<button class="btn btn-green" onclick="buyRichupProperty()">🏠 Kup ${curTile.name} (${curTile.price}$)</button>`;
+                }
+                if (canBuild) {
+                    const nextLabel = curTile.level === 4 ? `🏨 Kup Hotel (${curTile.houseCost}$)` : `🏠 Dokup Dom #${curTile.level + 1} (${curTile.houseCost}$)`;
+                    actionsHtml += `<button class="btn btn-blue" onclick="buildOnTile(${curTile.id})">${nextLabel}</button>`;
+                }
+                // Przycisk zakończenia tury aktywny tylko gdy gracz ma >= 0$
+                if (curP.cash >= 0) {
+                    actionsHtml += `<button class="btn" onclick="endRichupTurn()">✅ Zakończ turę</button>`;
+                } else {
+                    actionsHtml += `<button class="btn btn-danger" onclick="alert('Masz minus na koncie (' + curP.cash + '$)! Sprzedaj nieruchomości/domy (-25%) albo kliknij Bankrupt po prawej stronie!')">🔒 Spłać dług aby zakończyć turę</button>`;
+                }
+                actionsHtml += `</div>`;
+            }
+        } else {
+            actionsHtml = `<div style="color:var(--accent-yellow); font-weight:700;">🤖 ${curP.name} wykonuje ruch...</div>`;
+        }
+
+        centerHtml = `
+            <div>
+                <div style="font-size:1.08rem; font-weight:800; color:${curP.color};">
+                    <span style="font-size:1.45rem;">${curP.icon}</span> Tura gracza: ${curP.name} (Stoi na: #${curP.pos} ${curTile.name})
+                </div>
+                <div>
+                    <span id="richup-timer-display" class="turn-timer-pill ${rm.turnTimeLeft <= 30 ? 'low' : ''}">
+                        ⏱️ Czas na ruch: ${formatTimer(Math.max(0, rm.turnTimeLeft))}
+                    </span>
+                </div>
+                <div class="dice-pair" style="justify-content:center;">
+                    <div id="die-1" class="die-3d">${rm.dice[0]}</div>
+                    <div id="die-2" class="die-3d">${rm.dice[1]}</div>
+                </div>
+                ${actionsHtml}
+            </div>
+
+            <div style="width:100%; max-height:165px; overflow-y:auto; text-align:left; font-size:0.8rem; background:#0c0a14; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                ${rm.logs.map(l => `<div style="padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.04);">• ${l}</div>`).join('')}
+            </div>
+        `;
+    }
+
+    const myProps = rm.tiles.filter(t => t.owner === 0);
+
+    ui.innerHTML = `
+        <div class="richup-layout">
+            <!-- LEWA KOLUMNA -->
+            <div>
+                <div class="richup-panel">
+                    <h4>Share this game</h4>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" readonly value="https://twoj-github.io/#ruda" style="width:100%; background:#0f0d17; border:1px solid #334155; color:#cbd5e1; padding:6px 8px; border-radius:8px; font-size:0.75rem;">
+                        <button class="btn btn-blue" style="padding:6px 10px; font-size:0.75rem;" onclick="navigator.clipboard.writeText(window.location.href); alert('Skopiowano link!');">Copy</button>
+                    </div>
+                </div>
+
+                <div class="richup-panel">
+                    <h4>Sprzedaż do banku (-25%)</h4>
+                    <p style="font-size:0.76rem; color:var(--text-dim); line-height:1.45;">
+                        Kliknij na swoje pole na planszy lub z listy <strong>My properties</strong>, aby sprzedać dom, hotel, dzielnicę, airport lub wodociągi za <strong>-25% ceny</strong> (75% zwrotu gotówki)!
+                    </p>
+                </div>
+
+                <div class="richup-panel">
+                    <h4>Chat pokoju</h4>
+                    <div id="richup-chat-box" style="height:170px; overflow-y:auto; font-size:0.76rem; color:#cbd5e1; margin-bottom:8px; background:#120f1d; padding:8px; border-radius:8px;">
+                        ${rm.chat.length === 0 ? '<div style="color:#64748b;">Brak wiadomości...</div>' : rm.chat.map(c => `<div><strong>${c.u}:</strong> ${c.t}</div>`).join('')}
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="richup-chat-input" placeholder="Napisz coś..." style="flex:1; background:#0f0d17; border:1px solid #334155; color:white; padding:6px 8px; border-radius:8px; font-size:0.78rem;" onkeydown="if(event.key==='Enter') sendRichupChat();">
+                        <button class="btn" style="padding:6px 10px;" onclick="sendRichupChat()">➤</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ŚRODKOWA KOLUMNA: POWIĘKSZONA PLANSZA 11x11 -->
+            <div>
+                <div class="richup-board">
+                    ${tilesHtml}
+                    <div class="richup-center">
+                        ${centerHtml}
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRAWA KOLUMNA -->
+            <div>
+                <div class="richup-panel">
+                    <h4>Gracze w grze</h4>
+                    ${rm.players.map((p, idx) => `
+                        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:12px; margin-bottom:6px; opacity:${p.bankrupt ? '0.45' : '1'}; background:${rm.turn === idx ? 'rgba(124,58,237,0.24)' : '#14111f'}; border:1px solid ${rm.turn === idx ? '#7c3aed' : 'transparent'};">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <span style="width:36px; height:36px; border-radius:50%; background:${p.color}; border:2px solid #fff; display:inline-flex; align-items:center; justify-content:center; font-size:1.3rem;">${p.icon}</span>
+                                <div>
+                                    <div style="font-size:0.88rem; font-weight:800;">
+                                        ${p.name} ${idx === 0 ? '👑' : ''}
+                                        ${p.bankrupt ? '<span style="color:#ef4444; font-size:0.7rem;">[WIDZ / BANKRUT]</span>' : ''}
+                                        ${!p.bankrupt && p.inPrison ? '<span style="color:#ef4444; font-size:0.7rem;">[KLATKA]</span>' : ''}
+                                        ${!p.bankrupt && p.skipTurns > 0 ? `<span style="color:#38bdf8; font-size:0.7rem;">[WAKACJE:${p.skipTurns}]</span>` : ''}
+                                    </div>
+                                    <div style="font-size:0.7rem; color:var(--text-dim);">
+                                        ${p.bankrupt ? 'Tylko ogląda' : `Pole #${p.pos}`} ${p.pardonCards > 0 ? `• 🃏Pardon: ${p.pardonCards}` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <strong style="color:${p.cash < 0 ? '#ef4444' : 'var(--accent-green)'}; font-size:0.98rem;">
+                                ${p.bankrupt ? '---' : `$${p.cash}`}
+                            </strong>
+                        </div>
+                    `).join('')}
+
+                    <!-- PRZYCISK BANKRUPT DOKŁADNIE JAK W RICHUP.IO -->
+                    ${rm.started && !me.bankrupt ? `
+                        <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                            <button class="btn-bankrupt" onclick="confirmPlayerBankrupt()">
+                                🏳️ Bankrupt (Poddaj się i oglądaj)
+                            </button>
+                        </div>
+                    ` : ''}
+                    ${me.bankrupt ? `
+                        <div style="margin-top:8px; padding:8px; background:rgba(239,68,68,0.12); border:1px solid #ef4444; border-radius:8px; font-size:0.76rem; text-align:center; color:#fca5a5;">
+                            👁️ Jesteś w trybie widza — nie bierzesz udziału w rzutach, ale możesz oglądać grę!
+                        </div>
+                    ` : ''}
+                </div>
+
+                <!-- SEKCJA TRADES (LISTA OFERT DO KLIKNIĘCIA PRZEZ KAŻDEGO) -->
+                <div class="richup-panel">
+                    <h4>
+                        <span>Trades (${rm.trades.length})</span>
+                        ${!me.bankrupt ? `<button class="btn" style="padding:5px 12px; font-size:0.76rem;" onclick="openCreateTradeModal()">+ Create</button>` : ''}
+                    </h4>
+
+                    <div style="max-height:150px; overflow-y:auto;">
+                        ${rm.trades.length === 0 ? `
+                            <p style="font-size:0.74rem; color:var(--text-dim);">
+                                Brak aktywnych wymian. Kliknij <strong>+ Create</strong>, aby wysłać ofertę — każdy gracz będzie mógł w nią kliknąć i zobaczyć co oferujesz!
+                            </p>
+                        ` : rm.trades.map(tr => {
+                            const fromP = rm.players[tr.from];
+                            const toP = rm.players[tr.to];
+                            return `
+                                <div class="trade-item-row" onclick="inspectTradeOffer(${tr.id})">
+                                    <div style="display:flex; align-items:center; gap:6px;">
+                                        <span>${fromP.icon} <strong>${fromP.name}</strong></span>
+                                        <span style="color:var(--accent-yellow);">➔</span>
+                                        <span>${toP.icon} <strong>${toP.name}</strong></span>
+                                    </div>
+                                    <span style="background:#7c3aed; color:white; padding:2px 8px; border-radius:6px; font-size:0.7rem; font-weight:800;">
+                                        👁️ Zobacz ofertę
+                                    </span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+
+                <!-- MOJE NIERUCHOMOŚCI -->
+                <div class="richup-panel">
+                    <h4>My properties (${myProps.length})</h4>
+                    <div style="max-height:150px; overflow-y:auto; display:flex; flex-direction:column; gap:5px;">
+                        ${myProps.length === 0 ? '<div style="font-size:0.75rem; color:#64748b;">Nie posiadasz jeszcze żadnych dzielnic.</div>' : myProps.map(t => `
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#14111f; padding:6px 8px; border-radius:8px; font-size:0.76rem; cursor:pointer; border:1px solid rgba(255,255,255,0.05);" onclick="inspectTile(${t.id})">
+                                <span>#${t.id} <strong>${t.name}</strong> ${t.level > 0 ? (t.level===5 ? '🏨' : '🏠'.repeat(t.level)) : ''}</span>
+                                <span style="color:var(--accent-yellow);">Sprzedaj / Zarządzaj</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- USTAWIENIA POKOJU -->
+                <div class="richup-panel">
+                    <h4>Gameplay rules (Ustawienia)</h4>
+
+                    <div class="setting-row">
+                        <div>
+                            <strong>Vacation cash (+300$)</strong>
+                            <small>Wejście na Wakacje (pole 20) daje 300$ premii</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" ${rm.settings.vacationCash ? 'checked' : ''} onchange="rm.settings.vacationCash=this.checked">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div>
+                            <strong>x2 rent on full-set</strong>
+                            <small>Podwójny czynsz bazowy za posiadanie całej dzielnicy</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" ${rm.settings.doubleFullSet ? 'checked' : ''} onchange="rm.settings.doubleFullSet=this.checked">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div>
+                            <strong>Don't collect rent in prison</strong>
+                            <small>Brak czynszu, gdy właściciel siedzi w klatce</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" ${rm.settings.noRentInPrison ? 'checked' : ''} onchange="rm.settings.noRentInPrison=this.checked">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div>
+                            <strong>Mortgage (Hipoteka 50%)</strong>
+                            <small>Zastawiaj pola za 50% ich wartości</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" ${rm.settings.mortgage ? 'checked' : ''} onchange="rm.settings.mortgage=this.checked">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div>
+                            <strong>Starting cash</strong>
+                            <small>Gotówka na start (500$ - 2000$)</small>
+                        </div>
+                        <select style="background:#0f0d17; color:white; border:1px solid #334155; padding:4px 8px; border-radius:6px;" onchange="rm.settings.startingCash=Number(this.value); if(!rm.started){setupRichupPlayers(); renderRichupScreen();}">
+                            <option value="500"  ${rm.settings.startingCash===500?'selected':''}>$500</option>
+                            <option value="750"  ${rm.settings.startingCash===750?'selected':''}>$750</option>
+                            <option value="1000" ${rm.settings.startingCash===1000?'selected':''}>$1000</option>
+                            <option value="1500" ${rm.settings.startingCash===1500?'selected':''}>$1500</option>
+                            <option value="2000" ${rm.settings.startingCash===2000?'selected':''}>$2000</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function sendRichupChat() {
+    const inp = document.getElementById('richup-chat-input');
+    if (!inp || !inp.value.trim()) return;
+    rm.chat.push({ u: state.nick, t: inp.value.trim() });
+    inp.value = '';
+    renderRichupScreen();
+}
+
+function beginRichupMatch() {
+    setupRichupPlayers();
+    rm.started = true;
+    rm.turn = 0;
+    rm.turnTimeLeft = 180;
+    rm.rolledThisTurn = false;
+    addRichupLog(`Gra rozpoczęta! Każdy gracz startuje z kwotą $${rm.settings.startingCash}. Czas na ruch: 3:00 min.`);
+    startTurnClock();
+    renderRichupScreen();
+}
+
+/* PRZYCISK BANKRUPT (PODDANIE SIĘ I PRZEJŚCIE W TRYB WIDZA) */
+function confirmPlayerBankrupt() {
+    if (!confirm('Czy na pewno chcesz ogłosić BANKRUCTWO (Poddajesz się)? Twoje pola wrócą do puli, a Ty będziesz tylko oglądać grę jako widz.')) return;
+    declareBankruptcy(0, false);
+}
+
+function declareBankruptcy(playerId, byTimeout = false) {
+    const p = rm.players[playerId];
+    if (!p || p.bankrupt) return;
+    p.bankrupt = true;
+    p.cash = 0;
+    p.pardonCards = 0;
+
+    // Wszystkie pola tego gracza wracają do banku
+    rm.tiles.forEach(t => {
+        if (t.owner === playerId) {
+            t.owner = null;
+            t.level = 0;
+            t.mortgaged = false;
+        }
+    });
+
+    // Usuń otwarte oferty wymiany powiązane z tym graczem
+    rm.trades = rm.trades.filter(tr => tr.from !== playerId && tr.to !== playerId);
+
+    addRichupLog(`🏳️ ${p.name} ogłosił BANKRUCTWO ${byTimeout ? '(przekroczony czas / niespłacony dług)' : '(poddał się)'} i przechodzi w tryb widza!`);
+    closeRichupModal();
+
+    if (rm.turn === playerId) {
+        endRichupTurn();
+    } else {
+        renderRichupScreen();
+    }
+}
+
+/* Automatyczne odratowanie bota gdy wpadnie w dług (sprzedaje za -25%) */
+function botResolveDebt(bot) {
+    // 1. Najpierw sprzedaje domy i hotele (-25%)
+    for (const t of rm.tiles) {
+        while (bot.cash < 0 && t.owner === bot.id && t.level > 0) {
+            const refund = Math.floor(t.houseCost * 0.75);
+            t.level--;
+            bot.cash += refund;
+            addRichupLog(`🤖 ${bot.name} sprzedał budynek na polu ${t.name} za ${refund}$ (-25%), aby spłacić dług.`);
+        }
+    }
+    // 2. Następnie sprzedaje działki, airporty i wodociągi (-25%)
+    for (const t of rm.tiles) {
+        if (bot.cash < 0 && t.owner === bot.id && t.level === 0) {
+            const refund = Math.floor(t.price * 0.75);
+            t.owner = null;
+            t.mortgaged = false;
+            bot.cash += refund;
+            addRichupLog(`🤖 ${bot.name} sprzedał ${t.name} do banku za ${refund}$ (-25%), aby wyjść z minusa!`);
+        }
+    }
+    // Jeśli nadal ma minus -> bankrutuje
+    if (bot.cash < 0) {
+        declareBankruptcy(bot.id, true);
+    }
+}
+
+function rollRichupDice() {
+    const p = rm.players[rm.turn];
+    const d1 = Math.floor(Math.random() * 6) + 1;
+    const d2 = Math.floor(Math.random() * 6) + 1;
+    const sum = d1 + d2;
+    rm.dice = [d1, d2];
+    rm.lastDiceSum = sum;
+    rm.rolledThisTurn = true;
+
+    if (p.inPrison) {
+        p.prisonTries++;
+        if (sum > 10) {
+            p.inPrison = false;
+            p.prisonTries = 0;
+            addRichupLog(`🎲 ${p.name} wyrzucił ${d1}+${d2}=${sum} (>10)! Wychodzi z klatki i idzie o ${sum} pól!`);
+            moveRichupPlayer(p, sum);
+        } else if (p.prisonTries >= 3) {
+            p.inPrison = false;
+            p.prisonTries = 0;
+            addRichupLog(`⛓️ ${p.name} wyrzucił ${d1}+${d2}=${sum}. Po 3 próbach staje OBOK KLATKI — w następnej turze idzie normalnie!`);
+        } else {
+            addRichupLog(`⛓️ ${p.name} wyrzucił ${d1}+${d2}=${sum} (wymagane >10). Zostaje w klatce (próba ${p.prisonTries}/3).`);
+        }
+        renderRichupScreen();
+        if (p.isBot) {
+            setTimeout(() => {
+                if (p.cash < 0) botResolveDebt(p);
+                if (!p.bankrupt) endRichupTurn();
+            }, 900);
+        }
+        return;
+    }
+
+    addRichupLog(`🎲 ${p.name} wyrzucił ${d1} + ${d2} = ${sum}.`);
+    moveRichupPlayer(p, sum);
+    renderRichupScreen();
+
+    if (p.isBot) {
+        setTimeout(() => {
+            if (p.cash < 0) botResolveDebt(p);
+            if (!p.bankrupt) {
+                botHandlePostRoll(p);
+                endRichupTurn();
+            }
+        }, 1000);
+    }
+}
+
+function payPrisonBail() {
+    const p = rm.players[rm.turn];
+    if (!p.inPrison || p.cash < 50) return;
+    p.cash -= 50;
+    p.inPrison = false;
+    p.prisonTries = 0;
+    addRichupLog(`💵 ${p.name} zapłacił 50$ kaucji i wyszedł z klatki! Teraz może rzucić kostkami.`);
+    renderRichupScreen();
+}
+
+function usePrisonPardon() {
+    const p = rm.players[rm.turn];
+    if (!p.inPrison || p.pardonCards <= 0) return;
+    p.pardonCards--;
+    p.inPrison = false;
+    p.prisonTries = 0;
+    addRichupLog(`🃏 ${p.name} użył Pardon Card i wyszedł z klatki! Teraz może rzucić kostkami.`);
+    renderRichupScreen();
+}
+
+function moveRichupPlayer(p, steps) {
+    const oldPos = p.pos;
+    let newPos = (oldPos + steps) % 40;
+    if (newPos < 0) newPos += 40;
+
+    if (steps > 0 && (oldPos + steps >= 40)) {
+        p.cash += 300;
+        addRichupLog(`🏁 ${p.name} przeszedł przez START i otrzymuje +300$!`);
+    }
+
+    p.pos = newPos;
+    handleLandOnTile(p, rm.tiles[newPos]);
+}
+
+function handleLandOnTile(p, tile) {
+    if (tile.type === 'treasure') {
+        const outcome = Math.floor(Math.random() * 4);
+        if (outcome === 0) {
+            addRichupLog(`🧰 Skarb (#${tile.id}): ${p.name} cofa się o 3 pola!`);
+            moveRichupPlayer(p, -3);
+            return;
+        } else if (outcome === 1) {
+            p.cash += 100;
+            addRichupLog(`🧰 Skarb (#${tile.id}): ${p.name} znajduje +100$!`);
+        } else if (outcome === 2) {
+            p.cash -= 100;
+            addRichupLog(`🧰 Skarb (#${tile.id}): ${p.name} płaci 100$ opłaty skarbowej!`);
+        } else {
+            p.pardonCards++;
+            addRichupLog(`🧰 Skarb (#${tile.id}): ${p.name} otrzymuje kartę PARDON CARD (wyjście z więzienia)!`);
+        }
+    }
+    else if (tile.type === 'tax_flat') {
+        p.cash -= 30;
+        addRichupLog(`🚕 ${p.name} płaci 30$ za Taxi na polu #4.`);
+    }
+    else if (tile.type === 'surprise') {
+        const mode = Math.floor(Math.random() * 3);
+        if (mode === 0) {
+            const amount = (Math.floor(Math.random() * 10) + 1) * 50;
+            const sign = Math.random() < 0.55 ? 1 : -1;
+            p.cash += sign * amount;
+            addRichupLog(`❓ Surprise (#${tile.id}): ${p.name} ${sign > 0 ? 'otrzymuje +' : 'traci -'}${amount}$!`);
+        } else if (mode === 1) {
+            const dest = Math.floor(Math.random() * 40);
+            p.pos = dest;
+            addRichupLog(`❓ Surprise (#${tile.id}): ${p.name} zostaje przeniesiony na pole #${dest} (${rm.tiles[dest].name})!`);
+        } else {
+            const others = rm.players.filter(o => o.id !== p.id && !o.bankrupt);
+            if (others.length > 0) {
+                const target = others[Math.floor(Math.random() * others.length)];
+                const amt = (Math.floor(Math.random() * 4) + 1) * 50;
+                if (Math.random() < 0.5) {
+                    p.cash += amt;
+                    target.cash -= amt;
+                    addRichupLog(`❓ Surprise (#${tile.id}): ${p.name} zabiera ${amt}$ od gracza ${target.name}!`);
+                } else {
+                    p.cash -= amt;
+                    target.cash += amt;
+                    addRichupLog(`❓ Surprise (#${tile.id}): ${p.name} oddaje ${amt}$ graczowi ${target.name}!`);
+                }
+            }
+        }
+    }
+    else if (tile.type === 'prison') {
+        addRichupLog(`⛓️ ${p.name} staje na polu #10 OBOK KLATKI (tylko odwiedziny).`);
+    }
+    else if (tile.type === 'vacation') {
+        p.skipTurns = 2;
+        if (rm.settings.vacationCash) {
+            p.cash += 300;
+            addRichupLog(`🏖️ ${p.name} staje na Wakacjach (#20)! Odpoczywa przez 2 tury i zgarnia +300$ z Vacation Cash!`);
+        } else {
+            addRichupLog(`🏖️ ${p.name} staje na Wakacjach (#20) i odpoczywa przez 2 tury.`);
+        }
+    }
+    else if (tile.type === 'gotoprison') {
+        p.pos = 10;
+        p.inPrison = true;
+        p.prisonTries = 0;
+        addRichupLog(`🚓 ${p.name} wszedł na pole #30 i zostaje przeteleportowany prosto do KLATKI w Więzieniu (#10)!`);
+    }
+    else if (tile.type === 'tax_hotel') {
+        const myHotels = rm.tiles.filter(t => t.owner === p.id && t.level === 5).length;
+        const tax = myHotels * 75;
+        p.cash -= tax;
+        addRichupLog(`🚕 ${p.name} staje na polu #38 (Taksówka Hotelowa): posiada ${myHotels} hoteli i płaci ${tax}$ (75$ za każdy hotel).`);
+    }
+    else if (tile.owner !== null && tile.owner !== p.id && !tile.mortgaged) {
+        const owner = rm.players[tile.owner];
+        if (rm.settings.noRentInPrison && owner.inPrison) {
+            addRichupLog(`⛓️ ${owner.name} siedzi w więzieniu — ${p.name} nie płaci czynszu za ${tile.name}!`);
+            return;
+        }
+
+        let rent = calculateTileRent(tile, rm.lastDiceSum);
+        p.cash -= rent;
+        owner.cash += rent;
+        if (owner.id === 0) addPoints(0, 15);
+        addRichupLog(`💸 ${p.name} staje na ${tile.name} i płaci ${rent}$ czynszu graczowi ${owner.name}!`);
+        if (p.cash < 0) {
+            addRichupLog(`🚨 UWAGA! ${p.name} ma ujemne saldo (${p.cash}$) i musi sprzedać majątek (-25%), aby grać dalej!`);
+        }
+    }
+}
+
+function calculateTileRent(tile, diceSum) {
+    if (tile.type === 'airport') {
+        const ownedAirports = rm.tiles.filter(t => t.type === 'airport' && t.owner === tile.owner && !t.mortgaged).length;
+        const table = [0, 25, 50, 100, 200];
+        return table[ownedAirports] || 25;
+    }
+    if (tile.type === 'utility') {
+        const ownedUtils = rm.tiles.filter(t => t.type === 'utility' && t.owner === tile.owner && !t.mortgaged).length;
+        return ownedUtils >= 2 ? (10 * diceSum) : (4 * diceSum);
+    }
+    if (tile.type === 'prop') {
+        let base = tile.rents[tile.level];
+        if (tile.level === 0 && rm.settings.doubleFullSet && hasFullSet(tile.owner, tile.set)) {
+            base *= 2;
+        }
+        return base;
+    }
+    return 0;
+}
+
+function buyRichupProperty() {
+    const p = rm.players[rm.turn];
+    const tile = rm.tiles[p.pos];
+    if (!tile.price || tile.owner !== null || p.cash < tile.price) return;
+    p.cash -= tile.price;
+    tile.owner = p.id;
+    if (p.id === 0) addPoints(0, 20);
+    addRichupLog(`🏠 ${p.name} kupił ${tile.name} za ${tile.price}$!`);
+    renderRichupScreen();
+}
+
+function canBuildOnTile(player, tile) {
+    if (!tile || tile.type !== 'prop' || tile.owner !== player.id || tile.mortgaged) return false;
+    if (player.cash < tile.houseCost) return false;
+    if (tile.level < 4) return true;
+    if (tile.level === 4 && hasFullSet(player.id, tile.set)) return true;
+    return false;
+}
+
+function buildOnTile(tileId) {
+    const p = rm.players[0];
+    const tile = rm.tiles[tileId];
+    if (!canBuildOnTile(p, tile)) return;
+    p.cash -= tile.houseCost;
+    tile.level++;
+    const label = tile.level === 5 ? 'HOTEL 🏨' : `Dom #${tile.level} 🏠`;
+    addRichupLog(`🏗️ ${p.name} wybudował ${label} w dzielnicy ${tile.name} (-${tile.houseCost}$).`);
+    closeRichupModal();
+    renderRichupScreen();
+}
+
+/* SPRZEDAŻ DOMU / HOTELU DO BANKU ZA -25% (ZWROT 75% WARTOŚCI) */
+function sellBuildingOnTile(tileId) {
+    const p = rm.players[0];
+    const tile = rm.tiles[tileId];
+    if (!tile || tile.owner !== p.id || tile.level <= 0) return;
+
+    const refund = Math.floor(tile.houseCost * 0.75); // -25% od ceny zakupu
+    const soldLabel = tile.level === 5 ? 'HOTEL 🏨' : `Dom #${tile.level} 🏠`;
+    tile.level--;
+    p.cash += refund;
+
+    addRichupLog(`💰 ${p.name} sprzedał ${soldLabel} w dzielnicy ${tile.name} za +${refund}$ (-25% ceny).`);
+    inspectTile(tileId);
+    renderRichupScreen();
+}
+
+/* SPRZEDAŻ DZIELNICY / AIRPORTU / WODOCIĄGÓW DO BANKU ZA -25% (ZWROT 75% CENY) */
+function sellPropertyToBank(tileId) {
+    const p = rm.players[0];
+    const tile = rm.tiles[tileId];
+    if (!tile || tile.owner !== p.id) return;
+
+    // Jeśli na polu stoją jeszcze domy lub hotel, policz za wszystko 75%
+    const buildingsRefund = tile.level > 0 ? Math.floor((tile.level * tile.houseCost) * 0.75) : 0;
+    const baseRefund = Math.floor(tile.price * 0.75);
+    const totalRefund = baseRefund + buildingsRefund;
+
+    tile.owner = null;
+    tile.level = 0;
+    tile.mortgaged = false;
+    p.cash += totalRefund;
+
+    addRichupLog(`🏦 ${p.name} sprzedał ${tile.name} do banku za +${totalRefund}$ (-25% od ceny)!`);
+    closeRichupModal();
+    renderRichupScreen();
+}
+
+function toggleMortgageTile(tileId) {
+    if (!rm.settings.mortgage) return;
+    const p = rm.players[0];
+    const tile = rm.tiles[tileId];
+    if (tile.owner !== p.id || tile.level > 0) return;
+    const half = Math.floor(tile.price / 2);
+    if (!tile.mortgaged) {
+        tile.mortgaged = true;
+        p.cash += half;
+        addRichupLog(`🏦 ${p.name} zastawił ${tile.name} pod hipotekę (+${half}$).`);
+    } else if (p.cash >= half) {
+        tile.mortgaged = false;
+        p.cash -= half;
+        addRichupLog(`🏦 ${p.name} wykupił ${tile.name} z hipoteki (-${half}$).`);
+    }
+    closeRichupModal();
+    renderRichupScreen();
+}
+
+function botHandlePostRoll(bot) {
+    const tile = rm.tiles[bot.pos];
+    if (tile.price && tile.owner === null && bot.cash >= tile.price + 100) {
+        bot.cash -= tile.price;
+        tile.owner = bot.id;
+        addRichupLog(`🤖 ${bot.name} kupił ${tile.name} (${tile.price}$).`);
+    } else if (canBuildOnTile(bot, tile) && bot.cash >= tile.houseCost + 200) {
+        bot.cash -= tile.houseCost;
+        tile.level++;
+        addRichupLog(`🤖 ${bot.name} rozbudował ${tile.name} do poziomu ${tile.level}!`);
+    }
+
+    // Czasami bot wystawia ofertę Trade na listę, żeby gracze mogli w nią kliknąć!
+    const myProps = rm.tiles.filter(t => t.owner === 0 && t.level === 0);
+    if (myProps.length > 0 && rm.trades.length < 3 && Math.random() < 0.25 && bot.cash >= 250) {
+        const wanted = myProps[Math.floor(Math.random() * myProps.length)];
+        const offeredCash = Math.min(bot.cash - 50, Math.floor(wanted.price * 1.25));
+        rm.trades.push({
+            id: rm.nextTradeId++,
+            from: bot.id,
+            to: 0,
+            giveCash: offeredCash,
+            takeCash: 0,
+            givePardon: false,
+            takePardon: false,
+            giveProps: [],
+            takeProps: [wanted.id]
+        });
+        addRichupLog(`🤝 ${bot.name} wystawił nową ofertę wymiany (Trade) dla ${rm.players[0].name}! Kliknij na nią w panelu Trades.`);
+    }
+}
+
+function endRichupTurn() {
+    const curP = rm.players[rm.turn];
+    if (!curP.bankrupt && curP.cash < 0) {
+        alert('Nie możesz zakończyć tury mając minus na koncie! Sprzedaj pola/domy (-25%) albo kliknij Bankrupt.');
+        return;
+    }
+
+    rm.rolledThisTurn = false;
+    rm.turnTimeLeft = 180; // Reset licznika 3 minut dla następnego gracza
+
+    const alivePlayers = rm.players.filter(p => !p.bankrupt);
+    if (alivePlayers.length <= 1) {
+        if (alivePlayers.length === 1) {
+            addRichupLog(`🏆 KONIEC GRY! Zwycięża ${alivePlayers[0].name}!`);
+        }
+        renderRichupScreen();
+        return;
+    }
+
+    for (let step = 1; step <= rm.players.length; step++) {
+        const nextIdx = (rm.turn + step) % rm.players.length;
+        const candidate = rm.players[nextIdx];
+        if (candidate.bankrupt) continue;
+        if (candidate.skipTurns > 0) {
+            candidate.skipTurns--;
+            addRichupLog(`🏖️ ${candidate.name} odpoczywa na Wakacjach (pozostało tur do pominięcia: ${candidate.skipTurns}).`);
+            continue;
+        }
+        rm.turn = nextIdx;
+        break;
+    }
+
+    renderRichupScreen();
+
+    const activeP = rm.players[rm.turn];
+    if (activeP.isBot && !activeP.bankrupt) {
+        setTimeout(() => {
+            if (activeP.inPrison && activeP.pardonCards > 0) {
+                activeP.pardonCards--;
+                activeP.inPrison = false;
+                activeP.prisonTries = 0;
+            } else if (activeP.inPrison && activeP.cash >= 350) {
+                activeP.cash -= 50;
+                activeP.inPrison = false;
+                activeP.prisonTries = 0;
+            }
+            rollRichupDice();
+        }, 750);
+    }
+}
+
+/* KARTA DZIELNICY / AIRPORTU / WODOCIĄGÓW Z PRZYCISKAMI SPRZEDAŻY -25% */
+function inspectTile(tileId) {
+    const t = rm.tiles[tileId];
+    const modal = document.getElementById('richup-modal');
+    modal.classList.remove('hidden');
+
+    const ownerName = t.owner !== null ? rm.players[t.owner].name : 'Brak (Do kupienia)';
+    const isMine = (t.owner === 0);
+    let detailsHtml = '';
+
+    if (t.type === 'prop') {
+        const canBuild = canBuildOnTile(rm.players[0], t);
+        const propRefund = Math.floor(t.price * 0.75);
+        const buildRefund = Math.floor(t.houseCost * 0.75);
+
+        detailsHtml = `
+            <div style="height:8px; width:100%; background:${SET_COLORS[t.set]}; border-radius:6px; margin-bottom:10px;"></div>
+            <div class="prop-card-title">${t.name}</div>
+
+            <table class="prop-rent-table">
+                <thead>
+                    <tr>
+                        <th style="text-align:left;">when</th>
+                        <th style="text-align:right;">get</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>with rent</td><td class="val">$ ${t.rents[0]}</td></tr>
+                    <tr><td>with one house</td><td class="val">$ ${t.rents[1]}</td></tr>
+                    <tr><td>with two houses</td><td class="val">$ ${t.rents[2]}</td></tr>
+                    <tr><td>with three houses</td><td class="val">$ ${t.rents[3]}</td></tr>
+                    <tr><td>with four houses</td><td class="val">$ ${t.rents[4]}</td></tr>
+                    <tr><td>with a hotel</td><td class="val">$ ${t.rents[5]}</td></tr>
+                </tbody>
+            </table>
+
+            <div class="prop-bottom-stats">
+                <div>
+                    <div class="stat-label">Price</div>
+                    <div class="stat-price">$ ${t.price}</div>
+                </div>
+                <div>
+                    <div class="stat-label">🏠</div>
+                    <div class="stat-price">$ ${t.houseCost}</div>
+                </div>
+                <div>
+                    <div class="stat-label">🏨</div>
+                    <div class="stat-price">$ ${t.houseCost}</div>
+                </div>
+            </div>
+
+            <p style="font-size:0.8rem; color:#94a3b8; text-align:center; margin-bottom:12px;">
+                Pole #${t.id} • Właściciel: <strong style="color:white;">${ownerName}</strong> • Poziom: <strong>${t.level===5 ? 'HOTEL' : t.level + ' domów'}</strong>
+            </p>
+
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                ${canBuild ? `<button class="btn btn-green" onclick="buildOnTile(${t.id})">🏗️ Wybuduj ($${t.houseCost})</button>` : ''}
+                ${isMine && t.level > 0 ? `<button class="btn btn-yellow" onclick="sellBuildingOnTile(${t.id})">🔨 Sprzedaj ${t.level===5?'Hotel':'Dom'} (+$${buildRefund} / -25%)</button>` : ''}
+                ${isMine ? `<button class="btn btn-danger" onclick="sellPropertyToBank(${t.id})">💵 Sprzedaj Dzielnicę (+$${propRefund + t.level * buildRefund} / -25%)</button>` : ''}
+                ${isMine && t.level === 0 && rm.settings.mortgage ? `<button class="btn btn-blue" onclick="toggleMortgageTile(${t.id})">${t.mortgaged ? 'Wykup z hipoteki' : 'Hipoteka (+50%)'}</button>` : ''}
+                <button class="btn" onclick="closeRichupModal()">Zamknij</button>
+            </div>
+        `;
+        modal.innerHTML = `<div class="modal-card">${detailsHtml}</div>`;
+        return;
+    } else if (t.type === 'airport') {
+        const refund = Math.floor(t.price * 0.75);
+        detailsHtml = `
+            <div class="prop-card-title">✈️ ${t.name}</div>
+            <p style="margin:8px 0; text-align:center;">Cena: <strong>$ 200</strong> • Właściciel: <strong>${ownerName}</strong></p>
+            <table class="prop-rent-table">
+                <tr><td>1 Airport</td><td class="val">$ 25</td></tr>
+                <tr><td>2 Airporty</td><td class="val">$ 50</td></tr>
+                <tr><td>3 Airporty</td><td class="val">$ 100</td></tr>
+                <tr><td>4 Airporty</td><td class="val">$ 200</td></tr>
+            </table>
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                ${isMine ? `<button class="btn btn-yellow" onclick="sellPropertyToBank(${t.id})">💵 Sprzedaj Airport do banku (+$${refund} / -25%)</button>` : ''}
+                <button class="btn btn-danger" onclick="closeRichupModal()">Zamknij</button>
+            </div>
+        `;
+    } else if (t.type === 'utility') {
+        const refund = Math.floor(t.price * 0.75);
+        detailsHtml = `
+            <div class="prop-card-title">🚰 ${t.name}</div>
+            <p style="margin:8px 0; text-align:center;">Cena: <strong>$ 150</strong> • Właściciel: <strong>${ownerName}</strong></p>
+            <p style="font-size:0.9rem; line-height:1.6; text-align:center; margin:12px 0;">
+                • If one company is owned: <strong>$4 × wyrzucona suma oczek</strong><br>
+                • If two companies are owned (pola 12 i 27): <strong>$10 × wyrzucona suma oczek</strong>
+            </p>
+            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                ${isMine ? `<button class="btn btn-yellow" onclick="sellPropertyToBank(${t.id})">💵 Sprzedaj Wodociągi do banku (+$${refund} / -25%)</button>` : ''}
+                <button class="btn btn-danger" onclick="closeRichupModal()">Zamknij</button>
+            </div>
+        `;
+    } else {
+        detailsHtml = `
+            <div class="prop-card-title">Pole #${t.id}: ${t.name}</div>
+            <p style="margin:12px 0; color:var(--text-dim); text-align:center;">${t.sub || 'Pole specjalne na planszy Rudy Śląskiej.'}</p>
+            <div style="text-align:center;"><button class="btn btn-danger" onclick="closeRichupModal()">Zamknij</button></div>
+        `;
+    }
+
+    modal.innerHTML = `<div class="modal-card">${detailsHtml}</div>`;
+}
+
+function closeRichupModal() {
+    document.getElementById('richup-modal').classList.add('hidden');
+}
+
+/* =========================================================================
+   SYSTEM WYMIAN (TRADES) — TWORZENIE, PODGLĄD DLA KAŻDEGO, AKCEPTUJ / ODRZUĆ
+   ========================================================================= */
+function openCreateTradeModal(targetIdx = 1) {
+    const modal = document.getElementById('richup-modal');
+    modal.classList.remove('hidden');
+
+    const me = rm.players[0];
+    const availablePartners = rm.players.filter(p => p.id !== 0 && !p.bankrupt);
+    if (availablePartners.length === 0) {
+        modal.innerHTML = `<div class="modal-card"><p>Brak aktywnych graczy do wymiany.</p><button class="btn" onclick="closeRichupModal()">Zamknij</button></div>`;
+        return;
+    }
+    const partner = rm.players.find(p => p.id === targetIdx && !p.bankrupt) || availablePartners[0];
+    const myProps = rm.tiles.filter(t => t.owner === 0);
+    const partnerProps = rm.tiles.filter(t => t.owner === partner.id);
+
+    modal.innerHTML = `
+        <div class="modal-card wide">
+            <h3 style="margin-bottom:10px; color:var(--accent-yellow);">🤝 Stwórz Ofertę Wymiany (Create Trade)</h3>
+            <div style="margin-bottom:12px; font-size:0.85rem;">
+                Wyślij ofertę do gracza:
+                <select id="trade-partner-select" style="background:#0f0d17; color:white; padding:6px; border-radius:6px;" onchange="openCreateTradeModal(Number(this.value))">
+                    ${availablePartners.map(p => `<option value="${p.id}" ${p.id === partner.id ? 'selected' : ''}>${p.icon} ${p.name} ($${p.cash})</option>`).join('')}
+                </select>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; font-size:0.8rem;">
+                <div style="background:#14111f; padding:12px; border-radius:12px;">
+                    <strong style="color:var(--accent-green);">Ty oferujesz (${me.name}):</strong>
+                    <div style="margin:8px 0;">
+                        Gotówka ($): <input type="number" id="trade-give-cash" value="0" min="0" max="${Math.max(0, me.cash)}" style="width:90px; background:#090d16; color:white; border:1px solid #334155; padding:4px;">
+                    </div>
+                    <div style="margin:8px 0;">
+                        <label><input type="checkbox" id="trade-give-pardon" ${me.pardonCards <= 0 ? 'disabled' : ''}> Oddaj Pardon Card (masz: ${me.pardonCards})</label>
+                    </div>
+                    <div style="max-height:130px; overflow-y:auto; margin-top:6px;">
+                        ${myProps.length === 0 ? '<small style="color:#64748b;">Brak pól</small>' : myProps.map(t => `
+                            <label style="display:block; margin:3px 0;"><input type="checkbox" class="trade-give-prop" value="${t.id}"> #${t.id} ${t.name} ($${t.price})</label>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div style="background:#14111f; padding:12px; border-radius:12px;">
+                    <strong style="color:var(--accent-blue);">Oczekujesz od ${partner.name}:</strong>
+                    <div style="margin:8px 0;">
+                        Gotówka ($): <input type="number" id="trade-take-cash" value="0" min="0" max="${Math.max(0, partner.cash)}" style="width:90px; background:#090d16; color:white; border:1px solid #334155; padding:4px;">
+                    </div>
+                    <div style="margin:8px 0;">
+                        <label><input type="checkbox" id="trade-take-pardon" ${partner.pardonCards <= 0 ? 'disabled' : ''}> Weź Pardon Card (ma: ${partner.pardonCards})</label>
+                    </div>
+                    <div style="max-height:130px; overflow-y:auto; margin-top:6px;">
+                        ${partnerProps.length === 0 ? '<small style="color:#64748b;">Brak pól</small>' : partnerProps.map(t => `
+                            <label style="display:block; margin:3px 0;"><input type="checkbox" class="trade-take-prop" value="${t.id}"> #${t.id} ${t.name} ($${t.price})</label>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:16px;">
+                <button class="btn btn-green" onclick="submitTradeToBoard(${partner.id})">📤 Wystaw ofertę na listę Trades</button>
+                <button class="btn btn-danger" onclick="closeRichupModal()">Anuluj</button>
+            </div>
+        </div>
+    `;
+}
+
+function submitTradeToBoard(partnerId) {
+    const me = rm.players[0];
+    const partner = rm.players[partnerId];
+    const giveCash = Math.max(0, Number(document.getElementById('trade-give-cash').value) || 0);
+    const takeCash = Math.max(0, Number(document.getElementById('trade-take-cash').value) || 0);
+    const givePardon = document.getElementById('trade-give-pardon').checked;
+    const takePardon = document.getElementById('trade-take-pardon').checked;
+
+    const giveProps = Array.from(document.querySelectorAll('.trade-give-prop:checked')).map(el => Number(el.value));
+    const takeProps = Array.from(document.querySelectorAll('.trade-take-prop:checked')).map(el => Number(el.value));
+
+    if (giveCash > me.cash) {
+        alert('Nie masz tyle gotówki!');
+        return;
+    }
+
+    const newTrade = {
+        id: rm.nextTradeId++,
+        from: 0,
+        to: partnerId,
+        giveCash,
+        takeCash,
+        givePardon,
+        takePardon,
+        giveProps,
+        takeProps
+    };
+
+    rm.trades.push(newTrade);
+    addRichupLog(`🤝 ${me.name} wystawił ofertę wymiany dla ${partner.name}! Każdy może kliknąć w nią w sekcji Trades.`);
+    closeRichupModal();
+    renderRichupScreen();
+
+    // Otwórz od razu podgląd tej oferty, żeby było widać jak wygląda i co odpowie druga strona
+    inspectTradeOffer(newTrade.id);
+}
+
+/* PODGLĄD OFERTY TRADE (KAŻDY MOŻE KLIKNĄĆ I ZOBACZYĆ CO KTO OFERUJE + AKCEPTUJ / ODRZUĆ) */
+function inspectTradeOffer(tradeId) {
+    const tr = rm.trades.find(x => x.id === tradeId);
+    if (!tr) return;
+
+    const modal = document.getElementById('richup-modal');
+    modal.classList.remove('hidden');
+
+    const fromP = rm.players[tr.from];
+    const toP = rm.players[tr.to];
+
+    const giveNames = tr.giveProps.map(id => `#${id} ${rm.tiles[id].name} ($${rm.tiles[id].price})`);
+    const takeNames = tr.takeProps.map(id => `#${id} ${rm.tiles[id].name} ($${rm.tiles[id].price})`);
+
+    modal.innerHTML = `
+        <div class="modal-card wide">
+            <h3 style="color:var(--accent-yellow); margin-bottom:10px; text-align:center;">
+                🔍 Podgląd Oferty Wymiany #${tr.id}
+            </h3>
+            <p style="text-align:center; font-size:0.86rem; margin-bottom:14px;">
+                Oferta od <strong>${fromP.icon} ${fromP.name}</strong> dla gracza <strong>${toP.icon} ${toP.name}</strong>
+            </p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; font-size:0.84rem; margin-bottom:18px;">
+                <div style="background:#14111f; padding:14px; border-radius:12px; border:1px solid #22c55e;">
+                    <strong style="color:var(--accent-green); display:block; margin-bottom:8px;">
+                        ${fromP.icon} ${fromP.name} oferuje:
+                    </strong>
+                    <div>💵 Gotówka: <strong>$${tr.giveCash}</strong></div>
+                    <div>🃏 Pardon Card: <strong>${tr.givePardon ? 'TAK (1 szt.)' : 'Brak'}</strong></div>
+                    <div style="margin-top:6px;">🏠 Pola (${giveNames.length}):</div>
+                    <ul style="margin-left:18px; color:#cbd5e1; margin-top:4px;">
+                        ${giveNames.length === 0 ? '<li>Brak pól</li>' : giveNames.map(n => `<li>${n}</li>`).join('')}
+                    </ul>
+                </div>
+
+                <div style="background:#14111f; padding:14px; border-radius:12px; border:1px solid #38bdf8;">
+                    <strong style="color:var(--accent-blue); display:block; margin-bottom:8px;">
+                        W zamian od ${toP.icon} ${toP.name}:
+                    </strong>
+                    <div>💵 Gotówka: <strong>$${tr.takeCash}</strong></div>
+                    <div>🃏 Pardon Card: <strong>${tr.takePardon ? 'TAK (1 szt.)' : 'Brak'}</strong></div>
+                    <div style="margin-top:6px;">🏠 Pola (${takeNames.length}):</div>
+                    <ul style="margin-left:18px; color:#cbd5e1; margin-top:4px;">
+                        ${takeNames.length === 0 ? '<li>Brak pól</li>' : takeNames.map(n => `<li>${n}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button class="btn btn-green" onclick="acceptTradeOffer(${tr.id})">✅ Akceptuj wymianę</button>
+                <button class="btn btn-danger" onclick="declineTradeOffer(${tr.id})">❌ Nie akceptuj (Odrzuć / Usuń)</button>
+                <button class="btn" onclick="closeRichupModal()">Zamknij podgląd</button>
+            </div>
+        </div>
+    `;
+}
+
+function acceptTradeOffer(tradeId) {
+    const idx = rm.trades.findIndex(x => x.id === tradeId);
+    if (idx === -1) return;
+    const tr = rm.trades[idx];
+    const fromP = rm.players[tr.from];
+    const toP = rm.players[tr.to];
+
+    // Jeśli oferta była wysłana do Bota, sprawdź czy Bot zgadza się na warunki
+    if (toP.isBot && tr.from === 0) {
+        const giveVal = tr.giveCash + tr.giveProps.reduce((s, id) => s + rm.tiles[id].price, 0) + (tr.givePardon ? 100 : 0);
+        const takeVal = tr.takeCash + tr.takeProps.reduce((s, id) => s + rm.tiles[id].price, 0) + (tr.takePardon ? 100 : 0);
+        if (giveVal < takeVal * 0.75) {
+            rm.trades.splice(idx, 1);
+            addRichupLog(`❌ ${toP.name} NIE ZAAKCEPTOWAŁ (odrzucił) oferty wymiany od ${fromP.name} — zbyt niekorzystna!`);
+            closeRichupModal();
+            renderRichupScreen();
+            return;
+        }
+    }
+
+    if (fromP.cash < tr.giveCash || toP.cash < tr.takeCash) {
+        alert('Jeden z graczy nie ma już wystarczającej gotówki na tę wymianę!');
+        return;
+    }
+
+    fromP.cash = fromP.cash - tr.giveCash + tr.takeCash;
+    toP.cash = toP.cash - tr.takeCash + tr.giveCash;
+
+    if (tr.givePardon && fromP.pardonCards > 0) { fromP.pardonCards--; toP.pardonCards++; }
+    if (tr.takePardon && toP.pardonCards > 0) { toP.pardonCards--; fromP.pardonCards++; }
+
+    tr.giveProps.forEach(id => { if (rm.tiles[id].owner === fromP.id) rm.tiles[id].owner = toP.id; });
+    tr.takeProps.forEach(id => { if (rm.tiles[id].owner === toP.id) rm.tiles[id].owner = fromP.id; });
+
+    rm.trades.splice(idx, 1);
+    addRichupLog(`✅ Wymiana #${tr.id} pomiędzy ${fromP.name} a ${toP.name} została ZAAKCEPTOWANA!`);
+    closeRichupModal();
+    renderRichupScreen();
+}
+
+function declineTradeOffer(tradeId) {
+    const idx = rm.trades.findIndex(x => x.id === tradeId);
+    if (idx === -1) return;
+    const tr = rm.trades[idx];
+    rm.trades.splice(idx, 1);
+    addRichupLog(`❌ Oferta wymiany #${tr.id} (${rm.players[tr.from].name} ➔ ${rm.players[tr.to].name}) została ODRZUCONA.`);
+    closeRichupModal();
+    renderRichupScreen();
+}
+
+/* =========================================================================
+   POZOSTAŁE GRY (BATTLE ROYALE, PARTY, LIAR'S BAR, AMONG US, SZACHY ITD.)
+   ========================================================================= */
+const WEAPONS_DB = {
+    pistol: { name: 'Pistolet', icon: '🔫', dmg: 18, cd: 16, speed: 13, range: 420, spread: 0.05 },
+    pump:   { name: 'Pompa', icon: '💥', dmg: 16, pellets: 5, cd: 42, speed: 11, range: 260, spread: 0.24 },
+    ak47:   { name: 'AK-47', icon: '🔥', dmg: 22, cd: 9, speed: 15, range: 520, spread: 0.08 },
+    awp:    { name: 'AWP Snajperka', icon: '🎯', dmg: 85, cd: 65, speed: 24, range: 850, spread: 0.0 },
+    rpg:    { name: 'RPG Rakieta', icon: '🚀', dmg: 75, cd: 75, speed: 8, range: 600, spread: 0.02, explosive: true },
+    medkit: { name: 'Leczenie HP', icon: '❤️', healHp: 50 },
+    shield: { name: 'Armor Potka', icon: '🛡️', healArmor: 50 }
+};
+
+let br = {};
+
+function startBattleRoyale() {
+    canvas.classList.remove('hidden');
+    document.getElementById('br-hotbar').classList.remove('hidden');
+    document.getElementById('active-game-title').textContent = '🪂 Battle Royale 2D (Fortnite Arena)';
+    document.getElementById('active-game-status').textContent = 'WASD = Ruch | Myszka = Strzał | 1-6 = Broń/Leczenie | SPACJA = Skok z Autobusu';
+
+    br = {
+        phase: 'lobby', lobbyTimer: 210, mapSize: 2200,
+        bus: { x: 100, y: 300, vx: 4.5, vy: 3.5 }, stormRadius: 1500,
+        player: { x: 450, y: 270, hp: 100, armor: 50, alive: true, cooldown: 0, slot: 0, inventory: ['pistol', null, null, null, 'medkit', 'shield'] },
+        bots: [], groundLoot: [], bullets: [], trees: []
+    };
+
+    for (let i = 0; i < 60; i++) br.trees.push({ x: 150 + Math.random() * 1900, y: 150 + Math.random() * 1900, r: 22 + Math.random() * 16 });
+    const types = ['pistol', 'pump', 'ak47', 'awp', 'rpg', 'medkit', 'shield'];
+    for (let i = 0; i < 85; i++) br.groundLoot.push({ x: 120 + Math.random() * 1960, y: 120 + Math.random() * 1960, type: types[Math.floor(Math.random() * types.length)] });
+    for (let i = 0; i < 14; i++) br.bots.push({ name: `Bot_${i+1}`, x: 300 + Math.random() * 300, y: 180 + Math.random() * 200, hp: 100, armor: 50, cd: 30, alive: true });
+
+    renderBrHotbar();
+    loopBattleRoyale();
+}
+
+function renderBrHotbar() {
+    const bar = document.getElementById('br-hotbar');
+    bar.innerHTML = br.player.inventory.map((itemKey, idx) => {
+        const item = itemKey ? WEAPONS_DB[itemKey] : null;
+        return `<div class="hotbar-slot ${br.player.slot === idx ? 'active' : ''}" onclick="selectBrSlot(${idx})">
+            <span class="key-num">${idx + 1}</span>
+            <div style="font-size:1.4rem">${item ? item.icon : '➕'}</div>
+            <div>${item ? item.name : 'Pusty'}</div>
+        </div>`;
+    }).join('');
+}
+
+function selectBrSlot(idx) {
+    if (!br.player) return;
+    br.player.slot = idx;
+    const itemKey = br.player.inventory[idx];
+    if (itemKey === 'medkit' && br.player.hp < 100) { br.player.hp = Math.min(100, br.player.hp + 50); br.player.inventory[idx] = null; }
+    else if (itemKey === 'shield' && br.player.armor < 100) { br.player.armor = Math.min(100, br.player.armor + 50); br.player.inventory[idx] = null; }
+    renderBrHotbar();
+}
+
+function loopBattleRoyale() {
+    if (state.currentGame !== 'br') return;
+    const p = br.player;
+
+    if (br.phase === 'lobby') {
+        br.lobbyTimer--;
+        if (keys['w']) p.y -= 4; if (keys['s']) p.y += 4; if (keys['a']) p.x -= 4; if (keys['d']) p.x += 4;
+        ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(p.x, p.y, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 22px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText(`🏝️ LOBBY — Odjazd Autobusu Bojowego za: ${Math.ceil(br.lobbyTimer / 60)}s`, 450, 90);
+        if (br.lobbyTimer <= 0) {
+            br.phase = 'bus';
+            br.bots.forEach(b => { b.x = 200 + Math.random() * 1800; b.y = 200 + Math.random() * 1800; });
+        }
+        state.loopId = requestAnimationFrame(loopBattleRoyale);
+        return;
+    }
+
+    if (br.phase === 'bus') {
+        br.bus.x += br.bus.vx; br.bus.y += br.bus.vy; p.x = br.bus.x; p.y = br.bus.y;
+        if (keys[' '] || mouse.down || br.bus.x > br.mapSize - 200) { br.phase = 'fight'; mouse.down = false; }
+    }
+
+    if (br.phase === 'fight' && p.alive) {
+        if (keys['w']) p.y = Math.max(30, p.y - 4.2);
+        if (keys['s']) p.y = Math.min(br.mapSize - 30, p.y + 4.2);
+        if (keys['a']) p.x = Math.max(30, p.x - 4.2);
+        if (keys['d']) p.x = Math.min(br.mapSize - 30, p.x + 4.2);
+
+        for (let i = br.groundLoot.length - 1; i >= 0; i--) {
+            const item = br.groundLoot[i];
+            if (Math.hypot(p.x - item.x, p.y - item.y) < 34) {
+                const emptySlot = p.inventory.indexOf(null);
+                if (emptySlot !== -1) { p.inventory[emptySlot] = item.type; br.groundLoot.splice(i, 1); renderBrHotbar(); }
+            }
+        }
+
+        if (p.cooldown > 0) p.cooldown--;
+        const activeKey = p.inventory[p.slot];
+        const weapon = activeKey ? WEAPONS_DB[activeKey] : null;
+        if (mouse.down && weapon && weapon.dmg && p.cooldown <= 0) {
+            const camX = p.x - canvas.width / 2, camY = p.y - canvas.height / 2;
+            const baseAngle = Math.atan2((mouse.y + camY) - p.y, (mouse.x + camX) - p.x);
+            const count = weapon.pellets || 1;
+            for (let k = 0; k < count; k++) {
+                const angle = baseAngle + (Math.random() - 0.5) * weapon.spread;
+                br.bullets.push({ x: p.x, y: p.y, vx: Math.cos(angle) * weapon.speed, vy: Math.sin(angle) * weapon.speed, dmg: weapon.dmg, range: weapon.range });
+            }
+            p.cooldown = weapon.cd;
+        }
+    }
+
+    const camX = p.x - canvas.width / 2, camY = p.y - canvas.height / 2;
+    ctx.fillStyle = '#14532d'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.save(); ctx.translate(-camX, -camY);
+
+    ctx.font = '20px sans-serif'; ctx.textAlign = 'center';
+    br.groundLoot.forEach(item => ctx.fillText(WEAPONS_DB[item.type].icon, item.x, item.y));
+
+    let aliveBots = 0;
+    br.bots.forEach(b => {
+        if (!b.alive) return;
+        aliveBots++;
+        const ang = Math.atan2(p.y - b.y, p.x - b.x);
+        b.x += Math.cos(ang) * 2; b.y += Math.sin(ang) * 2;
+        ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(b.x, b.y, 16, 0, Math.PI * 2); ctx.fill();
+    });
+
+    for (let i = br.bullets.length - 1; i >= 0; i--) {
+        const bul = br.bullets[i];
+        bul.x += bul.vx; bul.y += bul.vy; bul.range -= 12;
+        ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(bul.x, bul.y, 5, 0, Math.PI * 2); ctx.fill();
+        br.bots.forEach(b => {
+            if (b.alive && Math.hypot(bul.x - b.x, bul.y - b.y) < 20) {
+                b.hp -= bul.dmg; bul.range = 0;
+                if (b.hp <= 0) { b.alive = false; addPoints(0, 25); }
+            }
+        });
+        if (bul.range <= 0) br.bullets.splice(i, 1);
+    }
+
+    if (br.phase === 'bus') {
+        ctx.fillStyle = '#3b82f6'; ctx.fillRect(br.bus.x - 45, br.bus.y - 25, 90, 50);
+        ctx.fillStyle = '#facc15'; ctx.fillText('🚌 AUTOBUS BOJOWY (SPACJA = SKOCZ!)', br.bus.x, br.bus.y - 35);
+    } else {
+        ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(p.x, p.y, 17, 0, Math.PI * 2); ctx.fill();
+    }
+
+    br.trees.forEach(t => { ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2); ctx.fill(); });
+    ctx.restore();
+
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(`❤️ HP: ${p.hp} | 🛡️ ARMOR: ${p.armor} | Żywi: ${aliveBots + 1}`, 20, 32);
+
+    state.loopId = requestAnimationFrame(loopBattleRoyale);
+}
+
+/* GRA 3: PARTY MINIGAMES */
+let partyState = {};
+function startPartyMinigames() {
+    canvas.classList.remove('hidden');
+    document.getElementById('active-game-title').textContent = '🕹️ 1-2-3-4 Player Party Arena';
+    partyState = {
+        actors: [
+            { name: state.nick, x: 150, y: 150, color: '#38bdf8', score: 0, isBot: false },
+            { name: 'Bot_1', x: 750, y: 150, color: '#f97316', score: 0, isBot: true },
+            { name: 'Bot_2', x: 150, y: 400, color: '#22c55e', score: 0, isBot: true },
+            { name: 'Bot_3', x: 750, y: 400, color: '#eab308', score: 0, isBot: true }
+        ],
+        stars: [{ x: 450, y: 270 }, { x: 250, y: 200 }, { x: 650, y: 340 }]
+    };
+    loopPartyMinigames();
+}
+function loopPartyMinigames() {
+    if (state.currentGame !== 'party') return;
+    const p = partyState.actors[0];
+    if (keys['w'] || keys['arrowup']) p.y -= 5;
+    if (keys['s'] || keys['arrowdown']) p.y += 5;
+    if (keys['a'] || keys['arrowleft']) p.x -= 5;
+    if (keys['d'] || keys['arrowright']) p.x += 5;
+
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = '24px sans-serif'; ctx.textAlign = 'center';
+    partyState.stars.forEach(s => {
+        ctx.fillText('⭐', s.x, s.y);
+        partyState.actors.forEach((act, idx) => {
+            if (act.isBot) {
+                const ang = Math.atan2(s.y - act.y, s.x - act.x);
+                act.x += Math.cos(ang) * 1.2; act.y += Math.sin(ang) * 1.2;
+            }
+            if (Math.hypot(act.x - s.x, act.y - s.y) < 28) {
+                act.score += 10; addPoints(idx, 10);
+                s.x = 80 + Math.random() * 740; s.y = 80 + Math.random() * 380;
+            }
+        });
+    });
+    partyState.actors.forEach(act => {
+        ctx.fillStyle = act.color; ctx.beginPath(); ctx.arc(act.x, act.y, 18, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.fillText(`${act.name}: ${act.score}`, act.x, act.y - 24);
+    });
+    state.loopId = requestAnimationFrame(loopPartyMinigames);
+}
+
+/* GRA 4: LIAR'S BAR */
+let liar = {};
+function startLiarsBar() {
+    const ui = document.getElementById('custom-game-ui');
+    ui.classList.remove('hidden');
+    document.getElementById('active-game-title').textContent = "🃏 Liar's Bar";
+    liar = { tableRank: 'KRÓL', hand: ['AS', 'KRÓL', 'DAMA', 'JOKER'], selectedIdx: 0, log: 'Bot rzucił kartę i mówi, że to KRÓL!' };
+    renderLiarsBar();
+}
+function renderLiarsBar() {
+    const ui = document.getElementById('custom-game-ui');
+    ui.innerHTML = `<div style="background:#1e293b; padding:24px; border-radius:18px; text-align:center;">
+        <h2>KARTA STOŁU: ${liar.tableRank}</h2>
+        <p style="margin:10px 0;">${liar.log}</p>
+        <div class="cards-row">${liar.hand.map((c, i) => `<div class="playing-card ${liar.selectedIdx===i?'selected':''}" onclick="liar.selectedIdx=${i};renderLiarsBar()">${c}</div>`).join('')}</div>
+        <button class="btn btn-green" onclick="liar.log='Zagrałeś kartę!'; addPoints(0,15); renderLiarsBar();">Zagraj kartę</button>
+        <button class="btn btn-danger" onclick="liar.log='Sprawdzono kłamcę! +30 pkt!'; addPoints(0,30); renderLiarsBar();">🔥 KŁAMIESZ!</button>
+    </div>`;
+}
+
+/* GRA 5: AMONG US */
+let among = {};
+function startAmongUs() {
+    canvas.classList.remove('hidden');
+    document.getElementById('active-game-title').textContent = '🚀 Among Us 2D';
+    among = { px: 450, py: 270, tasks: [{ x: 150, y: 120, done: false }, { x: 750, y: 420, done: false }] };
+    loopAmongUs();
+}
+function loopAmongUs() {
+    if (state.currentGame !== 'among') return;
+    if (keys['w']) among.py -= 4; if (keys['s']) among.py += 4; if (keys['a']) among.px -= 4; if (keys['d']) among.px += 4;
+    ctx.fillStyle = '#090d16'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    among.tasks.forEach(t => {
+        if (!t.done && Math.hypot(among.px - t.x, among.py - t.y) < 30) { t.done = true; addPoints(0, 25); }
+        ctx.fillStyle = t.done ? '#22c55e' : '#facc15'; ctx.fillRect(t.x - 15, t.y - 15, 30, 30);
+    });
+    ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(among.px, among.py, 18, 0, Math.PI * 2); ctx.fill();
+    state.loopId = requestAnimationFrame(loopAmongUs);
+}
+
+/* GRA 7 i 8: WARCABY I SZACHY */
+let boardState = {};
+function startBoardGame(type) {
+    const ui = document.getElementById('custom-game-ui');
+    ui.classList.remove('hidden');
+    const grid = Array(8).fill(null).map(() => Array(8).fill(null));
+    for (let c = 0; c < 8; c++) {
+        grid[1][c] = { owner: 'bot', icon: type === 'chess' ? '♟' : '⚫' };
+        grid[6][c] = { owner: 'player', icon: type === 'chess' ? '♙' : '🔴' };
+    }
+    boardState = { grid, selected: null };
+    renderBoard8x8();
+}
+function renderBoard8x8() {
+    const ui = document.getElementById('custom-game-ui');
+    let html = `<div class="board-grid-8x8">`;
+    for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+            const cell = boardState.grid[r][c];
+            html += `<div class="cell-8x8 ${(r+c)%2===0?'cell-light':'cell-dark'}" onclick="clickCell8x8(${r},${c})">${cell?cell.icon:''}</div>`;
+        }
+    }
+    ui.innerHTML = html + `</div>`;
+}
+function clickCell8x8(r, c) {
+    const cell = boardState.grid[r][c];
+    if (cell && cell.owner === 'player') { boardState.selected = { r, c }; return; }
+    if (boardState.selected) {
+        boardState.grid[r][c] = boardState.grid[boardState.selected.r][boardState.selected.c];
+        boardState.grid[boardState.selected.r][boardState.selected.c] = null;
+        boardState.selected = null;
+        addPoints(0, 10);
+        renderBoard8x8();
+    }
+}
+
+/* GRA 9: KASYNO */
+let casino = { chips: 500, reels: ['🍒', '💎', '7️⃣'] };
+function startCasino() {
+    const ui = document.getElementById('custom-game-ui');
+    ui.classList.remove('hidden');
+    ui.innerHTML = `<div style="text-align:center; padding:30px; background:#1e293b; border-radius:18px;">
+        <h2>💰 Żetony: <span id="cas-chips">${casino.chips}</span></h2>
+        <div id="cas-reels" style="font-size:3.5rem; margin:20px;">🍒 💎 7️⃣</div>
+        <button class="btn btn-yellow" onclick="casino.chips+=50; addPoints(0,20); document.getElementById('cas-chips').textContent=casino.chips;">🎰 Zakręć Slotem / Zagraj Rozdanie</button>
+    </div>`;
+}
+
+/* GRA 10: TETRIS */
+let tetris = {}, tetrisTimer = null;
+function startTetris() {
+    canvas.classList.remove('hidden');
+    tetris = { x: 4, y: 0, score: 0 };
+    if (tetrisTimer) clearInterval(tetrisTimer);
+    tetrisTimer = setInterval(() => {
+        tetris.y = (tetris.y + 1) % 16;
+        ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#38bdf8'; ctx.fillRect(300 + tetris.x * 28, 40 + tetris.y * 28, 56, 28);
+    }, 350);
+}
+function handleTetrisKey(k) {
+    if (k === 'ArrowLeft') tetris.x = Math.max(0, tetris.x - 1);
+    if (k === 'ArrowRight') tetris.x = Math.min(8, tetris.x + 1);
+}
+</script>
+
+</body>
+</html>

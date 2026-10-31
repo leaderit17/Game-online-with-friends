@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MegaParty Arena — Multiplayer Online & Monopolia Ruda Śląska</title>
+    <title>MegaParty Arena — Monopolia Ruda Śl. (40) & Duża Monopolia Świat (60)</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root {
@@ -37,18 +37,18 @@
         .hidden { display: none !important; }
 
         .container {
-            max-width: 1560px;
+            max-width: 1840px;
             margin: 0 auto;
-            padding: 12px;
+            padding: 10px;
         }
 
         .main-logo {
             text-align: center;
-            margin: 6px 0 14px;
+            margin: 4px 0 12px;
         }
 
         .main-logo h1 {
-            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-size: clamp(1.7rem, 3.5vw, 2.6rem);
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -57,7 +57,7 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .main-logo p { color: var(--text-dim); font-size: 0.95rem; }
+        .main-logo p { color: var(--text-dim); font-size: 0.9rem; }
 
         /* 1. EKRAN WEJŚCIOWY */
         .entry-box {
@@ -130,7 +130,7 @@
         }
 
         .room-waiting-box {
-            max-width: 900px;
+            max-width: 960px;
             margin: 15px auto;
             background: var(--bg-panel);
             border: 2px solid #4c436d;
@@ -142,12 +142,13 @@
         .player-slot-card {
             background: #14111f;
             border: 2px solid #334155;
-            border-radius: 14px;
-            padding: 12px 16px;
+            border-radius: 12px;
+            padding: 8px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 7px;
+            font-size: 0.88rem;
         }
 
         .player-slot-card.connected {
@@ -175,7 +176,7 @@
             padding: 6px 14px;
             border-radius: 10px;
             font-family: monospace;
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             color: var(--accent-yellow);
             font-weight: 900;
             letter-spacing: 1px;
@@ -203,8 +204,8 @@
             background: linear-gradient(135deg, #ea580c, #dc2626);
             color: #ffffff;
             font-weight: 800;
-            font-size: 0.84rem;
-            padding: 9px 18px;
+            font-size: 0.82rem;
+            padding: 8px 16px;
             border-radius: 10px;
             border: 1px solid rgba(255,255,255,0.22);
             cursor: pointer;
@@ -218,14 +219,13 @@
             background: #14111f;
             border: 1px solid #4c436d;
             border-radius: 10px;
-            padding: 9px 11px;
-            margin-bottom: 7px;
+            padding: 8px 10px;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            font-size: 0.78rem;
-            transition: border-color 0.15s, background 0.15s;
+            font-size: 0.76rem;
         }
         .trade-item-row:hover {
             border-color: var(--accent-yellow);
@@ -240,11 +240,11 @@
             border: 2px solid var(--accent-blue);
             color: var(--accent-yellow);
             font-family: monospace;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 900;
-            padding: 4px 14px;
+            padding: 3px 12px;
             border-radius: 999px;
-            margin-top: 4px;
+            margin-top: 3px;
         }
         .turn-timer-pill.low {
             border-color: var(--accent-red);
@@ -280,11 +280,11 @@
         .tile-tag { font-size: 0.68rem; font-weight: 900; background: rgba(0,0,0,0.45); padding: 3px 9px; border-radius: 999px; }
 
         .t-mono1 { background: linear-gradient(135deg, #7c3aed, #db2777); }
+        .t-mono2 { background: linear-gradient(135deg, #0d9488, #0284c7); }
         .t-br { background: linear-gradient(135deg, #2563eb, #7c3aed); }
         .t-party { background: linear-gradient(135deg, #f97316, #db2777); }
         .t-liar { background: linear-gradient(135deg, #991b1b, #450a0a); }
         .t-among { background: linear-gradient(135deg, #dc2626, #ea580c); }
-        .t-mono2 { background: linear-gradient(135deg, #0d9488, #0284c7); }
         .t-checkers { background: linear-gradient(135deg, #d97706, #b45309); }
         .t-chess { background: linear-gradient(135deg, #4f46e5, #312e81); }
         .t-casino { background: linear-gradient(135deg, #eab308, #ca8a04); color: #111; }
@@ -296,7 +296,7 @@
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 14px;
             padding: 10px 16px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
@@ -310,7 +310,7 @@
             border: 1px solid #334155;
             padding: 5px 11px;
             border-radius: 999px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 700;
         }
         .score-badge span { color: var(--accent-yellow); margin-left: 5px; }
@@ -319,12 +319,12 @@
             background: #13111c;
             border: 2px solid #2e2846;
             border-radius: 18px;
-            min-height: 680px;
+            min-height: 760px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 12px;
+            padding: 10px;
             position: relative;
         }
 
@@ -337,12 +337,12 @@
         }
 
         /* =========================================================
-           PLANSZA I STOŻKI — RICHUP.IO RUDA ŚLĄSKA
+           POWIĘKSZONA PLANSZA MONOPOLII (40 PÓL I DUŻA 60 PÓL)
            ========================================================= */
         .richup-layout {
             display: grid;
-            grid-template-columns: 230px 1fr 310px;
-            gap: 14px;
+            grid-template-columns: 215px 1fr 295px;
+            gap: 12px;
             width: 100%;
             align-items: start;
         }
@@ -351,14 +351,14 @@
             background: #1d192b;
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
         }
 
         .richup-panel h4 {
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             color: #cbd5e1;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -366,23 +366,36 @@
 
         .richup-board {
             display: grid;
-            grid-template-columns: 1.32fr repeat(9, 1fr) 1.32fr;
-            grid-template-rows: 1.32fr repeat(9, 1fr) 1.32fr;
-            width: min(88vw, 860px);
-            height: min(88vw, 860px);
             margin: 0 auto;
             background: #151221;
             border: 4px solid #3b3358;
             border-radius: 18px;
             gap: 3px;
-            padding: 4px;
+            padding: 5px;
             position: relative;
-            box-shadow: 0 22px 65px rgba(0,0,0,0.8);
+            box-shadow: 0 22px 65px rgba(0,0,0,0.85);
+        }
+
+        /* Plansza 40 pól (11x11) */
+        .richup-board.board-40 {
+            width: min(92vw, 900px);
+            height: min(92vw, 900px);
+            grid-template-columns: 1.32fr repeat(9, 1fr) 1.32fr;
+            grid-template-rows: 1.32fr repeat(9, 1fr) 1.32fr;
+        }
+
+        /* DUŻA PLANSZA 60 PÓL (16x16) — POWIĘKSZONA DO 1120x1120 PX! */
+        .richup-board.board-60 {
+            width: min(96vw, 1120px);
+            height: min(96vw, 1120px);
+            grid-template-columns: 1.35fr repeat(14, 1fr) 1.35fr;
+            grid-template-rows: 1.35fr repeat(14, 1fr) 1.35fr;
+            gap: 3px;
         }
 
         .r-tile {
             background: #252038;
-            border-radius: 8px;
+            border-radius: 7px;
             position: relative;
             display: flex;
             flex-direction: column;
@@ -393,83 +406,110 @@
             text-align: center;
             cursor: pointer;
             overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.09);
+            border: 1px solid rgba(255,255,255,0.1);
             transition: transform 0.14s, border-color 0.14s;
         }
 
+        /* Większe, czytelne pola w Dużej Monopolii 60 */
+        .board-60 .r-tile {
+            font-size: 0.66rem;
+            padding: 2px 1px;
+        }
+
         .r-tile:hover {
-            z-index: 20;
-            transform: scale(1.12);
+            z-index: 30;
+            transform: scale(1.22);
             border-color: var(--accent-yellow);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.9);
         }
 
         .r-tile.corner {
             background: #2d2744;
             font-weight: 900;
-            font-size: 0.78rem;
             justify-content: center;
         }
 
         .r-price-tag {
-            font-size: 0.68rem;
+            font-size: 0.66rem;
             font-weight: 900;
-            background: rgba(0,0,0,0.55);
+            background: rgba(0,0,0,0.6);
             color: #f8fafc;
             width: 100%;
-            padding: 2px 0;
+            padding: 1px 0;
+        }
+
+        .board-60 .r-price-tag {
+            font-size: 0.62rem;
         }
 
         .r-color-badge {
             width: 100%;
-            height: 9px;
-            border-radius: 3px;
+            height: 8px;
+            border-radius: 2px;
+        }
+
+        .board-60 .r-color-badge {
+            height: 7px;
         }
 
         .r-name {
             font-weight: 800;
-            font-size: 0.7rem;
-            line-height: 1.08;
+            line-height: 1.05;
             color: #ffffff;
-            padding: 1px 2px;
+            padding: 1px;
             word-break: break-word;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.85);
+        }
+
+        .board-60 .r-name {
+            font-size: 0.64rem;
         }
 
         .r-buildings {
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             line-height: 1;
             color: #facc15;
             font-weight: 900;
         }
 
+        .board-60 .r-buildings {
+            font-size: 0.62rem;
+        }
+
+        /* DUŻE, WYRAŹNE STOŻKI NA OBU PLANSZACH */
         .r-tokens {
             display: flex;
-            gap: 3px;
+            gap: 2px;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             position: absolute;
             inset: 0;
             pointer-events: none;
-            z-index: 5;
+            z-index: 6;
         }
 
         .r-token {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             border: 2.5px solid #ffffff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.9);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.95), 0 0 8px rgba(255,255,255,0.45);
+        }
+
+        /* Powiększone stożki w Dużej Monopolii 60! */
+        .board-60 .r-token {
+            width: 30px;
+            height: 30px;
+            font-size: 1.12rem;
+            border: 2.5px solid #ffffff;
         }
 
         .richup-center {
-            grid-column: 2 / 11;
-            grid-row: 2 / 11;
             background: #13101d;
             border-radius: 14px;
             display: flex;
@@ -481,9 +521,19 @@
             overflow-y: auto;
         }
 
+        .board-40 .richup-center {
+            grid-column: 2 / 11;
+            grid-row: 2 / 11;
+        }
+
+        .board-60 .richup-center {
+            grid-column: 2 / 16;
+            grid-row: 2 / 16;
+        }
+
         .dice-pair {
             display: flex;
-            gap: 24px;
+            gap: 22px;
             margin: 10px 0;
         }
 
@@ -492,7 +542,7 @@
             height: 72px;
             background: linear-gradient(145deg, #ffffff, #cbd5e1);
             color: #0f172a;
-            border-radius: 18px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -505,22 +555,22 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 7px 0;
+            padding: 6px 0;
             border-bottom: 1px solid rgba(255,255,255,0.06);
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             text-align: left;
         }
 
         .setting-row small {
             display: block;
             color: var(--text-dim);
-            font-size: 0.7rem;
+            font-size: 0.68rem;
         }
 
         .switch {
             position: relative;
-            width: 42px;
-            height: 22px;
+            width: 40px;
+            height: 21px;
             flex-shrink: 0;
         }
 
@@ -536,8 +586,8 @@
         .slider:before {
             position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
+            height: 15px;
+            width: 15px;
             left: 3px;
             bottom: 3px;
             background-color: white;
@@ -545,8 +595,9 @@
             border-radius: 50%;
         }
         input:checked + .slider { background-color: #7c3aed; }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider:before { transform: translateX(19px); }
 
+        /* POWIĘKSZONE STOŻKI W MENU WYBORU */
         .cone-picker {
             display: flex;
             gap: 10px;
@@ -556,27 +607,31 @@
         }
 
         .cone-option {
-            width: 56px;
-            height: 56px;
+            width: 60px;
+            height: 60px;
             border-radius: 16px;
             background: #262138;
-            border: 3px solid rgba(255,255,255,0.12);
-            font-size: 2rem;
+            border: 3px solid rgba(255,255,255,0.14);
+            font-size: 2.15rem;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: transform 0.15s;
         }
+
+        .cone-option:hover { transform: scale(1.08); }
 
         .cone-option.active {
             border-color: var(--accent-yellow);
-            background: rgba(250, 204, 21, 0.22);
-            transform: scale(1.12);
+            background: rgba(250, 204, 21, 0.24);
+            transform: scale(1.14);
+            box-shadow: 0 0 18px rgba(250, 204, 21, 0.45);
         }
 
         .color-dot {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             cursor: pointer;
             border: 3px solid transparent;
@@ -585,12 +640,13 @@
         .color-dot.active {
             border-color: #ffffff;
             transform: scale(1.22);
+            box-shadow: 0 0 14px rgba(255,255,255,0.65);
         }
 
         .modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.78);
+            background: rgba(0,0,0,0.82);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -613,18 +669,18 @@
         .modal-card.wide { max-width: 600px; }
 
         .prop-card-title {
-            font-size: 1.65rem;
+            font-size: 1.55rem;
             font-weight: 800;
             text-align: center;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             color: #ffffff;
         }
 
         .prop-rent-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.95rem;
-            margin-bottom: 16px;
+            font-size: 0.92rem;
+            margin-bottom: 14px;
         }
 
         .prop-rent-table th {
@@ -634,7 +690,7 @@
             border-bottom: 1px solid rgba(255,255,255,0.15);
         }
 
-        .prop-rent-table td { padding: 6px 2px; color: #f1f5f9; }
+        .prop-rent-table td { padding: 5px 2px; color: #f1f5f9; }
         .prop-rent-table td.val { text-align: right; font-weight: 700; }
 
         .prop-bottom-stats {
@@ -642,12 +698,12 @@
             grid-template-columns: 1fr 1fr 1fr;
             text-align: center;
             border-top: 1px solid rgba(255,255,255,0.15);
-            padding-top: 12px;
-            margin-bottom: 14px;
+            padding-top: 10px;
+            margin-bottom: 12px;
         }
 
-        .prop-bottom-stats .stat-label { font-size: 0.85rem; color: #94a3b8; margin-bottom: 4px; }
-        .prop-bottom-stats .stat-price { font-size: 1.2rem; font-weight: 800; color: #ffffff; }
+        .prop-bottom-stats .stat-label { font-size: 0.8rem; color: #94a3b8; margin-bottom: 3px; }
+        .prop-bottom-stats .stat-price { font-size: 1.15rem; font-weight: 800; color: #ffffff; }
 
         .br-hotbar { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
         .hotbar-slot {
@@ -676,9 +732,9 @@
         }
         .playing-card.selected { transform: translateY(-12px); border-color: var(--accent-yellow); }
 
-        @media (max-width: 1220px) {
+        @media (max-width: 1400px) {
             .richup-layout { grid-template-columns: 1fr; }
-            .richup-board { width: min(96vw, 780px); height: min(96vw, 780px); }
+            .richup-board.board-60 { width: min(98vw, 980px); height: min(98vw, 980px); }
         }
         @media (max-width: 680px) {
             .entry-buttons, .online-setup-grid { grid-template-columns: 1fr; }
@@ -690,12 +746,10 @@
 <div class="container">
     <header class="main-logo">
         <h1>MegaParty Arena</h1>
-        <p>Prawdziwy Multiplayer Online P2P (GitHub Pages) • Monopolia Ruda Śląska • 10 Gier</p>
+        <p>Monopolia Ruda Śląska (40 Pól) • Duża Monopolia Świat (60 Pól / 8 Osób) • Multiplayer Online</p>
     </header>
 
-    <!-- ==========================================================
-         1. EKRAN STARTOWY: GRAJ Z BOTAMI ALBO LOBBY ONLINE
-         ========================================================== -->
+    <!-- 1. EKRAN STARTOWY -->
     <section id="screen-entry" class="entry-box">
         <h2>Wpisz swój nick i wybierz tryb</h2>
         <input type="text" id="player-nick" class="nick-input" value="Gracz_1" maxlength="14" placeholder="Twój nick...">
@@ -704,7 +758,7 @@
             <button class="big-mode-btn btn-bots" onclick="startBotsLobby()">
                 <span class="icon">🤖</span>
                 GRAJ Z BOTAMI
-                <small>Szybka gra solo z botami na jednym komputerze</small>
+                <small>Szybka gra solo z botami (do 8 graczy!)</small>
             </button>
 
             <button class="big-mode-btn btn-lobby" onclick="openOnlineMenu()">
@@ -714,13 +768,12 @@
             </button>
         </div>
 
-        <!-- Podmenu wyboru: Stwórz pokój jako Host ALBO Wpisz kod kolegi -->
         <div id="online-sub-menu" class="online-setup-grid hidden">
             <div class="setup-card">
                 <div style="font-size:2.4rem; margin-bottom:8px;">👑</div>
                 <h3>Stwórz Nowe Lobby</h3>
                 <p style="font-size:0.82rem; color:var(--text-dim); margin:8px 0 16px;">
-                    Zakładasz pokój i dostajesz kod oraz link do wysłania znajomym.
+                    Zakładasz pokój (do 8 osób) i wysyłasz kod znajomym.
                 </p>
                 <button class="btn btn-green" style="width:100%; padding:13px;" onclick="createOnlineRoomAsHost()">
                     👑 Stwórz Pokój (Host)
@@ -741,14 +794,12 @@
         </div>
     </section>
 
-    <!-- ==========================================================
-         1B. POCZEKALNIA MULTIPLAYER ONLINE (WAITING ROOM)
-         ========================================================== -->
+    <!-- 1B. POCZEKALNIA MULTIPLAYER ONLINE (DO 8 OSÓB) -->
     <section id="screen-waiting-room" class="room-waiting-box hidden">
         <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:16px; margin-bottom:18px;">
             <div>
                 <span style="background:rgba(34,197,94,0.2); color:#4ade80; font-size:0.75rem; font-weight:800; padding:4px 10px; border-radius:999px;">
-                    ● POŁĄCZONO Z SIECIĄ P2P WEBRTC
+                    ● POŁĄCZONO Z SIECIĄ P2P WEBRTC (MAX 8 GRACZY)
                 </span>
                 <h2 style="margin-top:6px;">Poczekalnia Lobby Online</h2>
                 <p id="waiting-room-status" style="font-size:0.85rem; color:var(--text-dim);">Oczekiwanie na graczy z innych komputerów...</p>
@@ -760,20 +811,19 @@
                     <span id="room-code-badge" class="code-pill">ŁADOWANIE...</span>
                 </div>
                 <button class="btn btn-yellow" onclick="copyLobbyCode()">📋 Kopiuj Kod</button>
-                <button class="btn btn-blue" onclick="copyInviteLink()">🔗 Kopiuj Link Zaproszenia</button>
+                <button class="btn btn-blue" onclick="copyInviteLink()">🔗 Kopiuj Link</button>
             </div>
         </div>
 
-        <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:20px;">
-            <!-- Lista połączonych graczy -->
+        <div style="display:grid; grid-template-columns: 1.25fr 1fr; gap:20px;">
             <div>
-                <h3 style="margin-bottom:10px; font-size:1rem;">Gracze w Lobby (<span id="lobby-count-num">1</span>/4):</h3>
-                <div id="waiting-players-list"></div>
+                <h3 style="margin-bottom:10px; font-size:1rem;">Gracze w Lobby (<span id="lobby-count-num">1</span>/8):</h3>
+                <div id="waiting-players-list" style="max-height:280px; overflow-y:auto;"></div>
 
                 <div id="host-bot-toggle-box" style="margin-top:12px; padding:12px; background:#14111f; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <strong style="font-size:0.85rem;">Uzupełnij wolne miejsca botami</strong>
-                        <small style="display:block; font-size:0.72rem; color:var(--text-dim);">Jeśli gracie np. we dwóch, resztę miejsc mogą zająć boty lub możecie grać tylko sami.</small>
+                        <small style="display:block; font-size:0.72rem; color:var(--text-dim);">Dopełnij brakujące sloty botami podczas startu gry.</small>
                     </div>
                     <label class="switch">
                         <input type="checkbox" id="fill-bots-checkbox" onchange="toggleFillBots(this.checked)">
@@ -782,11 +832,10 @@
                 </div>
             </div>
 
-            <!-- Czat w poczekalni -->
             <div style="display:flex; flex-direction:column;">
                 <h3 style="margin-bottom:10px; font-size:1rem;">Czat w Lobby:</h3>
-                <div id="lobby-chat-messages" style="flex:1; min-height:170px; max-height:210px; overflow-y:auto; background:#0f0d17; border:1px solid #334155; border-radius:12px; padding:10px; font-size:0.82rem; margin-bottom:10px;">
-                    <div style="color:#64748b;">Wyślij kod lub link znajomemu! Gdy dołączy, pojawi się na liście po lewej stronie.</div>
+                <div id="lobby-chat-messages" style="flex:1; min-height:190px; max-height:240px; overflow-y:auto; background:#0f0d17; border:1px solid #334155; border-radius:12px; padding:10px; font-size:0.82rem; margin-bottom:10px;">
+                    <div style="color:#64748b;">Wyślij kod lub link znajomym!</div>
                 </div>
                 <div style="display:flex; gap:8px;">
                     <input type="text" id="lobby-chat-input" placeholder="Napisz do ziomków w lobby..." style="flex:1; padding:10px; border-radius:10px; border:1px solid #475569; background:#090d16; color:white;" onkeydown="if(event.key==='Enter') sendLobbyChatMessage();">
@@ -806,9 +855,7 @@
         </div>
     </section>
 
-    <!-- ==========================================================
-         2. EKRAN WYBORU GRY (SIATKA 10 GIER)
-         ========================================================== -->
+    <!-- 2. EKRAN WYBORU GRY -->
     <section id="screen-lobby" class="hidden">
         <div class="lobby-bar">
             <div>
@@ -824,13 +871,23 @@
         </div>
 
         <div class="games-grid">
+            <!-- 1. MONOPOLIA SZYBKA RUDA ŚLĄSKA (40 PÓL) -->
             <div class="game-tile t-mono1" onclick="requestLaunchGame('mono_fast')">
                 <span class="tile-icon">🎲</span>
                 <div class="tile-title">Monopolia Ruda Śl.</div>
-                <div class="tile-desc">40 pól dzielnic Rudy Śląskiej! Pełny Multiplayer Online z ziomkami, Trades, Sprzedaż -25%, Bankrupt i Zegar 3:00!</div>
-                <span class="tile-tag">⭐ MULTIPLAYER ONLINE</span>
+                <div class="tile-desc">40 pól dzielnic Rudy Śląskiej! 4 Airporty, 2 Wodociągi, Więzienie, Wakacje, Sprzedaż -25%, Trades i Zegar 3:00!</div>
+                <span class="tile-tag">⭐ 40 PÓL • MAX 4 OSOBY</span>
             </div>
 
+            <!-- 2. DUŻA MONOPOLIA ŚWIAT (60 PÓL / DO 8 OSÓB!) -->
+            <div class="game-tile t-mono2" onclick="requestLaunchGame('mono_big')">
+                <span class="tile-icon">🌍</span>
+                <div class="tile-title">Duża Monopolia 60</div>
+                <div class="tile-desc">Powiększona plansza 60 Pól! Kasa $1500-$3000, duże stożki, 16 Państw (Włochy: Rzym, Mediolan itd.), 8 Airportów i 4 Wodociągi!</div>
+                <span class="tile-tag">🏦 60 PÓL • MAX 8 OSÓB</span>
+            </div>
+
+            <!-- 3. BATTLE ROYALE FORTNITE -->
             <div class="game-tile t-br" onclick="requestLaunchGame('br')">
                 <span class="tile-icon">🪂</span>
                 <div class="tile-title">Battle Royale 2D</div>
@@ -838,6 +895,7 @@
                 <span class="tile-tag">🔥 FORTNITE STYLE</span>
             </div>
 
+            <!-- 4. 1234 PLAYER PARTY MINIGAMES -->
             <div class="game-tile t-party" onclick="requestLaunchGame('party')">
                 <span class="tile-icon">🕹️</span>
                 <div class="tile-title">1-2-3-4 Minigry</div>
@@ -845,6 +903,7 @@
                 <span class="tile-tag">🏆 TURNIEJ PUNKTOWY</span>
             </div>
 
+            <!-- 5. LIAR'S BAR -->
             <div class="game-tile t-liar" onclick="requestLaunchGame('liar')">
                 <span class="tile-icon">🃏</span>
                 <div class="tile-title">Liar's Bar</div>
@@ -852,6 +911,7 @@
                 <span class="tile-tag">💀 BLEF I RYZYKO</span>
             </div>
 
+            <!-- 6. AMONG US 2D -->
             <div class="game-tile t-among" onclick="requestLaunchGame('among')">
                 <span class="tile-icon">🚀</span>
                 <div class="tile-title">Among Us 2D</div>
@@ -859,13 +919,7 @@
                 <span class="tile-tag">🔪 IMPOSTOR</span>
             </div>
 
-            <div class="game-tile t-mono2" onclick="requestLaunchGame('mono_big')">
-                <span class="tile-icon">🏙️</span>
-                <div class="tile-title">Duża Monopolia</div>
-                <div class="tile-desc">Tryb wysokich stawek na pełnej planszy 40 pól Rudy Śląskiej ($2000 na start!).</div>
-                <span class="tile-tag">🏦 WYSOKIE STAWKI</span>
-            </div>
-
+            <!-- 7. WARCABY -->
             <div class="game-tile t-checkers" onclick="requestLaunchGame('checkers')">
                 <span class="tile-icon">🔴</span>
                 <div class="tile-title">Warcaby Arena</div>
@@ -873,6 +927,7 @@
                 <span class="tile-tag">♟️ PLANSZOWA</span>
             </div>
 
+            <!-- 8. SZACHY -->
             <div class="game-tile t-chess" onclick="requestLaunchGame('chess')">
                 <span class="tile-icon">♚</span>
                 <div class="tile-title">Szachy Królewskie</div>
@@ -880,6 +935,7 @@
                 <span class="tile-tag">👑 STRATEGIA</span>
             </div>
 
+            <!-- 9. KASYNO & POKER -->
             <div class="game-tile t-casino" onclick="requestLaunchGame('casino')">
                 <span class="tile-icon">🎰</span>
                 <div class="tile-title">Kasyno & Poker</div>
@@ -887,6 +943,7 @@
                 <span class="tile-tag">💎 JACKPOT</span>
             </div>
 
+            <!-- 10. TETRIS BATTLE -->
             <div class="game-tile t-tetris" onclick="requestLaunchGame('tetris')">
                 <span class="tile-icon">🧱</span>
                 <div class="tile-title">Tetris Battle</div>
@@ -896,9 +953,7 @@
         </div>
     </section>
 
-    <!-- ==========================================================
-         3. EKRAN ROZGRYWKI
-         ========================================================== -->
+    <!-- 3. EKRAN ROZGRYWKI -->
     <section id="screen-game" class="hidden">
         <div class="game-hud">
             <div>
@@ -908,7 +963,7 @@
 
             <div id="global-scoreboard" class="scoreboard"></div>
 
-            <button class="btn btn-danger" onclick="returnToLobby()">⬅ Wróć do Wyboru Gier</button>
+            <button class="btn btn-danger" onclick="returnToLobby()">⬅ Wróć do Wyboru Gier (Zachowaj Ekipę)</button>
         </div>
 
         <div class="stage-wrapper">
@@ -919,20 +974,20 @@
     </section>
 </div>
 
-<!-- MODAL WYMIANY (TRADE) LUB KARTY DZIELNICY -->
+<!-- MODAL WYMIANY (TRADE), KARTY POLA LUB EKRANU ZWYCIĘZCY -->
 <div id="richup-modal" class="modal-backdrop hidden"></div>
 
 <script>
 /* =========================================================================
-   STAN GLOBALNY PLATFORMY I PRAWDZIWY MULTIPLAYER P2P (PeerJS WebRTC)
+   STAN GLOBALNY PLATFORMY I MULTIPLAYER P2P (DO 8 OSÓB BEZ ROZŁĄCZANIA)
    ========================================================================= */
 const state = {
-    mode: 'bots',        // 'bots' albo 'online'
-    isHost: true,        // true jeśli gracz założył pokój lub gra z botami
-    mySlot: 0,           // Indeks gracza w tablicy (0 = Host, 1..3 = Koledzy online)
+    mode: 'bots',
+    isHost: true,
+    mySlot: 0,
     nick: 'Gracz_1',
     roomCode: '',
-    fillWithBots: false, // W trybie online domyślnie gramy tylko z ludźmi, chyba że Host włączy boty
+    fillWithBots: false,
     players: [
         { name: 'Gracz_1', points: 0, isBot: false, peerId: 'local' }
     ],
@@ -940,8 +995,8 @@ const state = {
     currentGame: null,
     loopId: null,
     peer: null,
-    hostConn: null,      // Połączenie Gościa do Hosta
-    guestConns: []       // Lista połączeń u Hosta do wszystkich Gości
+    hostConn: null,
+    guestConns: []
 };
 
 const canvas = document.getElementById('game-canvas');
@@ -949,9 +1004,9 @@ const ctx = canvas.getContext('2d');
 const keys = {};
 let mouse = { x: 450, y: 270, down: false };
 let richupInterval = null;
+let victoryRedirectTimeout = null;
 let tetrisTimer = null;
 
-// Automatyczne wykrycie linku z zaproszeniem ?room=KOD na GitHub Pages
 window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const roomParam = params.get('room');
@@ -980,7 +1035,6 @@ canvas.addEventListener('mousemove', e => {
 canvas.addEventListener('mousedown', () => mouse.down = true);
 window.addEventListener('mouseup', () => mouse.down = false);
 
-/* --- WEJŚCIE W TRYB BOTÓW LUB ONLINE --- */
 function startBotsLobby() {
     state.nick = document.getElementById('player-nick').value.trim() || 'Gracz_1';
     state.mode = 'bots';
@@ -1007,7 +1061,6 @@ function openOnlineMenu() {
     document.getElementById('online-sub-menu').classList.toggle('hidden');
 }
 
-/* --- TWORZENIE POKOJU ONLINE JAKO HOST --- */
 function createOnlineRoomAsHost() {
     state.nick = document.getElementById('player-nick').value.trim() || 'Host_1';
     state.mode = 'online';
@@ -1033,7 +1086,7 @@ function createOnlineRoomAsHost() {
     state.peer.on('open', id => {
         state.roomCode = id;
         document.getElementById('room-code-badge').textContent = id;
-        document.getElementById('waiting-room-status').textContent = 'Pokój aktywny! Wyślij kod lub link znajomym, aby dołączyli.';
+        document.getElementById('waiting-room-status').textContent = 'Pokój aktywny! Wyślij kod lub link znajomym (do 8 osób).';
         renderWaitingRoom();
     });
 
@@ -1052,18 +1105,13 @@ function createOnlineRoomAsHost() {
         });
     });
 
-    state.peer.on('error', err => {
-        alert('Komunikat sieci WebRTC: ' + err.type);
-    });
-
     renderWaitingRoom();
 }
 
-/* --- DOŁĄCZANIE DO POKOJU KOLEGI JAKO GOŚĆ --- */
 function joinOnlineRoomAsGuest() {
     const code = document.getElementById('join-room-code-input').value.trim().toUpperCase();
     if (!code) {
-        alert('Wpisz kod pokoju od kolegi (np. RUDA-XXXX)!');
+        alert('Wpisz kod pokoju od kolegi!');
         return;
     }
 
@@ -1078,7 +1126,6 @@ function joinOnlineRoomAsGuest() {
     document.getElementById('host-bot-toggle-box').classList.add('hidden');
     document.getElementById('guest-wait-host-msg').classList.remove('hidden');
     document.getElementById('room-code-badge').textContent = code;
-    document.getElementById('waiting-room-status').textContent = 'Łączenie z pokojem Hosta ' + code + '...';
 
     if (state.peer) state.peer.destroy();
     state.peer = new Peer();
@@ -1094,39 +1141,30 @@ function joinOnlineRoomAsGuest() {
 
         conn.on('data', data => handleGuestIncomingData(data));
         conn.on('close', () => {
-            alert('Host zamknął pokój lub połączenie zostało przerwane.');
+            alert('Host zamknął pokój.');
             leaveOnlineRoom();
         });
     });
-
-    state.peer.on('error', () => {
-        alert('Nie udało się połączyć z kodem: ' + code + '. Sprawdź czy kolega ma otwarte Lobby!');
-        leaveOnlineRoom();
-    });
 }
 
-/* --- OBSŁUGA PAKIETÓW SIECIOWYCH U HOSTA --- */
 function handleHostIncomingData(conn, data) {
     if (data.type === 'HELLO_JOIN') {
-        if (state.players.length >= 4) {
+        if (state.players.length >= 8) {
             conn.send({ type: 'ROOM_FULL' });
             return;
         }
         const slotIndex = state.players.length;
-        const icons = ['🏎️', '🐕', '🦊', '🐸', '🦁', '🐼'];
-        const colors = ['#ec4899', '#38bdf8', '#22c55e', '#facc15'];
         state.players.push({
             name: data.name,
             points: 0,
             isBot: false,
             peerId: conn.peer,
-            icon: icons[slotIndex % icons.length],
-            color: colors[slotIndex % colors.length]
+            icon: CONE_ICONS[slotIndex % CONE_ICONS.length],
+            color: CONE_COLORS[slotIndex % CONE_COLORS.length]
         });
-        addLobbyChat('SYSTEM', `🎉 ${data.name} dołączył do lobby z innego komputera!`);
+        addLobbyChat('SYSTEM', `🎉 ${data.name} dołączył do lobby!`);
         hostBroadcastLobby();
 
-        // Jeśli gra jest już uruchomiona, wyślij pełny stan gry nowemu graczowi
         if (state.currentGame) {
             conn.send({ type: 'LAUNCH_GAME', game: state.currentGame });
             if (rm && rm.tiles) setTimeout(() => hostBroadcastRichupState(), 300);
@@ -1137,41 +1175,42 @@ function handleHostIncomingData(conn, data) {
         hostBroadcastLobby();
     }
     else if (data.type === 'RM_ACTION') {
-        // Akcja z Monopolii przysłana przez kolegę (Gościa) do Hosta
         executeGuestRichupAction(data.slot, data.action, data.payload);
     }
 }
 
-/* --- OBSŁUGA PAKIETÓW SIECIOWYCH U GOŚCIA --- */
 function handleGuestIncomingData(data) {
     if (data.type === 'ROOM_FULL') {
-        alert('Ten pokój ma już maksymalną liczbę 4 graczy!');
+        alert('Ten pokój ma już maksymalną liczbę 8 graczy!');
         leaveOnlineRoom();
     }
     else if (data.type === 'LOBBY_SYNC') {
         state.players = data.players;
         state.lobbyChat = data.lobbyChat;
         state.fillWithBots = data.fillWithBots;
-        // Wyznacz mój własny numer slotu (0..3) po peerId
         const myIdx = state.players.findIndex(p => p.peerId === state.peer.id);
         if (myIdx !== -1) state.mySlot = myIdx;
         renderWaitingRoom();
         renderScoreboard();
     }
     else if (data.type === 'OPEN_GAME_SELECT') {
+        stopCurrentGame();
+        closeRichupModal();
         document.getElementById('screen-waiting-room').classList.add('hidden');
         document.getElementById('screen-game').classList.add('hidden');
         document.getElementById('screen-lobby').classList.remove('hidden');
-        document.getElementById('lobby-mode-label').textContent = `🌐 POKÓJ ONLINE: ${state.roomCode} (Gracz #${state.mySlot + 1})`;
+        document.getElementById('lobby-mode-label').textContent = `🌐 POKÓJ ONLINE: ${state.roomCode} (Gracz #${state.mySlot + 1} — Ekipa połączona!)`;
         renderScoreboard();
     }
     else if (data.type === 'LAUNCH_GAME') {
         launchGame(data.game, true);
     }
     else if (data.type === 'RM_SYNC') {
-        // Odebranie pełnego stanu Monopolii od Hosta
         rm = data.rmState;
         renderRichupScreen();
+        if (rm.winnerName) {
+            showVictoryModal(rm.winnerName);
+        }
     }
 }
 
@@ -1206,22 +1245,21 @@ function sendRichupAction(action, payload = {}) {
     }
 }
 
-/* --- WIDOK POCZEKALNI ONLINE --- */
 function renderWaitingRoom() {
     const list = document.getElementById('waiting-players-list');
     document.getElementById('lobby-count-num').textContent = state.players.length;
 
     let html = '';
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 8; i++) {
         const p = state.players[i];
         if (p) {
             html += `
                 <div class="player-slot-card connected">
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:1.5rem;">${p.icon || '🎮'}</span>
+                        <span style="font-size:1.4rem;">${p.icon || '🎮'}</span>
                         <div>
-                            <strong>${p.name} ${i === 0 ? '👑 (Host)' : ''} ${i === state.mySlot ? ' (Ty)' : ''}</strong>
-                            <div style="font-size:0.74rem; color:#4ade80;">Połączono online • Gotowy</div>
+                            <strong>#${i + 1} ${p.name} ${i === 0 ? '👑 (Host)' : ''} ${i === state.mySlot ? ' (Ty)' : ''}</strong>
+                            <div style="font-size:0.72rem; color:#4ade80;">Połączono online • W pokoju</div>
                         </div>
                     </div>
                     <span style="font-weight:800; color:var(--accent-yellow);">${p.points} pkt</span>
@@ -1230,13 +1268,11 @@ function renderWaitingRoom() {
         } else {
             html += `
                 <div class="player-slot-card">
-                    <div style="display:flex; align-items:center; gap:10px; opacity:0.6;">
-                        <span style="font-size:1.4rem;">⏳</span>
+                    <div style="display:flex; align-items:center; gap:10px; opacity:0.55;">
+                        <span style="font-size:1.2rem;">⏳</span>
                         <div>
                             <strong>Wolny slot #${i + 1}</strong>
-                            <div style="font-size:0.74rem; color:var(--text-dim);">
-                                ${state.fillWithBots ? 'Zostanie uzupełniony przez Bota' : 'Oczekiwanie na dołączenie znajomego...'}
-                            </div>
+                            <div style="font-size:0.7rem; color:var(--text-dim);">Oczekiwanie na gracza lub Bota</div>
                         </div>
                     </div>
                 </div>
@@ -1280,19 +1316,19 @@ function sendLobbyChatMessage() {
 
 function copyLobbyCode() {
     navigator.clipboard.writeText(state.roomCode);
-    alert('Skopiowano kod pokoju: ' + state.roomCode + '\nWyślij go znajomemu!');
+    alert('Skopiowano kod pokoju: ' + state.roomCode);
 }
 
 function copyInviteLink() {
     const url = window.location.origin + window.location.pathname + '?room=' + state.roomCode;
     navigator.clipboard.writeText(url);
-    alert('Skopiowano bezpośredni link do pokoju:\n' + url + '\nWyślij go znajomym — po kliknięciu od razu połączą się z Twoim pokojem!');
+    alert('Skopiowano link zaproszenia:\n' + url);
 }
 
 function hostProceedToGameSelect() {
     document.getElementById('screen-waiting-room').classList.add('hidden');
     document.getElementById('screen-lobby').classList.remove('hidden');
-    document.getElementById('lobby-mode-label').textContent = `🌐 POKÓJ ONLINE: ${state.roomCode} (Jesteś Hostem)`;
+    document.getElementById('lobby-mode-label').textContent = `🌐 POKÓJ ONLINE: ${state.roomCode} (Host — Ekipa zostaje razem!)`;
     document.getElementById('active-room-pill').textContent = state.roomCode;
     document.getElementById('active-room-pill').classList.remove('hidden');
     document.getElementById('back-to-waiting-btn').classList.remove('hidden');
@@ -1303,6 +1339,7 @@ function hostProceedToGameSelect() {
 
 function showWaitingRoom() {
     stopCurrentGame();
+    closeRichupModal();
     document.getElementById('screen-lobby').classList.add('hidden');
     document.getElementById('screen-game').classList.add('hidden');
     document.getElementById('screen-waiting-room').classList.remove('hidden');
@@ -1311,6 +1348,7 @@ function showWaitingRoom() {
 
 function leaveOnlineRoom() {
     stopCurrentGame();
+    closeRichupModal();
     if (state.peer) {
         state.peer.destroy();
         state.peer = null;
@@ -1325,7 +1363,7 @@ function leaveOnlineRoom() {
 
 function updatePlayersBanner() {
     const names = state.players.map(p => `${p.name} (${p.points} pkt)`).join(' • ');
-    document.getElementById('connected-players-text').textContent = 'Gracze w pokoju: ' + names;
+    document.getElementById('connected-players-text').textContent = 'Połączeni gracze w lobby: ' + names;
 }
 
 function renderScoreboard() {
@@ -1348,12 +1386,15 @@ function stopCurrentGame() {
     if (state.loopId) cancelAnimationFrame(state.loopId);
     if (tetrisTimer) clearInterval(tetrisTimer);
     if (richupInterval) clearInterval(richupInterval);
+    if (victoryRedirectTimeout) clearTimeout(victoryRedirectTimeout);
     state.loopId = null;
     state.currentGame = null;
 }
 
+/* POWRÓT DO WYBORU GIER BEZ WYRZUCANIA POŁĄCZONYCH OSÓB! */
 function returnToLobby() {
     stopCurrentGame();
+    closeRichupModal();
     document.getElementById('screen-game').classList.add('hidden');
     document.getElementById('screen-lobby').classList.remove('hidden');
     renderScoreboard();
@@ -1364,7 +1405,7 @@ function returnToLobby() {
 
 function requestLaunchGame(gameId) {
     if (state.mode === 'online' && !state.isHost) {
-        alert('Tylko Host pokoju może uruchomić wybraną grę dla całego lobby!');
+        alert('Tylko Host pokoju może wybrać kolejną grę dla całej ekipy!');
         return;
     }
     launchGame(gameId, false);
@@ -1372,6 +1413,7 @@ function requestLaunchGame(gameId) {
 
 function launchGame(gameId, fromNetwork = false) {
     stopCurrentGame();
+    closeRichupModal();
     state.currentGame = gameId;
 
     if (!fromNetwork && state.isHost && state.mode === 'online') {
@@ -1387,8 +1429,8 @@ function launchGame(gameId, fromNetwork = false) {
 
     renderScoreboard();
 
-    if (gameId === 'mono_fast') startRichupRuda(1500);
-    else if (gameId === 'mono_big') startRichupRuda(2000);
+    if (gameId === 'mono_fast') startRichupMonopoly('ruda');
+    else if (gameId === 'mono_big') startRichupMonopoly('world60');
     else if (gameId === 'br') startBattleRoyale();
     else if (gameId === 'party') startPartyMinigames();
     else if (gameId === 'liar') startLiarsBar();
@@ -1400,85 +1442,182 @@ function launchGame(gameId, fromNetwork = false) {
 }
 
 /* =========================================================================
-   GRA 1: MONOPOLIA RUDA ŚLĄSKA — PEŁNA SYNCHRONIZACJA MULTIPLAYER ONLINE
+   GRA 1 & 2: MONOPOLIA RUDA ŚLĄSKA (40 PÓL) ORAZ DUŻA MONOPOLIA ŚWIAT (60 PÓL)
    ========================================================================= */
-const CONE_ICONS = ['🏎️', '🐕', '🦊', '🐸', '🦁', '🐼', '🐧', '🦖'];
-const CONE_COLORS = ['#ec4899', '#38bdf8', '#22c55e', '#facc15', '#f97316', '#a855f7'];
+const CONE_ICONS = ['🏎️', '🐕', '🦊', '🐸', '🦁', '🐼', '🐧', '🦖', '🦄', '🐝'];
+const CONE_COLORS = ['#ec4899', '#38bdf8', '#22c55e', '#facc15', '#f97316', '#a855f7', '#14b8a6', '#f43f5e'];
 
 const SET_COLORS = {
     1: '#84cc16', 2: '#38bdf8', 3: '#f43f5e', 4: '#fb923c',
-    5: '#ef4444', 6: '#eab308', 7: '#10b981', 8: '#6366f1'
+    5: '#ef4444', 6: '#eab308', 7: '#10b981', 8: '#6366f1',
+    9: '#ec4899', 10: '#06b6d4', 11: '#d97706', 12: '#8b5cf6',
+    13: '#14b8a6', 14: '#e11d48', 15: '#2563eb', 16: '#facc15'
 };
 
+function calcRentsForPrice(price) {
+    const r0 = Math.max(2, Math.round(price * 0.08));
+    const r1 = Math.max(10, Math.round(price * 0.4));
+    const r2 = Math.round(price * 1.15);
+    const r3 = Math.round(price * 3.1);
+    const r4 = Math.round(price * 4.25);
+    const r5 = Math.round(price * 5.6);
+    return [r0, r1, r2, r3, r4, r5];
+}
+
+/* PLANSZA 1: 40 PÓL RUDA ŚLĄSKA */
 function createRudaSlaskaTiles() {
     return [
         { id: 0,  type: 'start',    name: 'START', sub: '+300$' },
-        { id: 1,  type: 'prop',     name: 'Chebzie', set: 1, price: 60, houseCost: 50, rents: [2, 10, 30, 90, 150, 240] },
+        { id: 1,  type: 'prop',     name: 'Chebzie', set: 1, country: 'Ruda Śl.', price: 60, houseCost: 50, rents: [2, 10, 30, 90, 150, 240] },
         { id: 2,  type: 'treasure', name: 'Skarb', sub: 'Skrzynia' },
-        { id: 3,  type: 'prop',     name: 'Osiedle Kaufhaus', set: 1, price: 60, houseCost: 50, rents: [4, 20, 60, 180, 300, 450] },
+        { id: 3,  type: 'prop',     name: 'Osiedle Kaufhaus', set: 1, country: 'Ruda Śl.', price: 60, houseCost: 50, rents: [4, 20, 60, 180, 300, 450] },
         { id: 4,  type: 'tax_flat', name: 'Taxi', sub: 'Płacisz 30$', amount: 30 },
         { id: 5,  type: 'airport',  name: 'Airport Nowy Bytom', price: 200 },
-        { id: 6,  type: 'prop',     name: 'Nowy Bytom', set: 2, price: 100, houseCost: 50, rents: [6, 30, 90, 260, 380, 540] },
-        { id: 7,  type: 'prop',     name: 'Czarny Las', set: 2, price: 110, houseCost: 50, rents: [7, 35, 105, 280, 410, 570] },
+        { id: 6,  type: 'prop',     name: 'Nowy Bytom', set: 2, country: 'Ruda Śl.', price: 100, houseCost: 50, rents: [6, 30, 90, 260, 380, 540] },
+        { id: 7,  type: 'prop',     name: 'Czarny Las', set: 2, country: 'Ruda Śl.', price: 110, houseCost: 50, rents: [7, 35, 105, 280, 410, 570] },
         { id: 8,  type: 'surprise', name: 'Surprise', sub: '?' },
-        { id: 9,  type: 'prop',     name: 'Wirek', set: 2, price: 120, houseCost: 50, rents: [8, 40, 115, 300, 450, 600] },
+        { id: 9,  type: 'prop',     name: 'Wirek', set: 2, country: 'Ruda Śl.', price: 120, houseCost: 50, rents: [8, 40, 115, 300, 450, 600] },
         { id: 10, type: 'prison',   name: 'Więzienie', sub: 'Klatka / Obok' },
 
-        { id: 11, type: 'prop',     name: 'Bielszowice Kokota', set: 3, price: 130, houseCost: 100, rents: [10, 50, 140, 440, 600, 740] },
+        { id: 11, type: 'prop',     name: 'Bielszowice Kokota', set: 3, country: 'Ruda Śl.', price: 130, houseCost: 100, rents: [10, 50, 140, 440, 600, 740] },
         { id: 12, type: 'utility',  name: 'Wodociągi', price: 150 },
-        { id: 13, type: 'prop',     name: 'Bielszowice Na Piaski', set: 3, price: 140, houseCost: 100, rents: [11, 55, 150, 450, 625, 760] },
-        { id: 14, type: 'prop',     name: 'Bielszowice Kopalnia', set: 3, price: 160, houseCost: 100, rents: [12, 60, 180, 500, 700, 900] },
+        { id: 13, type: 'prop',     name: 'Bielszowice Na Piaski', set: 3, country: 'Ruda Śl.', price: 140, houseCost: 100, rents: [11, 55, 150, 450, 625, 760] },
+        { id: 14, type: 'prop',     name: 'Bielszowice Kopalnia', set: 3, country: 'Ruda Śl.', price: 160, houseCost: 100, rents: [12, 60, 180, 500, 700, 900] },
         { id: 15, type: 'airport',  name: 'Airport Bielszowice', price: 200 },
-        { id: 16, type: 'prop',     name: 'Halemba Pętla', set: 4, price: 180, houseCost: 100, rents: [14, 70, 200, 550, 750, 950] },
+        { id: 16, type: 'prop',     name: 'Halemba Pętla', set: 4, country: 'Ruda Śl.', price: 180, houseCost: 100, rents: [14, 70, 200, 550, 750, 950] },
         { id: 17, type: 'treasure', name: 'Skarb', sub: 'Skrzynia' },
-        { id: 18, type: 'prop',     name: 'Halemba Energetyków', set: 4, price: 190, houseCost: 100, rents: [15, 75, 210, 575, 775, 975] },
-        { id: 19, type: 'prop',     name: 'Halemba Aquadrom', set: 4, price: 200, houseCost: 100, rents: [16, 80, 220, 600, 800, 1000] },
+        { id: 18, type: 'prop',     name: 'Halemba Energetyków', set: 4, country: 'Ruda Śl.', price: 190, houseCost: 100, rents: [15, 75, 210, 575, 775, 975] },
+        { id: 19, type: 'prop',     name: 'Halemba Aquadrom', set: 4, country: 'Ruda Śl.', price: 200, houseCost: 100, rents: [16, 80, 220, 600, 800, 1000] },
         { id: 20, type: 'vacation', name: 'Wakacje', sub: 'Stoisz 2 tury' },
 
-        { id: 21, type: 'prop',     name: 'Ruda Południowa', set: 5, price: 210, houseCost: 150, rents: [18, 90, 250, 700, 875, 1050] },
+        { id: 21, type: 'prop',     name: 'Ruda Południowa', set: 5, country: 'Ruda Śl.', price: 210, houseCost: 150, rents: [18, 90, 250, 700, 875, 1050] },
         { id: 22, type: 'surprise', name: 'Surprise', sub: '?' },
-        { id: 23, type: 'prop',     name: 'Orzegów', set: 5, price: 220, houseCost: 150, rents: [19, 95, 260, 725, 900, 1075] },
-        { id: 24, type: 'prop',     name: 'Godula', set: 5, price: 240, houseCost: 150, rents: [20, 100, 300, 750, 925, 1100] },
+        { id: 23, type: 'prop',     name: 'Orzegów', set: 5, country: 'Ruda Śl.', price: 220, houseCost: 150, rents: [19, 95, 260, 725, 900, 1075] },
+        { id: 24, type: 'prop',     name: 'Godula', set: 5, country: 'Ruda Śl.', price: 240, houseCost: 150, rents: [20, 100, 300, 750, 925, 1100] },
         { id: 25, type: 'airport',  name: 'Airport Godula Paris', price: 200 },
-        { id: 26, type: 'prop',     name: 'Burloch Arena', set: 6, price: 260, houseCost: 150, rents: [22, 110, 330, 800, 975, 1150] },
+        { id: 26, type: 'prop',     name: 'Burloch Arena', set: 6, country: 'Ruda Śl.', price: 260, houseCost: 150, rents: [22, 110, 330, 800, 975, 1150] },
         { id: 27, type: 'utility',  name: 'Wodociągi', price: 150 },
-        { id: 28, type: 'prop',     name: 'Stare Osiedle', set: 6, price: 270, houseCost: 150, rents: [23, 115, 345, 825, 1000, 1175] },
-        { id: 29, type: 'prop',     name: 'Ruda Dworzec PKP', set: 6, price: 280, houseCost: 150, rents: [24, 120, 360, 850, 1025, 1200] },
+        { id: 28, type: 'prop',     name: 'Stare Osiedle', set: 6, country: 'Ruda Śl.', price: 270, houseCost: 150, rents: [23, 115, 345, 825, 1000, 1175] },
+        { id: 29, type: 'prop',     name: 'Ruda Dworzec PKP', set: 6, country: 'Ruda Śl.', price: 280, houseCost: 150, rents: [24, 120, 360, 850, 1025, 1200] },
         { id: 30, type: 'gotoprison', name: 'Do Więzienia!', sub: 'Teleport -> 10' },
 
-        { id: 31, type: 'prop',     name: 'Bykowina Niedźwiedziniec', set: 7, price: 290, houseCost: 200, rents: [26, 130, 390, 900, 1100, 1275] },
-        { id: 32, type: 'prop',     name: 'Bykowina Gwarecka', set: 7, price: 300, houseCost: 200, rents: [27, 135, 405, 925, 1125, 1300] },
+        { id: 31, type: 'prop',     name: 'Bykowina Niedźwiedziniec', set: 7, country: 'Ruda Śl.', price: 290, houseCost: 200, rents: [26, 130, 390, 900, 1100, 1275] },
+        { id: 32, type: 'prop',     name: 'Bykowina Gwarecka', set: 7, country: 'Ruda Śl.', price: 300, houseCost: 200, rents: [27, 135, 405, 925, 1125, 1300] },
         { id: 33, type: 'treasure', name: 'Skarb', sub: 'Skrzynia' },
-        { id: 34, type: 'prop',     name: 'Bykowina Górnośląska', set: 7, price: 320, houseCost: 200, rents: [28, 150, 450, 1000, 1200, 1400] },
+        { id: 34, type: 'prop',     name: 'Bykowina Górnośląska', set: 7, country: 'Ruda Śl.', price: 320, houseCost: 200, rents: [28, 150, 450, 1000, 1200, 1400] },
         { id: 35, type: 'airport',  name: 'Airport Bykowina Mianka', price: 200 },
         { id: 36, type: 'surprise', name: 'Surprise', sub: '?' },
-        { id: 37, type: 'prop',     name: 'Kochłowice Kościół', set: 8, price: 360, houseCost: 200, rents: [35, 175, 500, 1100, 1300, 1700] },
+        { id: 37, type: 'prop',     name: 'Kochłowice Kościół', set: 8, country: 'Ruda Śl.', price: 360, houseCost: 200, rents: [35, 175, 500, 1100, 1300, 1700] },
         { id: 38, type: 'tax_hotel', name: 'Taxi Hotelowe', sub: '75$ za każdy hotel' },
-        { id: 39, type: 'prop',     name: 'Kochłowice Rynek', set: 8, price: 400, houseCost: 200, rents: [50, 200, 600, 1400, 1700, 2000] }
+        { id: 39, type: 'prop',     name: 'Kochłowice Rynek', set: 8, country: 'Ruda Śl.', price: 400, houseCost: 200, rents: [50, 200, 600, 1400, 1700, 2000] }
     ].map(t => ({ ...t, owner: null, level: 0, mortgaged: false }));
+}
+
+/* PLANSZA 2: DUŻA MONOPOLIA ŚWIAT — 60 PÓL (0 = START + 59 PÓL = 0..59) */
+function createWorld60Tiles() {
+    const raw = [
+        // GÓRNY BOK (0..15) — Dom i Hotel po 50$
+        { id: 0,  type: 'start',    name: 'START', sub: '+300$' },
+        { id: 1,  type: 'prop',     name: '🇮🇹 Rzym', country: 'Włochy', set: 1, price: 60, houseCost: 50, rents: [2, 10, 30, 90, 150, 240] },
+        { id: 2,  type: 'treasure', name: 'Skarb', sub: 'Skrzynia' },
+        { id: 3,  type: 'prop',     name: '🇮🇹 Mediolan', country: 'Włochy', set: 1, price: 70, houseCost: 50, rents: [4, 20, 60, 180, 300, 450] },
+        { id: 4,  type: 'airport',  name: 'Airport Rzym FCO', price: 200 },
+        { id: 5,  type: 'prop',     name: '🇪🇸 Madryt', country: 'Hiszpania', set: 2, price: 80, houseCost: 50, rents: calcRentsForPrice(80) },
+        { id: 6,  type: 'prop',     name: '🇪🇸 Barcelona', country: 'Hiszpania', set: 2, price: 90, houseCost: 50, rents: calcRentsForPrice(90) },
+        { id: 7,  type: 'utility',  name: 'Wodociągi #1', price: 150 },
+        { id: 8,  type: 'prop',     name: '🇵🇱 Warszawa', country: 'Polska', set: 3, price: 100, houseCost: 50, rents: [6, 30, 90, 260, 380, 540] },
+        { id: 9,  type: 'surprise', name: 'Surprise', sub: '?' },
+        { id: 10, type: 'prop',     name: '🇵🇱 Kraków', country: 'Polska', set: 3, price: 110, houseCost: 50, rents: calcRentsForPrice(110) },
+        { id: 11, type: 'airport',  name: 'Airport Chopina WAW', price: 200 },
+        { id: 12, type: 'prop',     name: '🇬🇷 Ateny', country: 'Grecja', set: 4, price: 120, houseCost: 50, rents: calcRentsForPrice(120) },
+        { id: 13, type: 'tax_flat', name: 'Taxi', sub: 'Płacisz 30$', amount: 30 },
+        { id: 14, type: 'prop',     name: '🇬🇷 Saloniki', country: 'Grecja', set: 4, price: 130, houseCost: 50, rents: [10, 50, 140, 440, 600, 740] },
+        { id: 15, type: 'prison',   name: 'Więzienie', sub: 'Klatka / Obok' },
+
+        // PRAWY BOK (16..30) — Dom i Hotel po 100$
+        { id: 16, type: 'prop',     name: '🇩🇪 Berlin', country: 'Niemcy', set: 5, price: 140, houseCost: 100, rents: calcRentsForPrice(140) },
+        { id: 17, type: 'prop',     name: '🇩🇪 Monachium', country: 'Niemcy', set: 5, price: 150, houseCost: 100, rents: calcRentsForPrice(150) },
+        { id: 18, type: 'prop',     name: '🇩🇪 Frankfurt', country: 'Niemcy', set: 5, price: 160, houseCost: 100, rents: calcRentsForPrice(160) },
+        { id: 19, type: 'airport',  name: 'Airport Frankfurt FRA', price: 200 },
+        { id: 20, type: 'prop',     name: '🇫🇷 Paryż', country: 'Francja', set: 6, price: 175, houseCost: 100, rents: calcRentsForPrice(175) },
+        { id: 21, type: 'treasure', name: 'Skarb', sub: 'Skrzynia' },
+        { id: 22, type: 'prop',     name: '🇫🇷 Lyon', country: 'Francja', set: 6, price: 185, houseCost: 100, rents: calcRentsForPrice(185) },
+        { id: 23, type: 'utility',  name: 'Wodociągi #2', price: 150 },
+        { id: 24, type: 'prop',     name: '🇬🇧 Londyn', country: 'Wlk. Brytania', set: 7, price: 200, houseCost: 100, rents: calcRentsForPrice(200) },
+        { id: 25, type: 'prop',     name: '🇬🇧 Manchester', country: 'Wlk. Brytania', set: 7, price: 210, houseCost: 100, rents: calcRentsForPrice(210) },
+        { id: 26, type: 'airport',  name: 'Airport Heathrow LHR', price: 200 },
+        { id: 27, type: 'prop',     name: '🇳🇱 Amsterdam', country: 'Holandia', set: 8, price: 220, houseCost: 100, rents: calcRentsForPrice(220) },
+        { id: 28, type: 'surprise', name: 'Surprise', sub: '?' },
+        { id: 29, type: 'prop',     name: '🇳🇱 Rotterdam', country: 'Holandia', set: 8, price: 230, houseCost: 100, rents: calcRentsForPrice(230) },
+        { id: 30, type: 'vacation', name: 'Wakacje', sub: 'Stoisz 2 tury' },
+
+        // DOLNY BOK (31..45) — Dom i Hotel po 150$
+        { id: 31, type: 'prop',     name: '🇺🇸 Nowy Jork', country: 'USA', set: 9, price: 245, houseCost: 150, rents: calcRentsForPrice(245) },
+        { id: 32, type: 'prop',     name: '🇺🇸 Los Angeles', country: 'USA', set: 9, price: 255, houseCost: 150, rents: calcRentsForPrice(255) },
+        { id: 33, type: 'prop',     name: '🇺🇸 Chicago', country: 'USA', set: 9, price: 270, houseCost: 150, rents: calcRentsForPrice(270) },
+        { id: 34, type: 'airport',  name: 'Airport JFK Nowy Jork', price: 200 },
+        { id: 35, type: 'prop',     name: '🇨🇦 Toronto', country: 'Kanada', set: 10, price: 280, houseCost: 150, rents: calcRentsForPrice(280) },
+        { id: 36, type: 'treasure', name: 'Skarb', sub: 'Skrzynia' },
+        { id: 37, type: 'prop',     name: '🇨🇦 Vancouver', country: 'Kanada', set: 10, price: 295, houseCost: 150, rents: calcRentsForPrice(295) },
+        { id: 38, type: 'utility',  name: 'Wodociągi #3', price: 150 },
+        { id: 39, type: 'prop',     name: '🇧🇷 Rio de Janeiro', country: 'Brazylia', set: 11, price: 310, houseCost: 150, rents: calcRentsForPrice(310) },
+        { id: 40, type: 'prop',     name: '🇧🇷 São Paulo', country: 'Brazylia', set: 11, price: 320, houseCost: 150, rents: calcRentsForPrice(320) },
+        { id: 41, type: 'airport',  name: 'Airport Rio GIG', price: 200 },
+        { id: 42, type: 'prop',     name: '🇦🇷 Buenos Aires', country: 'Argentyna', set: 12, price: 335, houseCost: 150, rents: calcRentsForPrice(335) },
+        { id: 43, type: 'surprise', name: 'Surprise', sub: '?' },
+        { id: 44, type: 'prop',     name: '🇦🇷 Córdoba', country: 'Argentyna', set: 12, price: 350, houseCost: 150, rents: calcRentsForPrice(350) },
+        { id: 45, type: 'gotoprison', name: 'Do Więzienia!', sub: 'Teleport -> 15' },
+
+        // LEWY BOK (46..59) — Dom i Hotel po 200$
+        { id: 46, type: 'prop',     name: '🇯🇵 Tokio', country: 'Japonia', set: 13, price: 365, houseCost: 200, rents: calcRentsForPrice(365) },
+        { id: 47, type: 'prop',     name: '🇯🇵 Osaka', country: 'Japonia', set: 13, price: 375, houseCost: 200, rents: calcRentsForPrice(375) },
+        { id: 48, type: 'prop',     name: '🇯🇵 Kioto', country: 'Japonia', set: 13, price: 390, houseCost: 200, rents: calcRentsForPrice(390) },
+        { id: 49, type: 'airport',  name: 'Airport Tokio HND', price: 200 },
+        { id: 50, type: 'prop',     name: '🇰🇷 Seul', country: 'Korea Płd.', set: 14, price: 405, houseCost: 200, rents: calcRentsForPrice(405) },
+        { id: 51, type: 'prop',     name: '🇰🇷 Pusan', country: 'Korea Płd.', set: 14, price: 420, houseCost: 200, rents: calcRentsForPrice(420) },
+        { id: 52, type: 'utility',  name: 'Wodociągi #4', price: 150 },
+        { id: 53, type: 'prop',     name: '🇦🇺 Sydney', country: 'Australia', set: 15, price: 435, houseCost: 200, rents: calcRentsForPrice(435) },
+        { id: 54, type: 'prop',     name: '🇦🇺 Melbourne', country: 'Australia', set: 15, price: 450, houseCost: 200, rents: calcRentsForPrice(450) },
+        { id: 55, type: 'prop',     name: '🇦🇺 Brisbane', country: 'Australia', set: 15, price: 465, houseCost: 200, rents: calcRentsForPrice(465) },
+        { id: 56, type: 'airport',  name: 'Airport Dubaj DXB', price: 200 },
+        { id: 57, type: 'prop',     name: '🇦🇪 Abu Zabi', country: 'Emiraty ZEA', set: 16, price: 490, houseCost: 200, rents: [45, 220, 650, 1450, 1750, 2100] },
+        { id: 58, type: 'tax_hotel', name: 'Taxi Hotelowe', sub: '75$ za każdy hotel' },
+        { id: 59, type: 'prop',     name: '🇦🇪 Dubaj', country: 'Emiraty ZEA', set: 16, price: 550, houseCost: 200, rents: [60, 260, 780, 1700, 2050, 2500] }
+    ];
+    return raw.map(t => ({ ...t, owner: null, level: 0, mortgaged: false }));
 }
 
 let rm = {};
 
-function startRichupRuda(defaultCash = 1500) {
+function startRichupMonopoly(variant = 'ruda') {
     const ui = document.getElementById('custom-game-ui');
     ui.classList.remove('hidden');
-    document.getElementById('active-game-title').textContent = '🎲 Monopolia Ruda Śląska (Multiplayer Online & Boty)';
-    document.getElementById('active-game-status').textContent = `Jesteś Graczem #${state.mySlot + 1} (${state.nick}) • Synchronizacja Online na żywo!`;
+
+    const isBig60 = (variant === 'world60');
+    document.getElementById('active-game-title').textContent = isBig60
+        ? '🌍 Duża Monopolia Światowa — 60 Pól (Powiększona Plansza • Kasa $1500-$3000 • Do 8 Osób)'
+        : '🎲 Monopolia Ruda Śląska — 40 Pól (Edycja Richup.io)';
+    document.getElementById('active-game-status').textContent = `Gracz #${state.mySlot + 1} (${state.nick}) • Ostatni gracz na planszy wygrywa i przenosi całą ekipę do wyboru kolejnej gry!`;
 
     if (richupInterval) clearInterval(richupInterval);
 
     if (state.isHost) {
         rm = {
+            variant,
+            boardTotal: isBig60 ? 60 : 40,
+            prisonIndex: isBig60 ? 15 : 10,
             started: false,
+            winnerName: null,
             settings: {
+                maxPlayers: isBig60 ? Math.max(4, state.players.length) : Math.min(4, Math.max(2, state.players.length)),
                 vacationCash: true,
                 doubleFullSet: false,
                 noRentInPrison: false,
                 mortgage: true,
-                startingCash: defaultCash
+                // W Dużej Monopolii min 1500 a max 3000 (domyślnie 2000), w Szybkiej 500..2000 (domyślnie 1500)
+                startingCash: isBig60 ? 2000 : 1500
             },
-            tiles: createRudaSlaskaTiles(),
+            tiles: isBig60 ? createWorld60Tiles() : createRudaSlaskaTiles(),
             players: [],
             trades: [],
             nextTradeId: 1,
@@ -1487,9 +1626,14 @@ function startRichupRuda(defaultCash = 1500) {
             dice: [6, 5],
             rolledThisTurn: false,
             lastDiceSum: 11,
-            logs: ['Wybierz swój stożek i kolor! Gdy wszyscy będą gotowi, Host klika Start Game.'],
+            logs: [isBig60
+                ? 'Witaj w Dużej Monopolii (60 Pól)! Duże pola i stożki, kasa na start od $1500 do $3000 oraz gra do 8 osób!'
+                : 'Witaj w Monopolii Ruda Śląska (40 Pól)! Wybierz stożek i kliknij Start Game.'],
             chat: []
         };
+        if (state.mode === 'bots') {
+            rm.settings.maxPlayers = isBig60 ? 6 : 4;
+        }
         setupRichupPlayers();
         hostBroadcastRichupState();
     }
@@ -1498,12 +1642,13 @@ function startRichupRuda(defaultCash = 1500) {
 
 function setupRichupPlayers() {
     rm.players = [];
-    const baseList = [...state.players];
+    const maxCap = rm.variant === 'world60' ? 8 : 4;
+    const targetCount = Math.min(maxCap, Math.max(state.players.length, Number(rm.settings.maxPlayers) || 4));
+    const baseList = state.players.slice(0, maxCap);
 
-    // Jeśli włączono uzupełnianie botami (lub jesteśmy w trybie botów), dopełnij do 4 graczy
     if (state.mode === 'bots' || state.fillWithBots) {
-        const botNames = ['Bot_Krait', 'Bot_Nameless', 'Bot_Pls4koff'];
-        while (baseList.length < 4) {
+        const botNames = ['Bot_Krait', 'Bot_Nameless', 'Bot_Pls4koff', 'Bot_Viper', 'Bot_Shadow', 'Bot_Nitro', 'Bot_blazE'];
+        while (baseList.length < targetCount) {
             baseList.push({
                 name: botNames[baseList.length - 1] || `Bot_${baseList.length}`,
                 points: 0,
@@ -1530,7 +1675,6 @@ function setupRichupPlayers() {
     });
 }
 
-/* CENTRALNYPROCESOR AKCJI MONOPOLII (DLA HOSTA I GOŚCI ONLINE) */
 function executeGuestRichupAction(slot, action, payload) {
     if (!state.isHost) return;
     const player = rm.players[slot];
@@ -1546,6 +1690,10 @@ function executeGuestRichupAction(slot, action, payload) {
     else if (action === 'CHANGE_CASH' && !rm.started && slot === 0) {
         rm.settings.startingCash = Number(payload.cash);
         rm.players.forEach(p => p.cash = rm.settings.startingCash);
+    }
+    else if (action === 'CHANGE_MAX_PLAYERS' && !rm.started && slot === 0) {
+        rm.settings.maxPlayers = Number(payload.maxPlayers);
+        setupRichupPlayers();
     }
     else if (action === 'START_MATCH' && slot === 0) {
         beginRichupMatch();
@@ -1604,7 +1752,7 @@ function executeGuestRichupAction(slot, action, payload) {
             takeProps: payload.takeProps
         };
         rm.trades.push(newTrade);
-        addRichupLog(`🤝 ${rm.players[slot].name} wystawił ofertę wymiany dla ${rm.players[payload.to].name}! Kliknij na nią w sekcji Trades.`);
+        addRichupLog(`🤝 ${rm.players[slot].name} wystawił ofertę wymiany dla ${rm.players[payload.to].name}!`);
     }
     else if (action === 'ACCEPT_TRADE') {
         acceptTradeOfferHost(slot, payload.tradeId);
@@ -1632,7 +1780,7 @@ function startTurnClock() {
     if (!state.isHost) return;
     if (richupInterval) clearInterval(richupInterval);
     richupInterval = setInterval(() => {
-        if (!rm.started || (state.currentGame !== 'mono_fast' && state.currentGame !== 'mono_big')) return;
+        if (!rm.started || rm.winnerName || (state.currentGame !== 'mono_fast' && state.currentGame !== 'mono_big')) return;
         rm.turnTimeLeft--;
         const badge = document.getElementById('richup-timer-display');
         if (badge) {
@@ -1652,10 +1800,17 @@ function startTurnClock() {
 }
 
 function getTileGridPos(idx) {
-    if (idx <= 10) return { row: 1, col: idx + 1 };
-    if (idx <= 20) return { row: (idx - 10) + 1, col: 11 };
-    if (idx <= 30) return { row: 11, col: 11 - (idx - 20) };
-    return { row: 11 - (idx - 30), col: 1 };
+    if (rm.boardTotal === 60) {
+        if (idx <= 15) return { row: 1, col: idx + 1 };
+        if (idx <= 30) return { row: (idx - 15) + 1, col: 16 };
+        if (idx <= 45) return { row: 16, col: 16 - (idx - 30) };
+        return { row: 16 - (idx - 45), col: 1 };
+    } else {
+        if (idx <= 10) return { row: 1, col: idx + 1 };
+        if (idx <= 20) return { row: (idx - 10) + 1, col: 11 };
+        if (idx <= 30) return { row: 11, col: 11 - (idx - 20) };
+        return { row: 11 - (idx - 30), col: 1 };
+    }
 }
 
 function hasFullSet(playerId, setNum) {
@@ -1668,6 +1823,54 @@ function addRichupLog(msg) {
     if (rm.logs.length > 30) rm.logs.pop();
 }
 
+function checkRichupWinner() {
+    if (!rm.started || rm.winnerName) return false;
+    const alivePlayers = rm.players.filter(p => !p.bankrupt);
+    if (alivePlayers.length === 1 && rm.players.length > 1) {
+        const winner = alivePlayers[0];
+        rm.winnerName = winner.name;
+        addPoints(winner.id, 100);
+        addRichupLog(`🏆 ZWYCIĘSTWO! Ostatnim graczem na planszy zostaje ${winner.name} i zgarnia +100 pkt!`);
+        if (richupInterval) clearInterval(richupInterval);
+        renderRichupScreen();
+        hostBroadcastRichupState();
+        showVictoryModal(winner.name);
+
+        if (state.isHost) {
+            if (victoryRedirectTimeout) clearTimeout(victoryRedirectTimeout);
+            victoryRedirectTimeout = setTimeout(() => {
+                returnToLobby();
+            }, 5000);
+        }
+        return true;
+    }
+    return false;
+}
+
+function showVictoryModal(winnerName) {
+    const modal = document.getElementById('richup-modal');
+    modal.classList.remove('hidden');
+    modal.innerHTML = `
+        <div class="modal-card" style="text-align:center; border:3px solid var(--accent-yellow);">
+            <div style="font-size:4rem; margin-bottom:8px;">🏆</div>
+            <h2 style="color:var(--accent-yellow); font-size:1.8rem; margin-bottom:8px;">
+                ZWYCIĘŻA: ${winnerName}!
+            </h2>
+            <p style="font-size:1rem; color:#f8fafc; margin-bottom:14px;">
+                Wszyscy rywale zbankrutowali! <strong>${winnerName}</strong> otrzymuje <strong>+100 punktów</strong> w lobby!
+            </p>
+            <p style="font-size:0.85rem; color:var(--text-dim); margin-bottom:18px;">
+                Za 5 sekund cała Wasza ekipa zostanie automatycznie przeniesiona do ekranu wyboru kolejnej gry (nikt nie zostaje wyrzucony z lobby!).
+            </p>
+            ${state.isHost ? `
+                <button class="btn btn-green" style="width:100%; padding:12px; font-size:1.05rem;" onclick="returnToLobby()">
+                    🎮 Przejdź do wyboru gier teraz ➔
+                </button>
+            ` : ''}
+        </div>
+    `;
+}
+
 function renderRichupScreen() {
     if (!rm || !rm.players || rm.players.length === 0) return;
     const ui = document.getElementById('custom-game-ui');
@@ -1675,24 +1878,32 @@ function renderRichupScreen() {
     const me = rm.players[state.mySlot] || rm.players[0];
     const isMyTurn = (rm.turn === state.mySlot && !me.bankrupt);
     const curTile = rm.tiles[curP.pos];
+    const cornerMod = rm.boardTotal === 60 ? 15 : 10;
+
+    // Dostępne opcje gotówki startowej zależnie od trybu:
+    // Duża Monopolia (60 pól): min $1500, max $3000
+    // Szybka Monopolia (40 pól): min $500, max $2000
+    const cashOptions = rm.boardTotal === 60
+        ? [1500, 2000, 2500, 3000]
+        : [500, 750, 1000, 1500, 2000];
 
     let tilesHtml = '';
     rm.tiles.forEach(t => {
         const pos = getTileGridPos(t.id);
-        const isCorner = (t.id % 10 === 0);
+        const isCorner = (t.id % cornerMod === 0);
         const setColor = t.set ? SET_COLORS[t.set] : null;
         const ownerP = t.owner !== null ? rm.players[t.owner] : null;
 
         let iconHtml = '';
-        if (t.type === 'start') iconHtml = '<div style="font-size:1.5rem;">🏁</div>';
-        else if (t.type === 'treasure') iconHtml = '<div style="font-size:1.35rem;">🧰</div>';
-        else if (t.type === 'surprise') iconHtml = '<div style="font-size:1.45rem; color:#ec4899; font-weight:900;">❓</div>';
-        else if (t.type === 'airport') iconHtml = '<div style="font-size:1.3rem;">✈️</div>';
-        else if (t.type === 'utility') iconHtml = '<div style="font-size:1.3rem;">🚰</div>';
-        else if (t.type === 'prison') iconHtml = '<div style="font-size:1.4rem;">⛓️</div>';
-        else if (t.type === 'vacation') iconHtml = '<div style="font-size:1.45rem;">🏖️</div>';
-        else if (t.type === 'gotoprison') iconHtml = '<div style="font-size:1.45rem;">🚓</div>';
-        else if (t.type.startsWith('tax')) iconHtml = '<div style="font-size:1.25rem;">🚕</div>';
+        if (t.type === 'start') iconHtml = '<div style="font-size:1.3rem;">🏁</div>';
+        else if (t.type === 'treasure') iconHtml = '<div style="font-size:1.15rem;">🧰</div>';
+        else if (t.type === 'surprise') iconHtml = '<div style="font-size:1.2rem; color:#ec4899; font-weight:900;">❓</div>';
+        else if (t.type === 'airport') iconHtml = '<div style="font-size:1.15rem;">✈️</div>';
+        else if (t.type === 'utility') iconHtml = '<div style="font-size:1.15rem;">🚰</div>';
+        else if (t.type === 'prison') iconHtml = '<div style="font-size:1.2rem;">⛓️</div>';
+        else if (t.type === 'vacation') iconHtml = '<div style="font-size:1.2rem;">🏖️</div>';
+        else if (t.type === 'gotoprison') iconHtml = '<div style="font-size:1.2rem;">🚓</div>';
+        else if (t.type.startsWith('tax')) iconHtml = '<div style="font-size:1.05rem;">🚕</div>';
 
         let buildBadge = '';
         if (t.level > 0 && t.level <= 4) buildBadge = `<div class="r-buildings">${'🏠'.repeat(t.level)}</div>`;
@@ -1721,10 +1932,11 @@ function renderRichupScreen() {
 
     let centerHtml = '';
     if (!rm.started) {
+        const maxSelectable = rm.boardTotal === 60 ? [2,3,4,5,6,7,8] : [2,3,4];
         centerHtml = `
-            <div style="width:100%; max-width:480px; margin:auto;">
-                <h3 style="color:var(--accent-yellow); font-size:1.2rem; margin-bottom:8px;">
-                    Wybierz swój Stożek i Kolor (${me.name})
+            <div style="width:100%; max-width:540px; margin:auto;">
+                <h3 style="color:var(--accent-yellow); font-size:1.25rem; margin-bottom:8px;">
+                    Wybierz swój Duży Stożek i Kolor (${me.name})
                 </h3>
                 <div class="cone-picker">
                     ${CONE_ICONS.map(ic => `
@@ -1739,15 +1951,24 @@ function renderRichupScreen() {
                     `).join('')}
                 </div>
 
-                <div style="margin-bottom:14px; font-size:0.95rem;">
-                    <strong>Kasa na start:</strong>
-                    <select ${!state.isHost ? 'disabled' : ''} style="background:#1d192b; color:var(--accent-yellow); font-weight:900; font-size:1rem; border:2px solid #7c3aed; padding:6px 14px; border-radius:10px; margin-left:8px;" onchange="sendRichupAction('CHANGE_CASH', {cash: Number(this.value)})">
-                        <option value="500"  ${rm.settings.startingCash===500?'selected':''}>$500</option>
-                        <option value="750"  ${rm.settings.startingCash===750?'selected':''}>$750</option>
-                        <option value="1000" ${rm.settings.startingCash===1000?'selected':''}>$1000</option>
-                        <option value="1500" ${rm.settings.startingCash===1500?'selected':''}>$1500</option>
-                        <option value="2000" ${rm.settings.startingCash===2000?'selected':''}>$2000 (MAX)</option>
-                    </select>
+                <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:14px; font-size:0.95rem;">
+                    <div>
+                        <strong>Kasa na start (${rm.boardTotal === 60 ? '1500$ - 3000$' : '500$ - 2000$'}):</strong>
+                        <select ${!state.isHost ? 'disabled' : ''} style="background:#1d192b; color:var(--accent-yellow); font-weight:900; font-size:1rem; border:2px solid #7c3aed; padding:6px 12px; border-radius:8px;" onchange="sendRichupAction('CHANGE_CASH', {cash: Number(this.value)})">
+                            ${cashOptions.map((val, idx) => `
+                                <option value="${val}" ${rm.settings.startingCash===val?'selected':''}>
+                                    $${val}${idx===0 ? ' (MIN)' : idx===cashOptions.length-1 ? ' (MAX)' : ''}
+                                </option>
+                            `).join('')}
+                        </select>
+                    </div>
+
+                    <div>
+                        <strong>Liczba graczy:</strong>
+                        <select ${!state.isHost ? 'disabled' : ''} style="background:#1d192b; color:#38bdf8; font-weight:900; font-size:1rem; border:2px solid #38bdf8; padding:6px 12px; border-radius:8px;" onchange="sendRichupAction('CHANGE_MAX_PLAYERS', {maxPlayers: Number(this.value)})">
+                            ${maxSelectable.map(n => `<option value="${n}" ${rm.players.length===n?'selected':''}>${n} Osób</option>`).join('')}
+                        </select>
+                    </div>
                 </div>
 
                 <div class="dice-pair" style="justify-content:center;">
@@ -1756,11 +1977,11 @@ function renderRichupScreen() {
                 </div>
 
                 ${state.isHost ? `
-                    <button class="btn btn-green" style="font-size:1.2rem; padding:14px 32px; margin-top:10px;" onclick="sendRichupAction('START_MATCH')">
-                        ▶ Start Game (Rozpocznij dla wszystkich)
+                    <button class="btn btn-green" style="font-size:1.2rem; padding:14px 34px; margin-top:8px;" onclick="sendRichupAction('START_MATCH')">
+                        ▶ Start Game (${rm.boardTotal} Pól • ${rm.players.length} Graczy)
                     </button>
                 ` : `
-                    <div style="color:var(--accent-yellow); font-weight:800; margin-top:12px;">
+                    <div style="color:var(--accent-yellow); font-weight:800; margin-top:10px;">
                         ⏳ Wybrałeś pionek! Czekamy aż Host kliknie Start Game...
                     </div>
                 `}
@@ -1774,22 +1995,21 @@ function renderRichupScreen() {
         } else if (isMyTurn) {
             if (me.cash < 0) {
                 actionsHtml += `
-                    <div style="background:rgba(239,68,68,0.22); border:2px solid #ef4444; padding:10px 14px; border-radius:12px; margin-bottom:10px; font-size:0.84rem; color:#fecaca;">
-                        🚨 <strong>MASZ DŁUG (${me.cash}$)!</strong> Aby grać dalej, musisz wyjść na minimum <strong>$0</strong>!<br>
-                        Kliknij na swoje pola, aby sprzedać Domy, Hotele, Dzielnice, Airporty lub Wodociągi za <strong>-25%</strong> ceny albo kliknij <strong>Bankrupt</strong>!
+                    <div style="background:rgba(239,68,68,0.22); border:2px solid #ef4444; padding:8px 12px; border-radius:12px; margin-bottom:8px; font-size:0.8rem; color:#fecaca;">
+                        🚨 <strong>MASZ DŁUG (${me.cash}$)!</strong> Sprzedaj Domy/Hotele/Miasta/Airporty/Wodociągi za <strong>-25%</strong>, aby wyjść na <strong>$0</strong>, albo kliknij <strong>Bankrupt</strong>!
                     </div>
                 `;
             }
 
             if (me.inPrison && !rm.rolledThisTurn) {
                 actionsHtml += `
-                    <div style="background:rgba(239,68,68,0.15); border:1px solid #ef4444; padding:8px 12px; border-radius:10px; margin-bottom:8px; font-size:0.84rem;">
+                    <div style="background:rgba(239,68,68,0.15); border:1px solid #ef4444; padding:6px 10px; border-radius:10px; margin-bottom:6px; font-size:0.8rem;">
                         ⛓️ Jesteś w KLATCE (Próba ${me.prisonTries}/3). Wyrzuć sumę > 10 (11 lub 12), zapłać 50$ lub użyj Pardon Card!
                     </div>
                     <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
                         <button class="btn btn-yellow" onclick="sendRichupAction('ROLL_DICE')">🎲 Rzuć (>10 wychodzi)</button>
                         ${me.cash >= 50 ? `<button class="btn btn-blue" onclick="sendRichupAction('PAY_BAIL')">💵 Zapłać 50$</button>` : ''}
-                        ${me.pardonCards > 0 ? `<button class="btn btn-green" onclick="sendRichupAction('USE_PARDON')">🃏 Użyj Pardon Card (${me.pardonCards})</button>` : ''}
+                        ${me.pardonCards > 0 ? `<button class="btn btn-green" onclick="sendRichupAction('USE_PARDON')">🃏 Pardon Card (${me.pardonCards})</button>` : ''}
                     </div>
                 `;
             } else if (!rm.rolledThisTurn) {
@@ -1808,7 +2028,7 @@ function renderRichupScreen() {
                 if (me.cash >= 0) {
                     actionsHtml += `<button class="btn" onclick="sendRichupAction('END_TURN')">✅ Zakończ turę</button>`;
                 } else {
-                    actionsHtml += `<button class="btn btn-danger" onclick="alert('Masz minus na koncie (' + ${me.cash} + '$)! Sprzedaj nieruchomości/domy (-25%) albo kliknij Bankrupt!')">🔒 Spłać dług aby zakończyć turę</button>`;
+                    actionsHtml += `<button class="btn btn-danger" onclick="alert('Masz minus na koncie! Sprzedaj pola (-25%) albo kliknij Bankrupt!')">🔒 Spłać dług aby zakończyć turę</button>`;
                 }
                 actionsHtml += `</div>`;
             }
@@ -1819,7 +2039,7 @@ function renderRichupScreen() {
         centerHtml = `
             <div>
                 <div style="font-size:1.08rem; font-weight:800; color:${curP.color};">
-                    <span style="font-size:1.45rem;">${curP.icon}</span> Tura gracza: ${curP.name} (Stoi na: #${curP.pos} ${curTile.name})
+                    <span style="font-size:1.45rem;">${curP.icon}</span> Tura: ${curP.name} (Pole #${curP.pos}: ${curTile.name})
                 </div>
                 <div>
                     <span id="richup-timer-display" class="turn-timer-pill ${rm.turnTimeLeft <= 30 ? 'low' : ''}">
@@ -1833,8 +2053,8 @@ function renderRichupScreen() {
                 ${actionsHtml}
             </div>
 
-            <div style="width:100%; max-height:165px; overflow-y:auto; text-align:left; font-size:0.8rem; background:#0c0a14; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
-                ${rm.logs.map(l => `<div style="padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.04);">• ${l}</div>`).join('')}
+            <div style="width:100%; max-height:175px; overflow-y:auto; text-align:left; font-size:0.8rem; background:#0c0a14; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                ${rm.logs.map(l => `<div style="padding:2px 0; border-bottom:1px solid rgba(255,255,255,0.04);">• ${l}</div>`).join('')}
             </div>
         `;
     }
@@ -1849,21 +2069,14 @@ function renderRichupScreen() {
                 <div class="richup-panel">
                     <h4>Zaproś znajomych online</h4>
                     <div style="display:flex; gap:6px;">
-                        <input type="text" readonly value="${inviteLink}" style="width:100%; background:#0f0d17; border:1px solid #334155; color:#cbd5e1; padding:6px 8px; border-radius:8px; font-size:0.75rem;">
-                        <button class="btn btn-blue" style="padding:6px 10px; font-size:0.75rem;" onclick="navigator.clipboard.writeText('${inviteLink}'); alert('Skopiowano link do pokoju!');">Copy</button>
+                        <input type="text" readonly value="${inviteLink}" style="width:100%; background:#0f0d17; border:1px solid #334155; color:#cbd5e1; padding:6px 8px; border-radius:8px; font-size:0.74rem;">
+                        <button class="btn btn-blue" style="padding:6px 10px; font-size:0.74rem;" onclick="navigator.clipboard.writeText('${inviteLink}'); alert('Skopiowano link!');">Copy</button>
                     </div>
                 </div>
 
                 <div class="richup-panel">
-                    <h4>Sprzedaż do banku (-25%)</h4>
-                    <p style="font-size:0.76rem; color:var(--text-dim); line-height:1.45;">
-                        Kliknij na swoje pole na planszy lub z listy <strong>My properties</strong>, aby sprzedać dom, hotel, dzielnicę, airport lub wodociągi za <strong>-25% ceny</strong>!
-                    </p>
-                </div>
-
-                <div class="richup-panel">
                     <h4>Chat w grze</h4>
-                    <div id="richup-chat-box" style="height:170px; overflow-y:auto; font-size:0.76rem; color:#cbd5e1; margin-bottom:8px; background:#120f1d; padding:8px; border-radius:8px;">
+                    <div id="richup-chat-box" style="height:220px; overflow-y:auto; font-size:0.76rem; color:#cbd5e1; margin-bottom:8px; background:#120f1d; padding:8px; border-radius:8px;">
                         ${rm.chat.length === 0 ? '<div style="color:#64748b;">Brak wiadomości...</div>' : rm.chat.map(c => `<div><strong>${c.u}:</strong> ${c.t}</div>`).join('')}
                     </div>
                     <div style="display:flex; gap:6px;">
@@ -1873,9 +2086,9 @@ function renderRichupScreen() {
                 </div>
             </div>
 
-            <!-- ŚRODKOWA KOLUMNA: PLANSZA 11x11 -->
+            <!-- ŚRODKOWA KOLUMNA: POWIĘKSZONA PLANSZA 40 LUB 60 PÓL -->
             <div>
-                <div class="richup-board">
+                <div class="richup-board ${rm.boardTotal === 60 ? 'board-60' : 'board-40'}">
                     ${tilesHtml}
                     <div class="richup-center">
                         ${centerHtml}
@@ -1887,27 +2100,29 @@ function renderRichupScreen() {
             <div>
                 <div class="richup-panel">
                     <h4>Gracze w grze (${rm.players.length})</h4>
-                    ${rm.players.map((p, idx) => `
-                        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 10px; border-radius:12px; margin-bottom:6px; opacity:${p.bankrupt ? '0.45' : '1'}; background:${rm.turn === idx ? 'rgba(124,58,237,0.24)' : '#14111f'}; border:1px solid ${rm.turn === idx ? '#7c3aed' : 'transparent'};">
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <span style="width:36px; height:36px; border-radius:50%; background:${p.color}; border:2px solid #fff; display:inline-flex; align-items:center; justify-content:center; font-size:1.3rem;">${p.icon}</span>
-                                <div>
-                                    <div style="font-size:0.88rem; font-weight:800;">
-                                        ${p.name} ${idx === 0 ? '👑' : ''} ${idx === state.mySlot ? '(Ty)' : ''}
-                                        ${p.bankrupt ? '<span style="color:#ef4444; font-size:0.7rem;">[WIDZ]</span>' : ''}
-                                        ${!p.bankrupt && p.inPrison ? '<span style="color:#ef4444; font-size:0.7rem;">[KLATKA]</span>' : ''}
-                                        ${!p.bankrupt && p.skipTurns > 0 ? `<span style="color:#38bdf8; font-size:0.7rem;">[WAKACJE:${p.skipTurns}]</span>` : ''}
-                                    </div>
-                                    <div style="font-size:0.7rem; color:var(--text-dim);">
-                                        ${p.bankrupt ? 'Tylko ogląda' : `Pole #${p.pos}`} ${p.pardonCards > 0 ? `• 🃏Pardon: ${p.pardonCards}` : ''}
+                    <div style="max-height:280px; overflow-y:auto;">
+                        ${rm.players.map((p, idx) => `
+                            <div style="display:flex; align-items:center; justify-content:space-between; padding:7px 9px; border-radius:10px; margin-bottom:5px; opacity:${p.bankrupt ? '0.45' : '1'}; background:${rm.turn === idx ? 'rgba(124,58,237,0.24)' : '#14111f'}; border:1px solid ${rm.turn === idx ? '#7c3aed' : 'transparent'};">
+                                <div style="display:flex; align-items:center; gap:9px;">
+                                    <span style="width:34px; height:34px; border-radius:50%; background:${p.color}; border:2px solid #fff; display:inline-flex; align-items:center; justify-content:center; font-size:1.25rem;">${p.icon}</span>
+                                    <div>
+                                        <div style="font-size:0.84rem; font-weight:800;">
+                                            ${p.name} ${idx === 0 ? '👑' : ''} ${idx === state.mySlot ? '(Ty)' : ''}
+                                            ${p.bankrupt ? '<span style="color:#ef4444; font-size:0.68rem;">[WIDZ]</span>' : ''}
+                                            ${!p.bankrupt && p.inPrison ? '<span style="color:#ef4444; font-size:0.68rem;">[KLATKA]</span>' : ''}
+                                            ${!p.bankrupt && p.skipTurns > 0 ? `<span style="color:#38bdf8; font-size:0.68rem;">[WAKACJE:${p.skipTurns}]</span>` : ''}
+                                        </div>
+                                        <div style="font-size:0.68rem; color:var(--text-dim);">
+                                            ${p.bankrupt ? 'Tylko ogląda' : `Pole #${p.pos}`} ${p.pardonCards > 0 ? `• 🃏Pardon: ${p.pardonCards}` : ''}
+                                        </div>
                                     </div>
                                 </div>
+                                <strong style="color:${p.cash < 0 ? '#ef4444' : 'var(--accent-green)'}; font-size:0.92rem;">
+                                    ${p.bankrupt ? '---' : `$${p.cash}`}
+                                </strong>
                             </div>
-                            <strong style="color:${p.cash < 0 ? '#ef4444' : 'var(--accent-green)'}; font-size:0.98rem;">
-                                ${p.bankrupt ? '---' : `$${p.cash}`}
-                            </strong>
-                        </div>
-                    `).join('')}
+                        `).join('')}
+                    </div>
 
                     ${rm.started && !me.bankrupt ? `
                         <div style="display:flex; justify-content:flex-end; margin-top:8px;">
@@ -1922,25 +2137,25 @@ function renderRichupScreen() {
                 <div class="richup-panel">
                     <h4>
                         <span>Trades (${rm.trades.length})</span>
-                        ${!me.bankrupt ? `<button class="btn" style="padding:5px 12px; font-size:0.76rem;" onclick="openCreateTradeModal()">+ Create</button>` : ''}
+                        ${!me.bankrupt ? `<button class="btn" style="padding:5px 12px; font-size:0.75rem;" onclick="openCreateTradeModal()">+ Create</button>` : ''}
                     </h4>
 
-                    <div style="max-height:150px; overflow-y:auto;">
+                    <div style="max-height:130px; overflow-y:auto;">
                         ${rm.trades.length === 0 ? `
-                            <p style="font-size:0.74rem; color:var(--text-dim);">
-                                Brak aktywnych wymian. Kliknij <strong>+ Create</strong>, aby wysłać ofertę — każdy gracz może w nią kliknąć i zobaczyć co oferujesz!
+                            <p style="font-size:0.73rem; color:var(--text-dim);">
+                                Kliknij <strong>+ Create</strong>, aby wymienić się miastami, lotniskami, wodociągami lub gotówką.
                             </p>
                         ` : rm.trades.map(tr => {
                             const fromP = rm.players[tr.from];
                             const toP = rm.players[tr.to];
                             return `
                                 <div class="trade-item-row" onclick="inspectTradeOffer(${tr.id})">
-                                    <div style="display:flex; align-items:center; gap:6px;">
+                                    <div style="display:flex; align-items:center; gap:5px;">
                                         <span>${fromP.icon} <strong>${fromP.name}</strong></span>
                                         <span style="color:var(--accent-yellow);">➔</span>
                                         <span>${toP.icon} <strong>${toP.name}</strong></span>
                                     </div>
-                                    <span style="background:#7c3aed; color:white; padding:2px 8px; border-radius:6px; font-size:0.7rem; font-weight:800;">
+                                    <span style="background:#7c3aed; color:white; padding:2px 7px; border-radius:6px; font-size:0.68rem; font-weight:800;">
                                         👁️ Zobacz
                                     </span>
                                 </div>
@@ -1952,11 +2167,11 @@ function renderRichupScreen() {
                 <!-- MOJE NIERUCHOMOŚCI -->
                 <div class="richup-panel">
                     <h4>My properties (${myProps.length})</h4>
-                    <div style="max-height:150px; overflow-y:auto; display:flex; flex-direction:column; gap:5px;">
-                        ${myProps.length === 0 ? '<div style="font-size:0.75rem; color:#64748b;">Nie posiadasz jeszcze żadnych dzielnic.</div>' : myProps.map(t => `
-                            <div style="display:flex; justify-content:space-between; align-items:center; background:#14111f; padding:6px 8px; border-radius:8px; font-size:0.76rem; cursor:pointer;" onclick="inspectTile(${t.id})">
+                    <div style="max-height:150px; overflow-y:auto; display:flex; flex-direction:column; gap:4px;">
+                        ${myProps.length === 0 ? '<div style="font-size:0.73rem; color:#64748b;">Brak kupionych pól.</div>' : myProps.map(t => `
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#14111f; padding:5px 8px; border-radius:8px; font-size:0.74rem; cursor:pointer;" onclick="inspectTile(${t.id})">
                                 <span>#${t.id} <strong>${t.name}</strong> ${t.level > 0 ? (t.level===5 ? '🏨' : '🏠'.repeat(t.level)) : ''}</span>
-                                <span style="color:var(--accent-yellow);">Sprzedaj / Zarządzaj</span>
+                                <span style="color:var(--accent-yellow);">Zarządzaj</span>
                             </div>
                         `).join('')}
                     </div>
@@ -1976,10 +2191,11 @@ function sendRichupChat() {
 function beginRichupMatch() {
     setupRichupPlayers();
     rm.started = true;
+    rm.winnerName = null;
     rm.turn = 0;
     rm.turnTimeLeft = 180;
     rm.rolledThisTurn = false;
-    addRichupLog(`Gra rozpoczęta! Każdy gracz startuje z kwotą $${rm.settings.startingCash}.`);
+    addRichupLog(`Gra rozpoczęta na planszy ${rm.boardTotal} pól! Kasa na start: $${rm.settings.startingCash} • Liczba graczy: ${rm.players.length}.`);
     startTurnClock();
     renderRichupScreen();
     hostBroadcastRichupState();
@@ -2006,8 +2222,10 @@ function declareBankruptcy(playerId, byTimeout = false) {
     });
 
     rm.trades = rm.trades.filter(tr => tr.from !== playerId && tr.to !== playerId);
-    addRichupLog(`🏳️ ${p.name} ogłosił BANKRUCTWO ${byTimeout ? '(przekroczony czas / dług)' : '(poddał się)'} i przechodzi w tryb widza!`);
+    addRichupLog(`🏳️ ${p.name} ogłosił BANKRUCTWO i przechodzi w tryb widza!`);
     closeRichupModal();
+
+    if (checkRichupWinner()) return;
 
     if (rm.turn === playerId) {
         endRichupTurn();
@@ -2023,7 +2241,7 @@ function botResolveDebt(bot) {
             const refund = Math.floor(t.houseCost * 0.75);
             t.level--;
             bot.cash += refund;
-            addRichupLog(`🤖 ${bot.name} sprzedał budynek na polu ${t.name} za ${refund}$ (-25%).`);
+            addRichupLog(`🤖 ${bot.name} sprzedał budynek w ${t.name} za ${refund}$ (-25%).`);
         }
     }
     for (const t of rm.tiles) {
@@ -2039,6 +2257,7 @@ function botResolveDebt(bot) {
 }
 
 function rollRichupDice() {
+    if (rm.winnerName) return;
     const p = rm.players[rm.turn];
     const d1 = Math.floor(Math.random() * 6) + 1;
     const d2 = Math.floor(Math.random() * 6) + 1;
@@ -2066,8 +2285,8 @@ function rollRichupDice() {
         if (p.isBot) {
             setTimeout(() => {
                 if (p.cash < 0) botResolveDebt(p);
-                if (!p.bankrupt) endRichupTurn();
-            }, 900);
+                if (!p.bankrupt && !rm.winnerName) endRichupTurn();
+            }, 850);
         }
         return;
     }
@@ -2080,11 +2299,11 @@ function rollRichupDice() {
     if (p.isBot) {
         setTimeout(() => {
             if (p.cash < 0) botResolveDebt(p);
-            if (!p.bankrupt) {
+            if (!p.bankrupt && !rm.winnerName) {
                 botHandlePostRoll(p);
                 endRichupTurn();
             }
-        }, 1000);
+        }, 950);
     }
 }
 
@@ -2111,11 +2330,12 @@ function usePrisonPardon() {
 }
 
 function moveRichupPlayer(p, steps) {
+    const total = rm.boardTotal;
     const oldPos = p.pos;
-    let newPos = (oldPos + steps) % 40;
-    if (newPos < 0) newPos += 40;
+    let newPos = (oldPos + steps) % total;
+    if (newPos < 0) newPos += total;
 
-    if (steps > 0 && (oldPos + steps >= 40)) {
+    if (steps > 0 && (oldPos + steps >= total)) {
         p.cash += 300;
         addRichupLog(`🏁 ${p.name} przeszedł przez START i otrzymuje +300$!`);
     }
@@ -2144,7 +2364,7 @@ function handleLandOnTile(p, tile) {
     }
     else if (tile.type === 'tax_flat') {
         p.cash -= 30;
-        addRichupLog(`🚕 ${p.name} płaci 30$ za Taxi na polu #4.`);
+        addRichupLog(`🚕 ${p.name} płaci 30$ za Taxi.`);
     }
     else if (tile.type === 'surprise') {
         const mode = Math.floor(Math.random() * 3);
@@ -2154,7 +2374,7 @@ function handleLandOnTile(p, tile) {
             p.cash += sign * amount;
             addRichupLog(`❓ Surprise (#${tile.id}): ${p.name} ${sign > 0 ? 'otrzymuje +' : 'traci -'}${amount}$!`);
         } else if (mode === 1) {
-            const dest = Math.floor(Math.random() * 40);
+            const dest = Math.floor(Math.random() * rm.boardTotal);
             p.pos = dest;
             addRichupLog(`❓ Surprise (#${tile.id}): ${p.name} przenosi się na pole #${dest} (${rm.tiles[dest].name})!`);
         } else {
@@ -2176,22 +2396,22 @@ function handleLandOnTile(p, tile) {
         p.skipTurns = 2;
         if (rm.settings.vacationCash) {
             p.cash += 300;
-            addRichupLog(`🏖️ ${p.name} staje na Wakacjach (#20)! Odpoczywa 2 tury i dostaje +300$!`);
+            addRichupLog(`🏖️ ${p.name} staje na Wakacjach (#${tile.id})! Odpoczywa 2 tury i dostaje +300$!`);
         } else {
-            addRichupLog(`🏖️ ${p.name} staje na Wakacjach (#20) i odpoczywa 2 tury.`);
+            addRichupLog(`🏖️ ${p.name} staje na Wakacjach (#${tile.id}) i odpoczywa 2 tury.`);
         }
     }
     else if (tile.type === 'gotoprison') {
-        p.pos = 10;
+        p.pos = rm.prisonIndex;
         p.inPrison = true;
         p.prisonTries = 0;
-        addRichupLog(`🚓 ${p.name} trafia do KLATKI w Więzieniu (#10)!`);
+        addRichupLog(`🚓 ${p.name} trafia prosto do KLATKI w Więzieniu (#${rm.prisonIndex})!`);
     }
     else if (tile.type === 'tax_hotel') {
         const myHotels = rm.tiles.filter(t => t.owner === p.id && t.level === 5).length;
         const tax = myHotels * 75;
         p.cash -= tax;
-        addRichupLog(`🚕 ${p.name} płaci ${tax}$ na polu #38 (75$ za każdy posiadany hotel).`);
+        addRichupLog(`🚕 ${p.name} płaci ${tax}$ za Taksówkę Hotelową (75$ za każdy posiadany hotel).`);
     }
     else if (tile.owner !== null && tile.owner !== p.id && !tile.mortgaged) {
         const owner = rm.players[tile.owner];
@@ -2210,11 +2430,13 @@ function handleLandOnTile(p, tile) {
 function calculateTileRent(tile, diceSum) {
     if (tile.type === 'airport') {
         const ownedAirports = rm.tiles.filter(t => t.type === 'airport' && t.owner === tile.owner && !t.mortgaged).length;
-        return [0, 25, 50, 100, 200][ownedAirports] || 25;
+        const scale = [0, 25, 50, 100, 200, 300, 400, 600, 800];
+        return scale[ownedAirports] || 25;
     }
     if (tile.type === 'utility') {
         const ownedUtils = rm.tiles.filter(t => t.type === 'utility' && t.owner === tile.owner && !t.mortgaged).length;
-        return ownedUtils >= 2 ? (10 * diceSum) : (4 * diceSum);
+        const mult = [0, 4, 10, 16, 25][ownedUtils] || 4;
+        return mult * diceSum;
     }
     if (tile.type === 'prop') {
         let base = tile.rents[tile.level];
@@ -2251,7 +2473,7 @@ function buildOnTile(slot, tileId) {
     p.cash -= tile.houseCost;
     tile.level++;
     const label = tile.level === 5 ? 'HOTEL 🏨' : `Dom #${tile.level} 🏠`;
-    addRichupLog(`🏗️ ${p.name} wybudował ${label} w dzielnicy ${tile.name} (-${tile.houseCost}$).`);
+    addRichupLog(`🏗️ ${p.name} wybudował ${label} w ${tile.name} (-${tile.houseCost}$).`);
     closeRichupModal();
     renderRichupScreen();
     hostBroadcastRichupState();
@@ -2267,7 +2489,7 @@ function sellBuildingOnTile(slot, tileId) {
     tile.level--;
     p.cash += refund;
 
-    addRichupLog(`💰 ${p.name} sprzedał ${soldLabel} w dzielnicy ${tile.name} za +${refund}$ (-25%).`);
+    addRichupLog(`💰 ${p.name} sprzedał ${soldLabel} w ${tile.name} za +${refund}$ (-25%).`);
     closeRichupModal();
     renderRichupScreen();
     hostBroadcastRichupState();
@@ -2327,19 +2549,12 @@ function botHandlePostRoll(bot) {
 }
 
 function endRichupTurn() {
+    if (checkRichupWinner()) return;
     const curP = rm.players[rm.turn];
     if (!curP.bankrupt && curP.cash < 0) return;
 
     rm.rolledThisTurn = false;
     rm.turnTimeLeft = 180;
-
-    const alivePlayers = rm.players.filter(p => !p.bankrupt);
-    if (alivePlayers.length <= 1) {
-        if (alivePlayers.length === 1) addRichupLog(`🏆 KONIEC GRY! Zwycięża ${alivePlayers[0].name}!`);
-        renderRichupScreen();
-        hostBroadcastRichupState();
-        return;
-    }
 
     for (let step = 1; step <= rm.players.length; step++) {
         const nextIdx = (rm.turn + step) % rm.players.length;
@@ -2358,7 +2573,7 @@ function endRichupTurn() {
     hostBroadcastRichupState();
 
     const activeP = rm.players[rm.turn];
-    if (state.isHost && activeP.isBot && !activeP.bankrupt) {
+    if (state.isHost && activeP.isBot && !activeP.bankrupt && !rm.winnerName) {
         setTimeout(() => {
             if (activeP.inPrison && activeP.pardonCards > 0) {
                 activeP.pardonCards--;
@@ -2370,7 +2585,7 @@ function endRichupTurn() {
                 activeP.prisonTries = 0;
             }
             rollRichupDice();
-        }, 750);
+        }, 700);
     }
 }
 
@@ -2390,7 +2605,8 @@ function inspectTile(tileId) {
         const buildRefund = Math.floor(t.houseCost * 0.75);
 
         detailsHtml = `
-            <div style="height:8px; width:100%; background:${SET_COLORS[t.set]}; border-radius:6px; margin-bottom:10px;"></div>
+            <div style="height:8px; width:100%; background:${SET_COLORS[t.set]}; border-radius:6px; margin-bottom:8px;"></div>
+            <div style="text-align:center; font-size:0.78rem; color:var(--accent-yellow); font-weight:800;">PAŃSTWO / ZESTAW #${t.set}: ${(t.country || '').toUpperCase()}</div>
             <div class="prop-card-title">${t.name}</div>
 
             <table class="prop-rent-table">
@@ -2420,7 +2636,7 @@ function inspectTile(tileId) {
             <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
                 ${canBuild ? `<button class="btn btn-green" onclick="sendRichupAction('BUILD_TILE', {tileId:${t.id}}); closeRichupModal();">🏗️ Wybuduj ($${t.houseCost})</button>` : ''}
                 ${isMine && t.level > 0 ? `<button class="btn btn-yellow" onclick="sendRichupAction('SELL_BUILDING', {tileId:${t.id}}); closeRichupModal();">🔨 Sprzedaj ${t.level===5?'Hotel':'Dom'} (+$${buildRefund})</button>` : ''}
-                ${isMine ? `<button class="btn btn-danger" onclick="sendRichupAction('SELL_PROP', {tileId:${t.id}}); closeRichupModal();">💵 Sprzedaj Dzielnicę (+$${propRefund + t.level * buildRefund})</button>` : ''}
+                ${isMine ? `<button class="btn btn-danger" onclick="sendRichupAction('SELL_PROP', {tileId:${t.id}}); closeRichupModal();">💵 Sprzedaj Miasto (+$${propRefund + t.level * buildRefund})</button>` : ''}
                 ${isMine && t.level === 0 && rm.settings.mortgage ? `<button class="btn btn-blue" onclick="sendRichupAction('MORTGAGE_TILE', {tileId:${t.id}}); closeRichupModal();">${t.mortgaged ? 'Wykup z hipoteki' : 'Hipoteka (+50%)'}</button>` : ''}
                 <button class="btn" onclick="closeRichupModal()">Zamknij</button>
             </div>
@@ -2452,7 +2668,7 @@ function closeRichupModal() {
     document.getElementById('richup-modal').classList.add('hidden');
 }
 
-/* --- SYSTEM TRADES ONLINE --- */
+/* --- SYSTEM TRADES --- */
 function openCreateTradeModal(targetIdx = -1) {
     const modal = document.getElementById('richup-modal');
     modal.classList.remove('hidden');
@@ -2603,9 +2819,8 @@ function acceptTradeOfferHost(actorSlot, tradeId) {
 function declineTradeOfferHost(tradeId) {
     const idx = rm.trades.findIndex(x => x.id === tradeId);
     if (idx === -1) return;
-    const tr = rm.trades[idx];
     rm.trades.splice(idx, 1);
-    addRichupLog(`❌ Oferta wymiany #${tr.id} została ODRZUCONA.`);
+    addRichupLog(`❌ Oferta wymiany #${tradeId} została ODRZUCONA.`);
     renderRichupScreen();
     hostBroadcastRichupState();
 }
@@ -2729,7 +2944,6 @@ function loopBattleRoyale() {
     state.loopId = requestAnimationFrame(loopBattleRoyale);
 }
 
-/* POZOSTAŁE MINIGRY */
 let partyState = {};
 function startPartyMinigames() {
     canvas.classList.remove('hidden');

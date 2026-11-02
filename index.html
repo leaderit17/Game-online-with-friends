@@ -739,24 +739,28 @@
             .entry-buttons, .online-setup-grid { grid-template-columns: 1fr; }
         }
     </style>
-    <script type="module">
-        import { initializeApp } from "https://unpkg.com";
-        import { getDatabase, ref, set, onValue, onDisconnect } from "https://unpkg.com";
+        <script type="module">
+        // Podajemy pełne adresy URL, żeby przeglądarka wiedziała skąd pobrać Firebase bez instalowania npm
+        import { initializeApp } from "https://gstatic.com";
+        import { getDatabase, ref, set, onValue, onDisconnect } from "https://gstatic.com";
 
+        // Twoja konfiguracja wklejona w całości i poprawnie
         const firebaseConfig = {
-            apiKey: "AIzaSyCMRkaNoevXX3BfezgSF_SEG67_G4_s-Rw",
-            authDomain: "://firebaseapp.com",
-            databaseURL: "https://firebasedatabase.app",
+            apiKey: "AIzaSyCMRkaNoevXX03EbzgSF_5EOG7_D4_a-8w",
+            authDomain: "game-online-multiplayer.firebaseapp.com",
+            databaseURL: "https://game-online-multiplayer-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "game-online-multiplayer",
             storageBucket: "game-online-multiplayer.firebasestorage.app",
-            messagingSenderId: "416475188310",
-            appId: "1:416475188310:web:21b1f8dd65c81448bcf7f7",
-            measurementId: "G-XMGZRLH51"
+            messagingSenderId: "436475188310",
+            appId: "1:436475188310:web:21b1f8dd65c81448bcf7f7",
+            measurementId: "G-XWGZNRLH51"
         };
 
+        // Inicjalizacja Firebase i bazy Realtime Database
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Reszta logiki sieciowej pokoju (Zostawiasz tak jak było wcześniej)
         const inputNick = document.getElementById("player-nick");
         const myPlayerId = "Gracz_" + Math.floor(Math.random() * 10000);
 
@@ -809,6 +813,7 @@
             set(ref(db, `gry/${currentGame}/pokoje/${currentRoom}/gracze/${myPlayerId}`), dataObject);
         };
     </script>
+
 
 </head>
 <body>

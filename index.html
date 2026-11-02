@@ -2981,24 +2981,2095 @@ function renderLiarsBar() {
     </div>`;
 }
 
+/* =========================================================================
+   PEŁNA GRA AMONG US 2D — UKŁAD THE SKELD ZE ZDJĘĆ (ŚCIANY I KORYTARZE),
+   NIEBIESKA MAPA OVERLAY, SYSTEM WIZJI (0.25x-5x), ZADANIA WIELOETAPOWE,
+   MĄDRE BOTY (ZADANIA + REPORT) ORAZ NATYCHMIASTOWY KONIEC GŁOSOWANIA
+   ========================================================================= */
+/* =========================================================================
+   CAŁKOWITA BLOKADA WYSKAKUJĄCYCH POWIADOMIEŃ U GÓRY PRZEGLĄDARKI (NA CAŁEJ STRONIE)
+   ========================================================================= */
+window.alert = function(msg) {
+    console.log('[Info]:', msg);
+};
+
+/* =========================================================================
+   PEŁNA GRA AMONG US 2D — TRYB FULLSCREEN, CIEMNE POKOJE ZA ŚCIANĄ,
+   ANIMACJA CHODZENIA, WYBÓR PRĘDKOŚCI, MEBLE W POKOJACH ZE ZDJĘCIA THE SKELD
+   ========================================================================= */
 let among = {};
+let amongInterval = null;
+
+const AU_COLORS = [
+    { name: 'Czerwony', hex: '#ef4444' }, { name: 'Niebieski', hex: '#2563eb' },
+    { name: 'Zielony', hex: '#16a34a' },  { name: 'Żółty', hex: '#eab308' },
+    { name: 'Pomarańcz', hex: '#f97316' },{ name: 'Różowy', hex: '#ec4899' },
+    { name: 'Fioletowy', hex: '#9333ea' },{ name: 'Cyjan', hex: '#06b6d4' },
+    { name: 'Limonka', hex: '#84cc16' },  { name: 'Biały', hex: '#f8fafc' },
+    { name: 'Czarny', hex: '#334155' },   { name: 'Brązowy', hex: '#78350f' },
+    { name: 'Koralowy', hex: '#fb7185' }, { name: 'Złoty', hex: '#ca8a04' },
+    { name: 'Morski', hex: '#0d9488' }
+];
+
+const AU_MAPS = {
+    skeld: {
+        name: 'The Skeld (Klasyczny Statek)',
+        width: 2600, height: 1600,
+        spawn: { x: 1310, y: 310 },
+        table: { x: 1310, y: 310, r: 52 },
+        camsConsole: { x: 630, y: 630, room: 'Security' },
+        reactorConsole: { x: 195, y: 740, room: 'Reactor' },
+        o2Console: { x: 1710, y: 630, room: 'O2' },
+        rooms: [
+            { id: 'cafeteria',      name: 'Cafeteria',      x: 1000, y: 80,   w: 620, h: 460, color: '#334155' },
+            { id: 'weapons',        name: 'Weapons',        x: 1820, y: 140,  w: 300, h: 280, color: '#293548' },
+            { id: 'o2',             name: 'O2',             x: 1620, y: 520,  w: 240, h: 220, color: '#1e3a5f' },
+            { id: 'navigation',     name: 'Navigation',     x: 2220, y: 540,  w: 260, h: 340, color: '#293548' },
+            { id: 'shields',        name: 'Shields',        x: 1820, y: 980,  w: 300, h: 280, color: '#3b3548' },
+            { id: 'communications', name: 'Communications', x: 1500, y: 1220, w: 280, h: 240, color: '#1e293b' },
+            { id: 'storage',        name: 'Storage',        x: 1100, y: 920,  w: 360, h: 480, color: '#383428' },
+            { id: 'admin',          name: 'Admin',          x: 1500, y: 780,  w: 300, h: 240, color: '#3f2733' },
+            { id: 'electrical',     name: 'Electrical',     x: 780,  y: 880,  w: 280, h: 320, color: '#27303f' },
+            { id: 'lower_engine',   name: 'Lower Engine',   x: 320,  y: 980,  w: 280, h: 300, color: '#3b2f2f' },
+            { id: 'security',       name: 'Security',       x: 560,  y: 580,  w: 200, h: 280, color: '#233831' },
+            { id: 'reactor',        name: 'Reactor',        x: 80,   y: 520,  w: 240, h: 440, color: '#2e1f47' },
+            { id: 'upper_engine',   name: 'Upper Engine',   x: 320,  y: 200,  w: 280, h: 300, color: '#3b2f2f' },
+            { id: 'medbay',         name: 'MedBay',         x: 740,  y: 420,  w: 240, h: 300, color: '#1f3647' }
+        ],
+        corridors: [
+            { x: 580,  y: 270,  w: 440, h: 110 },
+            { x: 800,  y: 360,  w: 110, h: 80  },
+            { x: 400,  y: 480,  w: 110, h: 520 },
+            { x: 300,  y: 670,  w: 280, h: 110 },
+            { x: 580,  y: 1100, w: 280, h: 100 },
+            { x: 760,  y: 1160, w: 360, h: 110 },
+            { x: 850,  y: 1180, w: 110, h: 40  },
+            { x: 1240, y: 520,  w: 120, h: 420 },
+            { x: 1340, y: 840,  w: 180, h: 100 },
+            { x: 1600, y: 230,  w: 240, h: 110 },
+            { x: 1900, y: 400,  w: 120, h: 600 },
+            { x: 1840, y: 580,  w: 80,  h: 100 },
+            { x: 2000, y: 650,  w: 240, h: 110 },
+            { x: 1440, y: 1080, w: 400, h: 110 },
+            { x: 1580, y: 1170, w: 110, h: 70  }
+        ],
+        // Fizyczne meble i przeszkody w pokojach (stół w Adminie, beczki/skrzynie w Storage, silniki itd.)
+        propsObstacles: [
+            { room: 'admin',        x: 1575, y: 885,  w: 160, h: 65 },  // Wąski długi stół w Adminie
+            { room: 'storage',      x: 1225, y: 1070, w: 115, h: 190 }, // Duże skrzynie i beczki na środku Storage
+            { room: 'upper_engine', x: 340,  y: 285,  w: 125, h: 130 }, // Silnik górny
+            { room: 'lower_engine', x: 340,  y: 1065, w: 125, h: 130 }, // Silnik dolny
+            { room: 'reactor',      x: 90,   y: 640,  w: 75,  h: 200 }, // Rdzeń reaktora
+            { room: 'electrical',   x: 820,  y: 940,  w: 140, h: 75  }  // Szafy elektryczne
+        ],
+        vents: [
+            { id: 0, x: 840,  y: 1050, links: [1, 2], name: 'Electrical' },
+            { id: 1, x: 800,  y: 640,  links: [0, 2], name: 'MedBay' },
+            { id: 2, x: 640,  y: 780,  links: [0, 1], name: 'Security' },
+            { id: 3, x: 1520, y: 440,  links: [4, 5], name: 'Cafeteria' },
+            { id: 4, x: 1640, y: 985,  links: [3, 5], name: 'Admin' },
+            { id: 5, x: 2040, y: 690,  links: [3, 4], name: 'Korytarz Nav' },
+            { id: 6, x: 200,  y: 580,  links: [7],    name: 'Reactor' },
+            { id: 7, x: 500,  y: 260,  links: [6],    name: 'Upper Engine' }
+        ],
+        cameras: [
+            { name: 'CAM 1: Skrzyżowanie Reactor / Security', x: 460,  y: 720 },
+            { name: 'CAM 2: Wyjście z MedBay / Cafeteria',    x: 860,  y: 320 },
+            { name: 'CAM 3: Korytarz Admin / Storage',        x: 1300, y: 860 },
+            { name: 'CAM 4: Korytarz Navigation / O2',        x: 1960, y: 660 }
+        ],
+        taskPool: [
+            { name: 'Pobierz i wyślij dane (Weapons -> Admin)', type: 'upload',   x: 1960, y: 200, step2X: 1650, step2Y: 830, step2Room: 'Admin' },
+            { name: 'Pobierz i wyślij dane (Cafeteria -> Admin)',type: 'upload',   x: 1480, y: 140, step2X: 1650, step2Y: 830, step2Room: 'Admin' },
+            { name: 'Oblicz parametry kursu w Navigation',      type: 'math',     x: 2400, y: 700 },
+            { name: 'Oblicz moc rdzenia w Reactor',             type: 'math',     x: 210,  y: 880 },
+            { name: 'Przeciągnij kartę i wpisz kod w Admin',    type: 'code',     x: 1730, y: 840 },
+            { name: 'Wpisz kod diagnostyki w MedBay',           type: 'code',     x: 910,  y: 650 },
+            { name: 'Kalibracja napięcia w Electrical',         type: 'sliders',  x: 990,  y: 940 },
+            { name: 'Wyrównaj moc silnika w Upper Engine',      type: 'sliders',  x: 520,  y: 340 },
+            { name: 'Wyrównaj moc silnika w Lower Engine',      type: 'sliders',  x: 520,  y: 1120 },
+            { name: 'Wyczyść filtr tlenu w O2',                 type: 'code',     x: 1760, y: 660 },
+            { name: 'Zresetuj osłony w Shields',                type: 'math',     x: 1960, y: 1140 },
+            { name: 'Opróżnij zsyp śmieci w Storage',           type: 'sliders',  x: 1390, y: 1330 }
+        ]
+    },
+    mira: {
+        name: 'MIRA HQ (Baza w Chmurach)',
+        width: 2600, height: 1600,
+        spawn: { x: 1300, y: 820 },
+        table: { x: 1300, y: 820, r: 52 },
+        camsConsole: { x: 1200, y: 280, room: 'Admin / Comms' },
+        reactorConsole: { x: 280, y: 340, room: 'Reactor MIRA' },
+        o2Console: { x: 2100, y: 340, room: 'Greenhouse O2' },
+        rooms: [
+            { id: 'cafeteria',  name: 'Cafeteria',       x: 1000, y: 620,  w: 600, h: 420, color: '#334155' },
+            { id: 'admin',      name: 'Admin & Comms',   x: 1020, y: 160,  w: 560, h: 300, color: '#3f2733' },
+            { id: 'reactor',    name: 'Reactor',         x: 160,  y: 180,  w: 420, h: 380, color: '#2e1f47' },
+            { id: 'laboratory', name: 'Laboratory',      x: 160,  y: 720,  w: 440, h: 360, color: '#1f3647' },
+            { id: 'locker',     name: 'Locker Room',     x: 320,  y: 1180, w: 460, h: 280, color: '#293548' },
+            { id: 'medbay',     name: 'MedBay',          x: 1020, y: 1180, w: 560, h: 280, color: '#233831' },
+            { id: 'greenhouse', name: 'Greenhouse (O2)', x: 1920, y: 180,  w: 460, h: 380, color: '#14532d' },
+            { id: 'office',     name: 'Office',          x: 1920, y: 720,  w: 460, h: 360, color: '#27303f' },
+            { id: 'storage',    name: 'Storage',         x: 1840, y: 1180, w: 480, h: 280, color: '#383428' }
+        ],
+        corridors: [
+            { x: 1240, y: 440,  w: 120, h: 760 },
+            { x: 560,  y: 300,  w: 1380, h: 110 },
+            { x: 320,  y: 540,  w: 120, h: 660 },
+            { x: 580,  y: 820,  w: 1360, h: 110 },
+            { x: 760,  y: 1260, w: 1100, h: 110 }
+        ],
+        propsObstacles: [
+            { room: 'admin',   x: 1200, y: 270,  w: 180, h: 65 },
+            { room: 'storage', x: 2020, y: 1260, w: 120, h: 120 }
+        ],
+        vents: [
+            { id: 0, x: 320,  y: 440,  links: [1, 2], name: 'Reactor' },
+            { id: 1, x: 1140, y: 230,  links: [0, 3], name: 'Admin' },
+            { id: 2, x: 380,  y: 920,  links: [0, 3], name: 'Laboratory' },
+            { id: 3, x: 2100, y: 440,  links: [1, 2], name: 'Greenhouse' }
+        ],
+        cameras: [
+            { name: 'CAM 1: Cafeteria Central', x: 1300, y: 820 },
+            { name: 'CAM 2: Reactor & Lab',     x: 380,  y: 620 },
+            { name: 'CAM 3: Greenhouse O2',     x: 2100, y: 380 },
+            { name: 'CAM 4: MedBay Corridor',   x: 1300, y: 1280 }
+        ],
+        taskPool: [
+            { name: 'Pobierz i wyślij dane (Greenhouse -> Admin)', type: 'upload',  x: 2120, y: 260, step2X: 1420, step2Y: 230, step2Room: 'Admin & Comms' },
+            { name: 'Oblicz skład próbki w Laboratory',            type: 'math',    x: 340,  y: 880 },
+            { name: 'Wpisz kod identyfikacyjny w Office',          type: 'code',    x: 2140, y: 880 },
+            { name: 'Kalibracja reaktora w Reactor',               type: 'sliders', x: 340,  y: 260 },
+            { name: 'Oblicz dawkę leku w MedBay',                  type: 'math',    x: 1300, y: 1340 },
+            { name: 'Pobierz i wyślij dane (Office -> Admin)',     type: 'upload',  x: 2220, y: 940, step2X: 1420, step2Y: 230, step2Room: 'Admin & Comms' },
+            { name: 'Wpisz kod szafki w Locker Room',              type: 'code',    x: 520,  y: 1320 },
+            { name: 'Ustaw zasilanie w Storage',                   type: 'sliders', x: 2220, y: 1320 }
+        ]
+    }
+};
+
+/* TRYB PEŁNOEKRANOWY DLA AMONG US (UKRYCIE NAGŁÓWKA I PRZYCISKU WYJŚCIA PODCZAS GRY) */
+function setAmongFullscreenMode(enable) {
+    const hud = document.querySelector('.game-hud');
+    const logo = document.querySelector('.main-logo');
+    const wrapper = document.querySelector('.stage-wrapper');
+    if (enable) {
+        if (hud) hud.classList.add('hidden');
+        if (logo) logo.classList.add('hidden');
+        if (wrapper) {
+            wrapper.style.minHeight = '94vh';
+            wrapper.style.padding = '6px';
+        }
+        canvas.width = 1180;
+        canvas.height = 640;
+    } else {
+        if (hud) hud.classList.remove('hidden');
+        if (logo) logo.classList.remove('hidden');
+        if (wrapper) {
+            wrapper.style.minHeight = '680px';
+            wrapper.style.padding = '10px';
+        }
+        canvas.width = 900;
+        canvas.height = 540;
+    }
+}
+
+function exitAmongToGameSelect() {
+    setAmongFullscreenMode(false);
+    returnToLobby();
+}
+
+/* SPRAWDZENIE CZY PUNKT (X,Y) JEST DOZWOLONY (ŚCIANY ORAZ MEBLE W POKOJACH!) */
+function isWalkableOnMap(map, x, y, alive = true) {
+    if (!alive) {
+        return x >= 50 && x <= map.width - 50 && y >= 50 && y <= map.height - 50;
+    }
+
+    // Sprawdzenie kolizji z meblami (stół w Adminie, beczki/skrzynie w Storage, silniki)
+    if (map.propsObstacles) {
+        for (const ob of map.propsObstacles) {
+            if (x >= ob.x - 12 && x <= ob.x + ob.w + 12 && y >= ob.y - 12 && y <= ob.y + ob.h + 12) {
+                return false;
+            }
+        }
+    }
+
+    // Sprawdzenie kolizji ze stołami w Cafeterii (The Skeld)
+    if (among.mapKey === 'skeld') {
+        const cafeTables = [
+            { x: 1310, y: 310, r: 54 },
+            { x: 1140, y: 190, r: 44 }, { x: 1480, y: 190, r: 44 },
+            { x: 1140, y: 420, r: 44 }, { x: 1480, y: 420, r: 44 }
+        ];
+        for (const tb of cafeTables) {
+            if (Math.hypot(x - tb.x, y - tb.y) < tb.r) return false;
+        }
+    }
+
+    const pad = 16;
+    for (const r of map.rooms) {
+        if (x >= r.x + pad && x <= r.x + r.w - pad && y >= r.y + pad && y <= r.y + r.h - pad) {
+            return true;
+        }
+    }
+    for (const c of map.corridors) {
+        if (x >= c.x && x <= c.x + c.w && y >= c.y && y <= c.y + c.h) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/* Sprawdzenie w jakim pokoju lub korytarzu stoi gracz (do okluzji ciemnych pokoi za ścianą!) */
+function getPlayerZones(map, x, y) {
+    const rooms = map.rooms.filter(r => x >= r.x - 18 && x <= r.x + r.w + 18 && y >= r.y - 18 && y <= r.y + r.h + 18);
+    const corridors = map.corridors.filter(c => x >= c.x - 18 && x <= c.x + c.w + 18 && y >= c.y - 18 && y <= c.y + c.h + 18);
+    return { rooms, corridors };
+}
+
+function isPointVisibleToPlayer(map, me, px, py) {
+    if (!me.alive) return true; // Duchy widzą przez ściany!
+    const myZones = getPlayerZones(map, me.x, me.y);
+
+    // Jeśli cel znajduje się w tym samym pokoju co gracz -> widoczny
+    for (const r of myZones.rooms) {
+        if (px >= r.x - 20 && px <= r.x + r.w + 20 && py >= r.y - 20 && py <= r.y + r.h + 20) return true;
+    }
+    // Jeśli cel znajduje się w tym samym korytarzu co gracz -> widoczny
+    for (const c of myZones.corridors) {
+        if (px >= c.x - 20 && px <= c.x + c.w + 20 && py >= c.y - 20 && py <= c.y + c.h + 20) return true;
+    }
+    return false;
+}
+
 function startAmongUs() {
+    setAmongFullscreenMode(true);
     canvas.classList.remove('hidden');
-    among = { px: 450, py: 270, tasks: [{ x: 150, y: 120, done: false }, { x: 750, y: 420, done: false }] };
+    const ui = document.getElementById('custom-game-ui');
+    ui.classList.remove('hidden');
+
+    if (amongInterval) clearInterval(amongInterval);
+
+    among = {
+        phase: 'lobby',
+        mapKey: 'skeld',
+        totalPlayersCount: 10,
+        impostorsCount: 2,
+        crewSpeed: 1.0,       // Wybór prędkości Cywila (0.5x - 3.0x)
+        impostorSpeed: 1.25,  // Wybór prędkości Impostora (0.5x - 3.0x)
+        crewVision: 1.0,
+        impostorVision: 1.75,
+        lightsSabotaged: false,
+        meetingsLeft: 4,
+        emergencyCooldown: 30,
+        killCooldown: 30,
+        sabotageCooldown: 0,
+        activeSabotage: null,
+        closedDoors: {},
+        watchingCams: false,
+        camBlink: false,
+        showMapModal: false,
+        showChatModal: false,
+        showSabotageModal: false,
+        activeTaskModal: null,
+        statusBanner: '',
+        ventAnim: 0,
+        inVentId: null,
+        players: [],
+        bodies: [],
+        chat: [],
+        votes: {},
+        myVote: null,
+        meetingTimer: 45,
+        meetingReason: '',
+        winnerTeam: null,
+        winnerReason: ''
+    };
+
+    initAmongLobbyPlayers();
+    renderAmongControlsUI();
+
+    amongInterval = setInterval(tickAmongSecond, 1000);
     loopAmongUs();
 }
+
+function initAmongLobbyPlayers() {
+    among.players = [];
+    for (let i = 0; i < among.totalPlayersCount; i++) {
+        const col = AU_COLORS[i % AU_COLORS.length];
+        among.players.push({
+            id: i,
+            name: i === 0 ? state.nick : (state.players[i] ? state.players[i].name : `Załogant_${i + 1}`),
+            color: col.hex,
+            colorName: col.name,
+            x: 420 + (i % 5) * 65,
+            y: 240 + Math.floor(i / 5) * 75,
+            dir: 1,
+            moving: false,
+            walkCycle: Math.random() * 10,
+            isBot: i !== 0,
+            isImpostor: false,
+            alive: true,
+            inVent: false,
+            tasks: [],
+            tasksDone: 0,
+            botWaypoints: [],
+            botWaitTimer: 0,
+            botKillCd: 20
+        });
+    }
+}
+
+function beginAmongMatch() {
+    const map = AU_MAPS[among.mapKey];
+    initAmongLobbyPlayers();
+
+    const impCount = Math.min(3, Math.max(1, Number(among.impostorsCount)));
+    const indices = among.players.map((_, idx) => idx).sort(() => Math.random() - 0.5);
+    for (let i = 0; i < impCount; i++) {
+        among.players[indices[i]].isImpostor = true;
+    }
+
+    among.players.forEach((p, idx) => {
+        const angle = (idx / among.players.length) * Math.PI * 2;
+        p.x = map.table.x + Math.cos(angle) * 92;
+        p.y = map.table.y + Math.sin(angle) * 92;
+        p.alive = true;
+        p.inVent = false;
+        p.tasksDone = 0;
+        p.botWaypoints = [];
+
+        const shuffled = [...map.taskPool].sort(() => Math.random() - 0.5);
+        p.tasks = shuffled.slice(0, 7).map((t, tid) => ({
+            id: tid,
+            name: t.name,
+            type: t.type,
+            x: t.x,
+            y: t.y,
+            step: 1,
+            maxSteps: t.type === 'upload' ? 2 : 1,
+            step2X: t.step2X || t.x,
+            step2Y: t.step2Y || t.y,
+            step2Room: t.step2Room || 'Admin',
+            done: false
+        }));
+    });
+
+    among.bodies = [];
+    among.meetingsLeft = 4;
+    among.emergencyCooldown = 30;
+    among.killCooldown = 30;
+    among.sabotageCooldown = 0;
+    among.activeSabotage = null;
+    among.lightsSabotaged = false;
+    among.closedDoors = {};
+    among.inVentId = null;
+    among.watchingCams = false;
+    among.showMapModal = false;
+    among.statusBanner = '';
+    among.phase = 'reveal';
+
+    renderAmongControlsUI();
+
+    setTimeout(() => {
+        if (among.phase === 'reveal') {
+            among.phase = 'play';
+            renderAmongControlsUI();
+        }
+    }, 3200);
+}
+
+function tickAmongSecond() {
+    if (state.currentGame !== 'among') return;
+    among.camBlink = !among.camBlink;
+
+    if (among.phase === 'play') {
+        if (among.emergencyCooldown > 0) among.emergencyCooldown--;
+        if (among.killCooldown > 0) among.killCooldown--;
+        if (among.sabotageCooldown > 0) among.sabotageCooldown--;
+
+        Object.keys(among.closedDoors).forEach(rId => {
+            among.closedDoors[rId]--;
+            if (among.closedDoors[rId] <= 0) delete among.closedDoors[rId];
+        });
+
+        if (among.activeSabotage) {
+            among.activeSabotage.timer--;
+            if (among.activeSabotage.timer <= 0) {
+                endAmongGame('impostors', `💥 Wybuch! Załoga nie wpisała kodu PIN (${among.activeSabotage.type.toUpperCase()}) w ciągu 30 sekund!`);
+                return;
+            }
+        }
+
+        const map = AU_MAPS[among.mapKey];
+        for (const b of among.players) {
+            if (!b.isBot) continue;
+
+            // Bot zgłasza ciało tylko jeśli jest w tym samym pokoju/korytarzu i blisko ciała
+            if (b.alive && among.bodies.length > 0) {
+                const foundBody = among.bodies.find(body =>
+                    Math.hypot(body.x - b.x, body.y - b.y) < 140 && isPointVisibleToPlayer(map, b, body.x, body.y)
+                );
+                if (foundBody) {
+                    if (!b.isImpostor || Math.random() < 0.2) {
+                        triggerAmongMeeting(`📢 ${b.name} znalazł i zgłosił (REPORT) ciało gracza ${foundBody.name}!`);
+                        return;
+                    }
+                }
+            }
+
+            if (b.isImpostor && b.alive) {
+                if (b.botKillCd > 0) b.botKillCd--;
+                if (b.botKillCd <= 0) {
+                    const victim = among.players.find(v =>
+                        v.alive && !v.isImpostor && Math.hypot(v.x - b.x, v.y - b.y) < 88 && isPointVisibleToPlayer(map, b, v.x, v.y)
+                    );
+                    if (victim) {
+                        victim.alive = false;
+                        among.bodies.push({ id: victim.id, name: victim.name, color: victim.color, x: victim.x, y: victim.y });
+                        b.botKillCd = 30;
+                        checkAmongWinConditions();
+                        if (among.phase !== 'play') return;
+                    }
+                }
+            }
+        }
+
+        if (!among.activeTaskModal) renderAmongControlsUI();
+    }
+    else if (among.phase === 'meeting') {
+        among.meetingTimer--;
+        if (among.meetingTimer <= 0) {
+            finalizeAmongVoting();
+        } else {
+            const timerEl = document.getElementById('au-meeting-timer');
+            if (timerEl) timerEl.textContent = among.meetingTimer + 's';
+        }
+    }
+}
+
+function checkAmongWinConditions() {
+    if (among.phase !== 'play' && among.phase !== 'meeting') return;
+
+    const aliveImpostors = among.players.filter(p => p.alive && p.isImpostor).length;
+    const aliveCrew = among.players.filter(p => p.alive && !p.isImpostor).length;
+
+    if (aliveImpostors === 0) {
+        endAmongGame('crew', '🎉 Wszyscy Impostorzy zostali wyeliminowani! Cywile wygrywają!');
+        return;
+    }
+
+    if (aliveImpostors >= aliveCrew) {
+        endAmongGame('impostors', `🔪 Liczba żywych Impostorów (${aliveImpostors}) zrównała się z liczbą Cywili (${aliveCrew})! Impostorzy wygrywają!`);
+        return;
+    }
+
+    const crewList = among.players.filter(p => !p.isImpostor);
+    const totalTasks = crewList.length * 7;
+    const doneTasks = crewList.reduce((acc, p) => acc + p.tasksDone, 0);
+    if (totalTasks > 0 && doneTasks >= totalTasks) {
+        endAmongGame('crew', '🛠️ Załoga ukończyła wszystkie zadania (100% paska)! Cywile wygrywają!');
+    }
+}
+
+function endAmongGame(winnerTeam, reason) {
+    among.phase = 'gameover';
+    among.winnerTeam = winnerTeam;
+    among.winnerReason = reason;
+    among.activeSabotage = null;
+
+    const me = among.players[0];
+    const iWon = (winnerTeam === 'impostors' && me.isImpostor) || (winnerTeam === 'crew' && !me.isImpostor);
+    if (iWon) addPoints(state.mySlot, 60);
+
+    renderAmongControlsUI();
+}
+
+function backToAmongWaitingLobby() {
+    among.phase = 'lobby';
+    initAmongLobbyPlayers();
+    renderAmongControlsUI();
+}
+
+/* =========================================================================
+   RYSOWANIE MEBLI I DETALI WEWNĄTRZ POKOI THE SKELD (JAK NA ZDJĘCIACH!)
+   ========================================================================= */
+function drawRoomFurniture(ctx, r) {
+    ctx.save();
+
+    if (r.id === 'cafeteria') {
+        // Szachownica na podłodze Cafeterii i 5 niebieskich okrągłych stołów
+        const tables = [
+            { x: 1310, y: 310, rad: 52, main: true },
+            { x: 1140, y: 190, rad: 42 }, { x: 1480, y: 190, rad: 42 },
+            { x: 1140, y: 420, rad: 42 }, { x: 1480, y: 420, rad: 42 }
+        ];
+        tables.forEach(tb => {
+            ctx.fillStyle = '#1e3a8a';
+            ctx.beginPath();
+            ctx.arc(tb.x, tb.y, tb.rad + 7, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#3b82f6';
+            ctx.beginPath();
+            ctx.arc(tb.x, tb.y, tb.rad, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#93c5fd';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        });
+    }
+    else if (r.id === 'admin') {
+        // Duży, wąski zielony stół mapowy w centrum Admina + czerwone fotele u góry
+        ctx.fillStyle = '#dc2626';
+        [1595, 1650, 1705].forEach(cx => {
+            ctx.beginPath();
+            ctx.arc(cx, 825, 14, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.roundRect(1575, 885, 160, 65, 10);
+        ctx.fill();
+        ctx.stroke();
+
+        // Świecący zielony ekran na stole w Adminie
+        ctx.fillStyle = '#10b981';
+        ctx.fillRect(1590, 897, 130, 40);
+        ctx.fillStyle = '#064e3b';
+        ctx.font = 'bold 11px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('ADMIN MAP TABLE', 1655, 921);
+    }
+    else if (r.id === 'storage') {
+        // Wielkie skrzynie ładunkowe i beczki na środku najniższego pokoju (Storage)
+        ctx.fillStyle = '#365314';
+        ctx.strokeStyle = '#1a2e05';
+        ctx.lineWidth = 4;
+        ctx.fillRect(1225, 1070, 110, 120);
+        ctx.strokeRect(1225, 1070, 110, 120);
+
+        ctx.fillStyle = '#4d7c0f';
+        ctx.fillRect(1240, 1160, 95, 95);
+        ctx.strokeRect(1240, 1160, 95, 95);
+
+        // Beczki paliwowe obok skrzyń i przy ścianie
+        const barrels = [
+            { x: 1245, y: 1055, col: '#ea580c' },
+            { x: 1280, y: 1055, col: '#2563eb' },
+            { x: 1320, y: 1055, col: '#ea580c' },
+            { x: 1135, y: 960,  col: '#2563eb' },
+            { x: 1135, y: 995,  col: '#ef4444' },
+            { x: 1230, y: 1245, col: '#ef4444' }
+        ];
+        barrels.forEach(b => {
+            ctx.fillStyle = b.col;
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, 14, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        });
+
+        // Żółto-czarne pasy zsypu na dole Storage
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(1340, 1375, 90, 18);
+    }
+    else if (r.id === 'medbay') {
+        // Niebieskie łóżka szpitalne po lewej i okrągły skaner medyczny na dole
+        [460, 530, 600].forEach(by => {
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(752, by, 65, 38);
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(772, by + 2, 43, 34);
+        });
+
+        // Skaner MedBay
+        ctx.fillStyle = '#0ea5e9';
+        ctx.beginPath();
+        ctx.arc(910, 655, 32, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#bae6fd';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+    }
+    else if (r.id === 'reactor') {
+        // Świecący rdzeń reaktora po lewej
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(125, 740, 52, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#e0f2fe';
+        ctx.lineWidth = 6;
+        ctx.stroke();
+    }
+    else if (r.id === 'upper_engine' || r.id === 'lower_engine') {
+        const ey = r.id === 'upper_engine' ? 285 : 1065;
+        ctx.fillStyle = '#9a3412';
+        ctx.strokeStyle = '#fdba74';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.roundRect(340, ey, 125, 130, 14);
+        ctx.fill();
+        ctx.stroke();
+
+        // Świecąca szczelina energetyczna silnika
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(455, ey + 20, 12, 90);
+    }
+    else if (r.id === 'electrical') {
+        // Szafy rozdzielcze i kolorowe kable na podłodze
+        ctx.fillStyle = '#475569';
+        ctx.fillRect(820, 940, 140, 75);
+        ctx.strokeStyle = '#94a3b8';
+        ctx.strokeRect(820, 940, 140, 75);
+    }
+    else if (r.id === 'weapons') {
+        // Konsola celownicza na środku Weapons
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.arc(1960, 260, 34, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#22c55e';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+    }
+    else if (r.id === 'navigation') {
+        // Fotel pilota i niebieski pulpit nawigacyjny po prawej
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(2430, 620, 36, 180);
+        ctx.fillStyle = '#334155';
+        ctx.beginPath();
+        ctx.arc(2390, 710, 20, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    else if (r.id === 'o2') {
+        // Zbiorniki tlenowe i zielona kapsuła z rośliną
+        ctx.fillStyle = '#16a34a';
+        ctx.beginPath();
+        ctx.arc(1665, 565, 26, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    else if (r.id === 'shields') {
+        // Świecący sześciokąt osłon na podłodze
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(1960, 1120, 45, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+    else if (r.id === 'communications') {
+        // Biurko radiowe i krzesło
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(1540, 1250, 180, 45);
+    }
+
+    ctx.restore();
+}
+
+/* =========================================================================
+   RYSOWANIE LUDZIKA Z ANIMACJĄ CHODZENIA (PRZEBIERANIE NOGAMI I KOŁYSANIE!)
+   ========================================================================= */
+function drawCrewmate(ctx, x, y, color, name, dir = 1, isGhost = false, isDeadBody = false, showImpostorTag = false, statusText = '', walkCycle = 0, isMoving = false) {
+    ctx.save();
+    ctx.translate(x, y);
+
+    if (isDeadBody) {
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        ctx.beginPath();
+        ctx.ellipse(0, 12, 24, 9, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.ellipse(-6, 6, 18, 12, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = '#7f1d1d';
+        ctx.beginPath();
+        ctx.ellipse(8, 6, 7, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(8, 3, 12, 6);
+        ctx.beginPath();
+        ctx.arc(20, 2, 4, 0, Math.PI * 2);
+        ctx.arc(20, 8, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        return;
+    }
+
+    // Cień pod postacią
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.42)';
+    ctx.beginPath();
+    ctx.ellipse(0, 20, 16, 6, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (isGhost) ctx.globalAlpha = 0.45;
+
+    // Obliczenie klatki animacji chodzenia (podskakiwanie tułowia + naprzemienny ruch nóg)
+    const bounceY = (isMoving && !isGhost) ? -Math.abs(Math.sin(walkCycle)) * 4.5 : 0;
+    const tiltAngle = (isMoving && !isGhost) ? Math.sin(walkCycle) * 0.09 : 0;
+    const leftLegOffset = (isMoving && !isGhost) ? Math.sin(walkCycle) * 6 : 0;
+    const rightLegOffset = (isMoving && !isGhost) ? -Math.sin(walkCycle) * 6 : 0;
+
+    ctx.save();
+    ctx.translate(0, bounceY);
+    ctx.rotate(tiltAngle);
+    ctx.scale(dir, 1);
+
+    ctx.fillStyle = color;
+    ctx.strokeStyle = '#090d16';
+    ctx.lineWidth = 3;
+
+    // Nóżki z animacją przebierania podczas chodzenia!
+    if (!isGhost) {
+        ctx.beginPath();
+        ctx.roundRect(-13 + leftLegOffset * 0.5, 9 + Math.max(0, leftLegOffset), 10, 11, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.roundRect(3 + rightLegOffset * 0.5, 9 + Math.max(0, rightLegOffset), 10, 11, 4);
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    // Plecak
+    ctx.beginPath();
+    ctx.roundRect(-21, -10, 9, 20, 4);
+    ctx.fill();
+    ctx.stroke();
+
+    // Tułów
+    ctx.beginPath();
+    ctx.roundRect(-14, -20, 28, 32, [14, 14, 6, 6]);
+    ctx.fill();
+    ctx.stroke();
+
+    if (isGhost) {
+        ctx.beginPath();
+        ctx.arc(0, 12, 12, 0, Math.PI);
+        ctx.fill();
+    }
+
+    // Wizjer
+    ctx.fillStyle = '#93c5fd';
+    ctx.beginPath();
+    ctx.roundRect(-2, -13, 18, 12, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#e0f2fe';
+    ctx.beginPath();
+    ctx.ellipse(8, -10, 5, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+
+    ctx.globalAlpha = 1;
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = showImpostorTag ? '#ef4444' : '#ffffff';
+    ctx.fillText((isGhost ? '👻 ' : '') + name, 0, -28);
+
+    if (statusText) {
+        ctx.fillStyle = '#facc15';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(statusText, 0, -42);
+    }
+
+    ctx.restore();
+}
+
+/* NIEBIESKA MAPA OVERLAY */
+function drawBlueMapOverlay(map, me) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(10, 15, 30, 0.78)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const padX = 50, padY = 55;
+    const availW = canvas.width - padX * 2;
+    const availH = canvas.height - padY * 2;
+    const scale = Math.min(availW / map.width, availH / map.height);
+    const offX = (canvas.width - map.width * scale) / 2;
+    const offY = (canvas.height - map.height * scale) / 2 + 10;
+
+    ctx.fillStyle = 'rgba(165, 180, 252, 0.85)';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    map.corridors.forEach(c => {
+        const rx = offX + c.x * scale, ry = offY + c.y * scale, rw = c.w * scale, rh = c.h * scale;
+        ctx.fillRect(rx, ry, rw, rh);
+        ctx.strokeRect(rx, ry, rw, rh);
+    });
+
+    map.rooms.forEach(r => {
+        const rx = offX + r.x * scale, ry = offY + r.y * scale, rw = r.w * scale, rh = r.h * scale;
+        ctx.fillStyle = among.closedDoors[r.id] ? 'rgba(220, 38, 38, 0.9)' : 'rgba(29, 78, 216, 0.95)';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.roundRect(rx, ry, rw, rh, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.font = 'bold 13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.strokeText(r.name, rx + rw / 2, ry + rh / 2 + 4);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(r.name, rx + rw / 2, ry + rh / 2 + 4);
+    });
+
+    if (!me.isImpostor) {
+        me.tasks.forEach(t => {
+            if (t.done) return;
+            const tx = offX + (t.step === 2 ? t.step2X : t.x) * scale;
+            const ty = offY + (t.step === 2 ? t.step2Y : t.y) * scale;
+
+            ctx.fillStyle = '#eab308';
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(tx, ty, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#000000';
+            ctx.font = 'bold 15px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('!', tx, ty + 5);
+        });
+    }
+
+    const mx = offX + me.x * scale, my = offY + me.y * scale;
+    ctx.fillStyle = me.color;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(mx, my, 9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(52, 68, 20, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillText('✕', 52, 75);
+
+    ctx.restore();
+}
+
+/* GŁÓWNA PĘTLA GRY AMONG US */
 function loopAmongUs() {
     if (state.currentGame !== 'among') return;
-    if (keys['w']) among.py -= 4; if (keys['s']) among.py += 4; if (keys['a']) among.px -= 4; if (keys['d']) among.px += 4;
-    ctx.fillStyle = '#090d16'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-    among.tasks.forEach(t => {
-        if (!t.done && Math.hypot(among.px - t.x, among.py - t.y) < 30) { t.done = true; addPoints(state.mySlot, 25); }
-        ctx.fillStyle = t.done ? '#22c55e' : '#facc15'; ctx.fillRect(t.x - 15, t.y - 15, 30, 30);
+    const me = among.players[0];
+
+    if (keys['m']) {
+        keys['m'] = false;
+        if (among.phase === 'play') {
+            among.showMapModal = !among.showMapModal;
+            renderAmongControlsUI();
+        }
+    }
+
+    // 1. EKRAN POCZEKALNI (DROPSHIP)
+    if (among.phase === 'lobby') {
+        let mv = false;
+        const lobbySpd = 4.2 * among.crewSpeed;
+        if (keys['w'] || keys['arrowup']) { me.y = Math.max(120, me.y - lobbySpd); mv = true; }
+        if (keys['s'] || keys['arrowdown']) { me.y = Math.min(520, me.y + lobbySpd); mv = true; }
+        if (keys['a'] || keys['arrowleft']) { me.x = Math.max(220, me.x - lobbySpd); me.dir = -1; mv = true; }
+        if (keys['d'] || keys['arrowright']) { me.x = Math.min(960, me.x + lobbySpd); me.dir = 1; mv = true; }
+        me.moving = mv;
+        if (mv) me.walkCycle += 0.28;
+
+        ctx.fillStyle = '#090d16';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.roundRect(180, 75, 820, 480, 30);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#facc15';
+        ctx.font = 'bold 20px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(
+            `🛸 POCZEKALNIA DROPSHIP — Gracze: ${among.players.length}/15 | Prędkość Cywila: ${among.crewSpeed}x | Prędkość Imp: ${among.impostorSpeed}x`,
+            canvas.width / 2, 46
+        );
+
+        among.players.forEach(p => {
+            if (p.isBot) {
+                p.x += Math.cos(p.walkCycle * 0.2) * 1.2;
+                p.y += Math.sin(p.walkCycle * 0.25) * 1.2;
+                p.x = Math.max(220, Math.min(950, p.x));
+                p.y = Math.max(120, Math.min(510, p.y));
+                p.moving = true;
+                p.walkCycle += 0.18;
+            }
+            drawCrewmate(ctx, p.x, p.y, p.color, p.name, p.dir, false, false, false, '', p.walkCycle, p.moving);
+        });
+
+        state.loopId = requestAnimationFrame(loopAmongUs);
+        return;
+    }
+
+    // 2. EKRAN ROLI
+    if (among.phase === 'reveal') {
+        ctx.fillStyle = '#05070c';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 48px sans-serif';
+        ctx.fillStyle = me.isImpostor ? '#ef4444' : '#38bdf8';
+        ctx.fillText(me.isImpostor ? '🔪 JESTEŚ IMPOSTOREM' : '🛠️ JESTEŚ ZAŁOGANTEM (CREWMATE)', canvas.width / 2, 180);
+
+        ctx.font = '20px sans-serif';
+        ctx.fillStyle = '#cbd5e1';
+        const impNames = among.players.filter(p => p.isImpostor).map(p => p.name).join(', ');
+        ctx.fillText(
+            me.isImpostor
+                ? `Twoja prędkość: ${among.impostorSpeed}x | Wizja: ${among.impostorVision}x | Impostorzy: ${impNames}`
+                : `Twoja prędkość: ${among.crewSpeed}x | Wizja: ${among.crewVision}x | Wykonaj 7 zadań w pokojach!`,
+            canvas.width / 2, 235
+        );
+
+        drawCrewmate(ctx, canvas.width / 2, 370, me.color, me.name, 1, false, false, me.isImpostor, '', 0, false);
+        state.loopId = requestAnimationFrame(loopAmongUs);
+        return;
+    }
+
+    const map = AU_MAPS[among.mapKey];
+
+    // 3. FIZYKA RUCHU GRACZA (Z WYBRANĄ PRĘDKOŚCIĄ I ANIMACJĄ CHODZENIA)
+    if (among.phase === 'play' && !among.watchingCams && !among.activeTaskModal && !me.inVent) {
+        const baseMult = me.isImpostor ? among.impostorSpeed : among.crewSpeed;
+        const speed = (me.alive ? 4.4 : 5.6) * baseMult;
+        let dx = 0, dy = 0;
+        if (keys['w'] || keys['arrowup']) dy -= speed;
+        if (keys['s'] || keys['arrowdown']) dy += speed;
+        if (keys['a'] || keys['arrowleft']) { dx -= speed; me.dir = -1; }
+        if (keys['d'] || keys['arrowright']) { dx += speed; me.dir = 1; }
+
+        let moved = false;
+        if (dx !== 0 && canMoveToPoint(map, me.x, me.y, me.x + dx, me.y, me.alive)) {
+            me.x += dx;
+            moved = true;
+        }
+        if (dy !== 0 && canMoveToPoint(map, me.x, me.y, me.x, me.y + dy, me.alive)) {
+            me.y += dy;
+            moved = true;
+        }
+        me.moving = moved;
+        if (moved) me.walkCycle += 0.26 * baseMult;
+    } else {
+        me.moving = false;
+    }
+
+    // 4. RUCH BOTÓW PO KORYTARZACH Z ANIMACJĄ CHODZENIA
+    if (among.phase === 'play') {
+        among.players.forEach(b => {
+            if (!b.isBot) return;
+
+            if (b.botWaitTimer > 0) {
+                b.botWaitTimer--;
+                b.moving = false;
+                if (b.botWaitTimer === 1 && !b.isImpostor && b.tasksDone < 7) {
+                    const pending = b.tasks.find(t => !t.done);
+                    if (pending) {
+                        pending.done = true;
+                        b.tasksDone++;
+                        checkAmongWinConditions();
+                    }
+                }
+                return;
+            }
+
+            if (!b.botWaypoints || b.botWaypoints.length === 0) {
+                const pendingTask = (!b.isImpostor) ? b.tasks.find(t => !t.done) : null;
+                const destX = pendingTask ? pendingTask.x : map.rooms[Math.floor(Math.random() * map.rooms.length)].x + 110;
+                const destY = pendingTask ? pendingTask.y : map.rooms[Math.floor(Math.random() * map.rooms.length)].y + 110;
+
+                const hubs = [
+                    { x: 1300, y: 540 }, { x: 1300, y: 880 },
+                    { x: 450,  y: 720 }, { x: 1960, y: 680 },
+                    { x: 820,  y: 320 }, { x: 820,  y: 1210 }
+                ];
+                const nearestHub = hubs.reduce((best, h) =>
+                    Math.hypot(h.x - b.x, h.y - b.y) < Math.hypot(best.x - b.x, best.y - b.y) ? h : best
+                , hubs[0]);
+
+                b.botWaypoints = [nearestHub, { x: destX, y: destY }];
+            }
+
+            const target = b.botWaypoints[0];
+            const dist = Math.hypot(target.x - b.x, target.y - b.y);
+            if (dist < 26) {
+                b.botWaypoints.shift();
+                if (b.botWaypoints.length === 0) {
+                    b.botWaitTimer = 90;
+                    b.moving = false;
+                }
+            } else {
+                const bMult = b.isImpostor ? among.impostorSpeed : among.crewSpeed;
+                const ang = Math.atan2(target.y - b.y, target.x - b.x);
+                const stepX = Math.cos(ang) * 2.7 * bMult;
+                const stepY = Math.sin(ang) * 2.7 * bMult;
+                b.dir = stepX >= 0 ? 1 : -1;
+
+                let bMoved = false;
+                if (canMoveToPoint(map, b.x, b.y, b.x + stepX, b.y + stepY, b.alive)) {
+                    b.x += stepX; b.y += stepY; bMoved = true;
+                } else if (canMoveToPoint(map, b.x, b.y, b.x + stepX, b.y, b.alive)) {
+                    b.x += stepX; bMoved = true;
+                } else if (canMoveToPoint(map, b.x, b.y, b.x, b.y + stepY, b.alive)) {
+                    b.y += stepY; bMoved = true;
+                } else {
+                    b.botWaypoints = [];
+                }
+                b.moving = bMoved;
+                if (bMoved) b.walkCycle += 0.24 * bMult;
+            }
+        });
+    }
+
+    if (among.watchingCams) {
+        drawSecurityCamerasView(map);
+        state.loopId = requestAnimationFrame(loopAmongUs);
+        return;
+    }
+
+    const camX = me.x - canvas.width / 2;
+    const camY = me.y - canvas.height / 2;
+
+    ctx.fillStyle = '#05070d';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+    ctx.translate(-camX, -camY);
+
+    // Zewnętrzny obrys ścian
+    ctx.fillStyle = '#475569';
+    map.corridors.forEach(c => ctx.fillRect(c.x - 10, c.y - 10, c.w + 20, c.h + 20));
+    map.rooms.forEach(r => ctx.fillRect(r.x - 10, r.y - 10, r.w + 20, r.h + 20));
+
+    // Sprawdź w jakim pokoju/korytarzu stoi teraz gracz (do przyciemnienia pokojów za ścianą!)
+    const myZones = getPlayerZones(map, me.x, me.y);
+
+    // Korytarze
+    map.corridors.forEach(c => {
+        const isCurrentCorr = !me.alive || myZones.corridors.includes(c) || myZones.rooms.some(r =>
+            !(c.x + c.w < r.x - 20 || c.x > r.x + r.w + 20 || c.y + c.h < r.y - 20 || c.y > r.y + r.h + 20)
+        );
+        ctx.fillStyle = isCurrentCorr ? '#64748b' : '#111622';
+        ctx.fillRect(c.x, c.y, c.w, c.h);
     });
-    ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.arc(among.px, among.py, 18, 0, Math.PI * 2); ctx.fill();
+
+    // Pokoje + Meble wewnątrz pokoi + Ciemne pokoje za ścianą!
+    map.rooms.forEach(r => {
+        const isMyRoom = !me.alive || myZones.rooms.includes(r);
+        ctx.fillStyle = r.color;
+        ctx.fillRect(r.x, r.y, r.w, r.h);
+
+        // Rysuj meble w pokoju (stół w Adminie, beczki w Storage, silniki, skaner itd.)
+        drawRoomFurniture(ctx, r);
+
+        if (among.closedDoors[r.id]) {
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 10;
+            ctx.strokeRect(r.x, r.y, r.w, r.h);
+        }
+
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.font = 'bold 17px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(r.name.toUpperCase(), r.x + r.w / 2, r.y + 28);
+
+        // JEŚLI STOISZ OBOK ŚCIANY W INNYM POKOJU / KORYTARZU -> TEN POKÓJ ZA ŚCIANĄ JEST CIEMNY!
+        if (!isMyRoom) {
+            ctx.fillStyle = 'rgba(4, 6, 12, 0.93)';
+            ctx.fillRect(r.x, r.y, r.w, r.h);
+        }
+    });
+
+    // Przycisk Emergency na środkowym stoliku (widoczny gdy jesteś w Cafeterii)
+    if (!me.alive || isPointVisibleToPlayer(map, me, map.table.x, map.table.y)) {
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(map.table.x, map.table.y, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.fillText('EMERGENCY', map.table.x, map.table.y - 20);
+    }
+
+    // Kratki Wentylacyjne
+    map.vents.forEach(v => {
+        if (!isPointVisibleToPlayer(map, me, v.x, v.y)) return;
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 2;
+        ctx.fillRect(v.x - 20, v.y - 13, 40, 26);
+        ctx.strokeRect(v.x - 20, v.y - 13, 40, 26);
+    });
+
+    // Komputer Kamer CCTV w Security
+    if (isPointVisibleToPlayer(map, me, map.camsConsole.x, map.camsConsole.y)) {
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(map.camsConsole.x - 18, map.camsConsole.y - 18, 36, 28);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('📹 KAMERY', map.camsConsole.x, map.camsConsole.y - 24);
+    }
+
+    // Terminale Sabotażu
+    if (isPointVisibleToPlayer(map, me, map.reactorConsole.x, map.reactorConsole.y)) {
+        ctx.fillStyle = (among.activeSabotage && among.activeSabotage.type === 'reactor') ? '#ef4444' : '#a855f7';
+        ctx.fillRect(map.reactorConsole.x - 18, map.reactorConsole.y - 18, 36, 36);
+        ctx.fillStyle = '#fff';
+        ctx.fillText('☢️ REAKTOR PIN', map.reactorConsole.x, map.reactorConsole.y - 24);
+    }
+    if (isPointVisibleToPlayer(map, me, map.o2Console.x, map.o2Console.y)) {
+        ctx.fillStyle = (among.activeSabotage && among.activeSabotage.type === 'o2') ? '#ef4444' : '#22c55e';
+        ctx.fillRect(map.o2Console.x - 18, map.o2Console.y - 18, 36, 36);
+        ctx.fillStyle = '#fff';
+        ctx.fillText('💧 O2 PIN', map.o2Console.x, map.o2Console.y - 24);
+    }
+
+    // Zadania gracza
+    if (!me.isImpostor) {
+        me.tasks.forEach(t => {
+            if (t.done) return;
+            const tx = t.step === 2 ? t.step2X : t.x;
+            const ty = t.step === 2 ? t.step2Y : t.y;
+            if (!isPointVisibleToPlayer(map, me, tx, ty)) return;
+            ctx.fillStyle = '#facc15';
+            ctx.beginPath();
+            ctx.arc(tx, ty, 14, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.fillText(`❗ ${t.step === 2 ? 'Wyślij dane w Admin!' : t.name}`, tx, ty - 18);
+        });
+    }
+
+    // Ciała (widoczne tylko jeśli jesteś w tym samym pokoju/korytarzu, a nie przez ścianę!)
+    among.bodies.forEach(b => {
+        if (!isPointVisibleToPlayer(map, me, b.x, b.y)) return;
+        drawCrewmate(ctx, b.x, b.y, b.color, b.name, 1, false, true, false);
+    });
+
+    // Gracze i Boty (ukryci, jeśli stoją w ciemnym pokoju za ścianą!)
+    among.players.forEach(p => {
+        if (p.inVent && p.id !== 0) return;
+        if (!p.alive && me.alive) return;
+        if (p.id !== 0 && !isPointVisibleToPlayer(map, me, p.x, p.y)) return;
+
+        const showImp = (me.isImpostor && p.isImpostor);
+        const statusTxt = (p.isBot && p.botWaitTimer > 0 && !p.isImpostor && p.alive) ? '🛠️ Robi zadanie...' : '';
+        if (!p.inVent) {
+            drawCrewmate(ctx, p.x, p.y, p.color, p.name, p.dir, !p.alive, false, showImp, statusTxt, p.walkCycle, p.moving);
+        }
+    });
+
+    ctx.restore();
+
+    // Stożek/promień widzenia wokół gracza
+    if (me.alive) {
+        let mult = me.isImpostor ? among.impostorVision : among.crewVision;
+        if (!me.isImpostor && among.lightsSabotaged) mult = Math.min(mult, 0.35);
+        const visionRadius = Math.max(105, mult * 260);
+
+        const grad = ctx.createRadialGradient(
+            canvas.width / 2, canvas.height / 2, visionRadius * 0.55,
+            canvas.width / 2, canvas.height / 2, visionRadius
+        );
+        grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        grad.addColorStop(1, 'rgba(4, 6, 12, 0.96)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Pasek TOTAL TASKS COMPLETED w lewym górnym rogu
+    const crewList = among.players.filter(p => !p.isImpostor);
+    const maxTasks = Math.max(1, crewList.length * 7);
+    const currentTasks = crewList.reduce((acc, p) => acc + p.tasksDone, 0);
+    const pct = Math.min(100, Math.round((currentTasks / maxTasks) * 100));
+
+    ctx.fillStyle = 'rgba(30, 41, 59, 0.92)';
+    ctx.fillRect(14, 12, 360, 30);
+    ctx.fillStyle = '#22c55e';
+    ctx.fillRect(18, 16, (pct / 100) * 352, 22);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(14, 12, 360, 30);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`TOTAL TASKS COMPLETED: ${pct}% (Ty: ${me.tasksDone}/7)`, 24, 31);
+
+    if (among.activeSabotage) {
+        ctx.fillStyle = 'rgba(220, 38, 38, 0.9)';
+        ctx.fillRect(390, 12, 520, 32);
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.fillText(
+            `🚨 ALARM SABOTAŻU: ${among.activeSabotage.type.toUpperCase()}! Wpisz PIN za ${among.activeSabotage.timer}s!`,
+            650, 33
+        );
+    } else if (among.statusBanner) {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+        ctx.fillRect(390, 12, 540, 30);
+        ctx.fillStyle = '#facc15';
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 13px sans-serif';
+        ctx.fillText(among.statusBanner, 660, 31);
+    }
+
+    if (among.showMapModal) {
+        drawBlueMapOverlay(map, me);
+    }
+
     state.loopId = requestAnimationFrame(loopAmongUs);
 }
 
+function canMoveToPoint(map, oldX, oldY, newX, newY, alive) {
+    if (!isWalkableOnMap(map, newX, newY, alive)) return false;
+    if (!alive) return true;
+
+    for (const r of map.rooms) {
+        if (among.closedDoors[r.id]) {
+            const wasIn = (oldX >= r.x && oldX <= r.x + r.w && oldY >= r.y && oldY <= r.y + r.h);
+            const willIn = (newX >= r.x && newX <= r.x + r.w && newY >= r.y && newY <= r.y + r.h);
+            if (wasIn !== willIn) return false;
+        }
+    }
+    return true;
+}
+
+function drawSecurityCamerasView(map) {
+    ctx.fillStyle = '#050811';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const w = (canvas.width - 60) / 2;
+    const h = (canvas.height - 90) / 2;
+    const views = [
+        { x: 20,      y: 50,      w, h, cam: map.cameras[0] },
+        { x: 40 + w,  y: 50,      w, h, cam: map.cameras[1] },
+        { x: 20,      y: 70 + h,  w, h, cam: map.cameras[2] },
+        { x: 40 + w,  y: 70 + h,  w, h, cam: map.cameras[3] }
+    ];
+
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 17px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('🔴 PODGLĄD KAMER SECURITY NA ŻYWO (Kamery na mapie migają czerwonym światłem!)', canvas.width / 2, 32);
+
+    views.forEach(v => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(v.x, v.y, v.w, v.h);
+        ctx.clip();
+
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(v.x, v.y, v.w, v.h);
+
+        const offsetX = v.x + v.w / 2 - v.cam.x;
+        const offsetY = v.y + v.h / 2 - v.cam.y;
+        ctx.translate(offsetX, offsetY);
+
+        map.corridors.forEach(c => { ctx.fillStyle = '#475569'; ctx.fillRect(c.x, c.y, c.w, c.h); });
+        map.rooms.forEach(r => { ctx.fillStyle = r.color; ctx.fillRect(r.x, r.y, r.w, r.h); drawRoomFurniture(ctx, r); });
+
+        among.bodies.forEach(b => drawCrewmate(ctx, b.x, b.y, b.color, b.name, 1, false, true, false));
+        among.players.forEach(p => {
+            if (p.alive && !p.inVent) drawCrewmate(ctx, p.x, p.y, p.color, p.name, p.dir, false, false, false, '', p.walkCycle, p.moving);
+        });
+
+        ctx.restore();
+
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(v.x, v.y, v.w, v.h);
+        ctx.fillStyle = '#facc15';
+        ctx.font = 'bold 12px monospace';
+        ctx.textAlign = 'left';
+        ctx.fillText(v.cam.name, v.x + 10, v.y + 20);
+    });
+}
+
+/* =========================================================================
+   DOLNY PANEL PRZYCISKÓW AKCJI I USTAWIENIA PRĘDKOŚCI W POCZEKALNI
+   ========================================================================= */
+function renderAmongControlsUI() {
+    const ui = document.getElementById('custom-game-ui');
+    if (!among || !among.players || among.players.length === 0) return;
+    const me = among.players[0];
+    const map = AU_MAPS[among.mapKey];
+
+    // 1. POCZEKALNIA (Z WYBOREM PRĘDKOŚCI CYWILA I IMPOSTORA ORAZ WIZJI)
+    if (among.phase === 'lobby') {
+        const visionVals = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0, 5.0];
+        const speedVals = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0];
+
+        ui.innerHTML = `
+            <div style="background:#1d192b; padding:12px 16px; border-radius:14px; border:2px solid #4c436d; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin-top:6px;">
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <div>
+                        <label style="font-size:0.72rem; color:var(--text-dim); display:block;">Mapa:</label>
+                        <select style="background:#0f0d17; color:white; padding:6px 8px; border-radius:8px; border:2px solid var(--accent-blue); font-weight:800;" onchange="among.mapKey=this.value; renderAmongControlsUI();">
+                            <option value="skeld" ${among.mapKey==='skeld'?'selected':''}>🛸 The Skeld</option>
+                            <option value="mira"  ${among.mapKey==='mira'?'selected':''}>☁️ MIRA HQ</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="font-size:0.72rem; color:var(--text-dim); display:block;">Gracze:</label>
+                        <select style="background:#0f0d17; color:var(--accent-yellow); padding:6px 8px; border-radius:8px; border:2px solid var(--accent-yellow); font-weight:800;" onchange="among.totalPlayersCount=Number(this.value); initAmongLobbyPlayers(); renderAmongControlsUI();">
+                            ${[4,5,6,7,8,9,10,11,12,13,14,15].map(n => `<option value="${n}" ${among.totalPlayersCount===n?'selected':''}>${n} Osób</option>`).join('')}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="font-size:0.72rem; color:var(--text-dim); display:block;">Impostorzy:</label>
+                        <select style="background:#0f0d17; color:#ef4444; padding:6px 8px; border-radius:8px; border:2px solid #ef4444; font-weight:800;" onchange="among.impostorsCount=Number(this.value); renderAmongControlsUI();">
+                            <option value="1" ${among.impostorsCount===1?'selected':''}>1 Imp.</option>
+                            <option value="2" ${among.impostorsCount===2?'selected':''}>2 Imp.</option>
+                            <option value="3" ${among.impostorsCount===3?'selected':''}>3 Imp.</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="font-size:0.72rem; color:var(--text-dim); display:block;">Prędkość Cywila:</label>
+                        <select style="background:#0f0d17; color:#22c55e; padding:6px 8px; border-radius:8px; border:1px solid #22c55e; font-weight:800;" onchange="among.crewSpeed=Number(this.value); renderAmongControlsUI();">
+                            ${speedVals.map(s => `<option value="${s}" ${among.crewSpeed===s?'selected':''}>${s}x</option>`).join('')}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="font-size:0.72rem; color:var(--text-dim); display:block;">Prędkość Impostora:</label>
+                        <select style="background:#0f0d17; color:#f97316; padding:6px 8px; border-radius:8px; border:1px solid #f97316; font-weight:800;" onchange="among.impostorSpeed=Number(this.value); renderAmongControlsUI();">
+                            ${speedVals.map(s => `<option value="${s}" ${among.impostorSpeed===s?'selected':''}>${s}x</option>`).join('')}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="font-size:0.72rem; color:var(--text-dim); display:block;">Wizja Załogi:</label>
+                        <select style="background:#0f0d17; color:#38bdf8; padding:6px 8px; border-radius:8px; border:1px solid #38bdf8; font-weight:800;" onchange="among.crewVision=Number(this.value); renderAmongControlsUI();">
+                            ${visionVals.map(v => `<option value="${v}" ${among.crewVision===v?'selected':''}>${v}x</option>`).join('')}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="font-size:0.72rem; color:var(--text-dim); display:block;">Wizja Imp.:</label>
+                        <select style="background:#0f0d17; color:#f43f5e; padding:6px 8px; border-radius:8px; border:1px solid #f43f5e; font-weight:800;" onchange="among.impostorVision=Number(this.value); renderAmongControlsUI();">
+                            ${visionVals.map(v => `<option value="${v}" ${among.impostorVision===v?'selected':''}>${v}x</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:8px;">
+                    <button class="btn btn-green" style="font-size:1.05rem; padding:10px 22px;" onclick="beginAmongMatch()">
+                        🚀 START GRY
+                    </button>
+                    <button class="btn btn-danger" style="padding:10px 14px;" onclick="exitAmongToGameSelect()">
+                        ⬅ Wyjdź
+                    </button>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // 2. TABLET GŁOSOWANIA
+    if (among.phase === 'meeting') {
+        const chatFiltered = among.chat.filter(msg => !msg.ghost || !me.alive);
+        const aliveCount = among.players.filter(p => p.alive).length;
+        const votesCast = Object.keys(among.votes).length;
+
+        ui.innerHTML = `
+            <div style="background:#1e293b; border:4px solid #475569; border-radius:20px; padding:18px; margin-top:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #334155; padding-bottom:10px; margin-bottom:12px;">
+                    <div>
+                        <h2 style="color:var(--accent-yellow);">📢 TABLET GŁOSOWANIA (${votesCast}/${aliveCount} głosów)</h2>
+                        <small style="color:#cbd5e1;">${among.meetingReason}</small>
+                    </div>
+                    <div style="background:#090d16; padding:8px 16px; border-radius:12px; border:2px solid var(--accent-blue); font-weight:900; font-size:1.2rem; color:var(--accent-yellow);">
+                        ⏱️ <span id="au-meeting-timer">${among.meetingTimer}s</span>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1.55fr 1fr; gap:14px;">
+                    <div>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap:8px; max-height:280px; overflow-y:auto;">
+                            ${among.players.map(p => {
+                                const isDead = !p.alive;
+                                const hasVoted = among.votes[p.id] !== undefined;
+                                return `
+                                    <div style="background:${isDead ? '#0f172a' : '#111827'}; opacity:${isDead ? '0.55' : '1'}; border:2px solid ${among.myVote === p.id ? '#22c55e' : '#334155'}; border-radius:12px; padding:8px 10px; display:flex; align-items:center; justify-content:space-between;">
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <span style="width:24px; height:24px; border-radius:50%; background:${p.color}; border:2px solid #fff; display:inline-block;"></span>
+                                            <div style="text-align:left;">
+                                                <div style="font-size:0.82rem; font-weight:800; color:${me.isImpostor && p.isImpostor ? '#ef4444' : '#fff'};">
+                                                    ${p.name}
+                                                </div>
+                                                <small style="font-size:0.68rem; color:${hasVoted ? '#4ade80' : '#94a3b8'};">
+                                                    ${isDead ? '❌ NIE ŻYJE' : (hasVoted ? '🗳️ Zagłosował' : 'Myśli...')}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        ${!isDead && me.alive && among.myVote === null ? `
+                                            <button class="btn btn-green" style="padding:4px 8px; font-size:0.72rem;" onclick="castAmongVote(${p.id})">Głosuj</button>
+                                        ` : ''}
+                                        ${isDead ? '<span style="font-size:1.2rem;">❌</span>' : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                            ${me.alive && among.myVote === null ? `
+                                <button class="btn btn-yellow" onclick="castAmongVote('skip')">⏭️ Głosuj na SKIP (Pomiń wyrzucanie)</button>
+                            ` : `
+                                <span style="color:#4ade80; font-weight:800;">✅ Wszyscy zagłosowali — podliczanie...</span>
+                            `}
+                        </div>
+                    </div>
+
+                    <div style="display:flex; flex-direction:column; background:#0f172a; border-radius:12px; padding:12px; border:1px solid #334155;">
+                        <h4 style="margin-bottom:8px; font-size:0.88rem; color:#38bdf8;">
+                            💬 Czat Spotkania ${!me.alive ? '(👻 Tryb Ducha — żywi Cię nie widzą)' : ''}
+                        </h4>
+                        <div style="flex:1; height:190px; overflow-y:auto; font-size:0.8rem; text-align:left; margin-bottom:8px; padding:6px; background:#090d16; border-radius:8px;">
+                            ${chatFiltered.map(c => `
+                                <div style="margin-bottom:5px; color:${c.ghost ? '#94a3b8' : '#f8fafc'};">
+                                    <strong>${c.ghost ? '👻 [DUCH] ' : ''}${c.u}:</strong> ${c.t}
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <input type="text" id="au-chat-input" placeholder="Napisz wiadomość..." style="flex:1; padding:8px; border-radius:8px; border:1px solid #475569; background:#1e293b; color:white;" onkeydown="if(event.key==='Enter') sendAmongChat();">
+                            <button class="btn btn-blue" onclick="sendAmongChat()">Wyślij</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // 3. EKRAN KOŃCA GRY (TUTAJ POJAWIA SIĘ PRZYCISK POWROTU DO POCZEKALNI ORAZ DO WYBORU GIER!)
+    if (among.phase === 'gameover') {
+        const iWon = (among.winnerTeam === 'impostors' && me.isImpostor) || (among.winnerTeam === 'crew' && !me.isImpostor);
+        const impList = among.players.filter(p => p.isImpostor).map(p => p.name).join(', ');
+        ui.innerHTML = `
+            <div style="background:#131b2e; border:3px solid ${iWon ? '#22c55e' : '#ef4444'}; border-radius:20px; padding:24px; text-align:center; margin-top:8px;">
+                <h1 style="font-size:2.4rem; color:${iWon ? '#22c55e' : '#ef4444'}; margin-bottom:8px;">
+                    ${iWon ? '🏆 WYGRANA (VICTORY)!' : '💀 PRZEGRANA (DEFEAT)!'}
+                </h1>
+                <p style="font-size:1.05rem; color:#f8fafc; margin-bottom:8px;">${among.winnerReason}</p>
+                <p style="font-size:0.9rem; color:var(--accent-yellow); margin-bottom:18px;">
+                    Impostorami w tym meczu byli: <strong>${impList}</strong>
+                </p>
+                <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
+                    <button class="btn btn-green" style="font-size:1.1rem; padding:12px 28px;" onclick="backToAmongWaitingLobby()">
+                        🔄 Powrót do Poczekalni Among Us
+                    </button>
+                    <button class="btn btn-danger" style="font-size:1.1rem; padding:12px 28px;" onclick="exitAmongToGameSelect()">
+                        ⬅ Wyjdź do Wyboru Gier
+                    </button>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // 4. TYLKO DOLNY PASEK PRZYCISKÓW AKCJI W TRAKCIE GRY (BEZ GÓRNEGO PASKA PLATFORMY)
+    const nearBody = me.alive ? among.bodies.find(b => Math.hypot(b.x - me.x, b.y - me.y) < 90 && isPointVisibleToPlayer(map, me, b.x, b.y)) : null;
+    const nearTable = me.alive && Math.hypot(map.table.x - me.x, map.table.y - me.y) < 95;
+    const nearCams = Math.hypot(map.camsConsole.x - me.x, map.camsConsole.y - me.y) < 85;
+    const nearReactor = among.activeSabotage && among.activeSabotage.type === 'reactor' && Math.hypot(map.reactorConsole.x - me.x, map.reactorConsole.y - me.y) < 95;
+    const nearO2 = among.activeSabotage && among.activeSabotage.type === 'o2' && Math.hypot(map.o2Console.x - me.x, map.o2Console.y - me.y) < 95;
+
+    const nearTask = !me.isImpostor ? me.tasks.find(t => {
+        if (t.done) return false;
+        const tx = t.step === 2 ? t.step2X : t.x;
+        const ty = t.step === 2 ? t.step2Y : t.y;
+        return Math.hypot(tx - me.x, ty - me.y) < 85;
+    }) : null;
+
+    const nearVent = (me.isImpostor && me.alive) ? map.vents.find(v => Math.hypot(v.x - me.x, v.y - me.y) < 75) : null;
+    const nearVictim = (me.isImpostor && me.alive) ? among.players.find(p => p.alive && !p.isImpostor && Math.hypot(p.x - me.x, p.y - me.y) < 95 && isPointVisibleToPlayer(map, me, p.x, p.y)) : null;
+
+    let mainActionBtn = '';
+    if (nearBody) {
+        mainActionBtn = `<button class="btn btn-danger" style="font-size:1.05rem; padding:10px 22px;" onclick="triggerAmongMeeting('🚨 Zgłoszono ciało gracza ${nearBody.name}!')">📢 REPORT (Zgłoś Ciało!)</button>`;
+    } else if (me.isImpostor) {
+        if (me.alive) {
+            const canKill = (among.killCooldown <= 0 && nearVictim);
+            mainActionBtn = `
+                <button class="btn btn-danger" style="font-size:1rem; padding:10px 20px; opacity:${canKill ? '1' : '0.55'};" onclick="impostorKillTarget()">
+                    🔪 KILL ${among.killCooldown > 0 ? `(${among.killCooldown}s)` : (nearVictim ? `(${nearVictim.name})` : '(Podejdź do Cywila)')}
+                </button>
+            `;
+        } else {
+            mainActionBtn = `<span style="color:#ef4444; font-weight:800;">👻 Duch Impostora (Sabotaż aktywny)</span>`;
+        }
+    } else {
+        const canUse = !!(nearTask || nearCams || nearReactor || nearO2);
+        const taskLabel = nearTask ? (nearTask.step === 2 ? `Wyślij dane w ${nearTask.step2Room}` : nearTask.name) : '';
+        mainActionBtn = `
+            <button class="btn btn-yellow" style="font-size:1rem; padding:10px 22px; opacity:${canUse ? '1' : '0.55'};" onclick="useAmongInteractive()">
+                🖐️ USE ${nearTask ? `(${taskLabel})` : nearCams ? '(Kamery CCTV)' : (nearReactor || nearO2) ? '(Wpisz PIN Sabotażu!)' : '(Podejdź do Zadania)'}
+            </button>
+        `;
+    }
+
+    let tableBtn = '';
+    if (nearTable && me.alive) {
+        if (among.emergencyCooldown > 0) {
+            tableBtn = `<button class="btn" disabled style="opacity:0.6;">🚨 Stolik ładuje się (${among.emergencyCooldown}s)</button>`;
+        } else if (among.meetingsLeft <= 0) {
+            tableBtn = `<button class="btn" disabled style="opacity:0.6;">🚨 Brak głosowań (0/4)</button>`;
+        } else {
+            tableBtn = `<button class="btn btn-blue" onclick="useEmergencyTable()">🚨 Głosowanie (${among.meetingsLeft}/4)</button>`;
+        }
+    }
+
+    let ventBtns = '';
+    if (me.isImpostor && me.alive && (nearVent || me.inVent)) {
+        const curV = me.inVent ? map.vents.find(v => v.id === among.inVentId) : nearVent;
+        ventBtns = `
+            <button class="btn btn-purple" onclick="toggleAmongVent(${curV.id})">
+                💨 ${me.inVent ? 'Wyjdź z Wentylacji' : 'Wentylacja (Vent)'}
+            </button>
+        `;
+        if (me.inVent && curV) {
+            curV.links.forEach(targetId => {
+                const targetVent = map.vents.find(v => v.id === targetId);
+                ventBtns += `<button class="btn btn-blue" onclick="jumpToVent(${targetVent.id})">➡️ ${targetVent.name}</button>`;
+            });
+        }
+    }
+
+    let modalOverlay = '';
+    if (among.activeTaskModal) {
+        modalOverlay = renderInteractiveTaskModal();
+    } else if (among.showSabotageModal) {
+        modalOverlay = renderSabotageModal(map);
+    } else if (among.showChatModal) {
+        modalOverlay = renderFloatingChatModal(me);
+    }
+
+    ui.innerHTML = `
+        <div style="background:#1d192b; padding:8px 14px; border-radius:14px; border:2px solid #334155; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin-top:4px;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                ${mainActionBtn}
+                ${tableBtn}
+                ${ventBtns}
+                ${me.isImpostor ? `
+                    <button class="btn btn-danger" onclick="among.showSabotageModal=!among.showSabotageModal; renderAmongControlsUI();">
+                        ⚡ SABOTAŻ ${among.sabotageCooldown > 0 ? `(${among.sabotageCooldown}s)` : ''}
+                    </button>
+                ` : ''}
+            </div>
+
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                ${among.watchingCams ? `<button class="btn btn-danger" onclick="among.watchingCams=false; renderAmongControlsUI();">❌ Wyjdź z Kamer</button>` : ''}
+                <button class="btn btn-blue" onclick="among.showMapModal=!among.showMapModal; among.showChatModal=false; renderAmongControlsUI();">
+                    🗺️ ${among.showMapModal ? 'ZAMKNIJ MAPĘ' : 'MAPA (M)'}
+                </button>
+                <button class="btn" onclick="among.showChatModal=!among.showChatModal; among.showMapModal=false; renderAmongControlsUI();">
+                    💬 CZAT ${!me.alive ? '(Duchy)' : ''}
+                </button>
+            </div>
+        </div>
+        ${modalOverlay}
+    `;
+}
+
+function impostorKillTarget() {
+    const me = among.players[0];
+    const map = AU_MAPS[among.mapKey];
+    if (!me.isImpostor || !me.alive || among.killCooldown > 0) return;
+    const victim = among.players.find(p => p.alive && !p.isImpostor && Math.hypot(p.x - me.x, p.y - me.y) < 95 && isPointVisibleToPlayer(map, me, p.x, p.y));
+    if (!victim) return;
+
+    victim.alive = false;
+    me.x = victim.x;
+    me.y = victim.y;
+    among.bodies.push({ id: victim.id, name: victim.name, color: victim.color, x: victim.x, y: victim.y });
+    among.killCooldown = 30;
+    checkAmongWinConditions();
+    renderAmongControlsUI();
+}
+
+function toggleAmongVent(ventId) {
+    const me = among.players[0];
+    const map = AU_MAPS[among.mapKey];
+    const vent = map.vents.find(v => v.id === ventId);
+    if (!vent) return;
+
+    among.ventAnim = 25;
+    if (!me.inVent) {
+        me.inVent = true;
+        among.inVentId = vent.id;
+        me.x = vent.x;
+        me.y = vent.y;
+    } else {
+        me.inVent = false;
+        among.inVentId = null;
+    }
+    renderAmongControlsUI();
+}
+
+function jumpToVent(targetId) {
+    const me = among.players[0];
+    const map = AU_MAPS[among.mapKey];
+    const target = map.vents.find(v => v.id === targetId);
+    if (!target) return;
+    me.x = target.x;
+    me.y = target.y;
+    among.inVentId = target.id;
+    among.ventAnim = 25;
+    renderAmongControlsUI();
+}
+
+function useEmergencyTable() {
+    if (among.emergencyCooldown > 0 || among.meetingsLeft <= 0) return;
+    among.meetingsLeft--;
+    triggerAmongMeeting(`🚨 ${state.nick} nacisnął przycisk Emergency na stoliku! (Pozostało: ${among.meetingsLeft}/4)`);
+}
+
+function useAmongInteractive() {
+    const me = among.players[0];
+    const map = AU_MAPS[among.mapKey];
+
+    if (among.activeSabotage) {
+        const nearReactor = among.activeSabotage.type === 'reactor' && Math.hypot(map.reactorConsole.x - me.x, map.reactorConsole.y - me.y) < 95;
+        const nearO2 = among.activeSabotage.type === 'o2' && Math.hypot(map.o2Console.x - me.x, map.o2Console.y - me.y) < 95;
+        if (nearReactor || nearO2) {
+            among.activeTaskModal = { mode: 'sabotage_pin', code: among.activeSabotage.pin, errorMsg: '' };
+            renderAmongControlsUI();
+            return;
+        }
+    }
+
+    if (Math.hypot(map.camsConsole.x - me.x, map.camsConsole.y - me.y) < 85) {
+        among.watchingCams = !among.watchingCams;
+        renderAmongControlsUI();
+        return;
+    }
+
+    if (!me.isImpostor) {
+        const task = me.tasks.find(t => {
+            if (t.done) return false;
+            const tx = t.step === 2 ? t.step2X : t.x;
+            const ty = t.step === 2 ? t.step2Y : t.y;
+            return Math.hypot(tx - me.x, ty - me.y) < 85;
+        });
+
+        if (task) {
+            if (task.type === 'math') {
+                const a = Math.floor(12 + Math.random() * 25);
+                const b = Math.floor(8 + Math.random() * 19);
+                among.activeTaskModal = { mode: 'math', task, expr: `${a} + ${b}`, answer: String(a + b), errorMsg: '' };
+            } else if (task.type === 'upload') {
+                among.activeTaskModal = { mode: 'upload', task, progress: 0, errorMsg: '' };
+            } else if (task.type === 'sliders') {
+                const targetVal = Math.floor(40 + Math.random() * 55);
+                among.activeTaskModal = { mode: 'sliders', task, targetVal, errorMsg: '' };
+            } else {
+                const code = String(Math.floor(10000 + Math.random() * 90000));
+                among.activeTaskModal = { mode: 'code', task, code, errorMsg: '' };
+            }
+            renderAmongControlsUI();
+        }
+    }
+}
+
+function renderInteractiveTaskModal() {
+    const m = among.activeTaskModal;
+    const errHtml = m.errorMsg ? `<div style="color:#ef4444; font-weight:800; margin-top:6px;">${m.errorMsg}</div>` : '';
+
+    if (m.mode === 'sabotage_pin') {
+        return `
+            <div style="background:#14111f; border:3px solid #ef4444; border-radius:16px; padding:16px; margin-top:8px; text-align:center;">
+                <h3 style="color:#ef4444;">🚨 NAPRAWA SABOTAŻU (${among.activeSabotage ? among.activeSabotage.type.toUpperCase() : ''})</h3>
+                <p style="margin:6px 0;">Wpisz poniższy kod PIN, aby wyłączyć alarm:</p>
+                <div style="font-size:2rem; font-family:monospace; font-weight:900; color:var(--accent-yellow); letter-spacing:6px; margin:6px 0;">${m.code}</div>
+                <input type="text" id="au-pin-input" placeholder="Wpisz PIN..." maxlength="4" style="padding:8px; font-size:1.25rem; text-align:center; width:160px; border-radius:8px; background:#090d16; color:white; border:2px solid var(--accent-blue);">
+                ${errHtml}
+                <div style="margin-top:10px; display:flex; gap:10px; justify-content:center;">
+                    <button class="btn btn-green" onclick="verifyAmongPin()">✅ Zatwierdź PIN</button>
+                    <button class="btn btn-danger" onclick="among.activeTaskModal=null; renderAmongControlsUI();">Zamknij</button>
+                </div>
+            </div>
+        `;
+    }
+
+    if (m.mode === 'math') {
+        return `
+            <div style="background:#14111f; border:3px solid var(--accent-blue); border-radius:16px; padding:16px; margin-top:8px; text-align:center;">
+                <h3 style="color:var(--accent-blue);">🧮 ZADANIE OBLICZENIOWE: ${m.task.name}</h3>
+                <div style="font-size:2rem; font-family:monospace; font-weight:900; color:var(--accent-yellow); margin:8px 0;">${m.expr} = ?</div>
+                <input type="number" id="au-math-input" placeholder="Wynik..." style="padding:8px; font-size:1.25rem; text-align:center; width:160px; border-radius:8px; background:#090d16; color:white; border:2px solid var(--accent-blue);">
+                ${errHtml}
+                <div style="margin-top:10px; display:flex; gap:10px; justify-content:center;">
+                    <button class="btn btn-green" onclick="verifyMathTask()">✅ Sprawdź wynik</button>
+                    <button class="btn btn-danger" onclick="among.activeTaskModal=null; renderAmongControlsUI();">Anuluj</button>
+                </div>
+            </div>
+        `;
+    }
+
+    if (m.mode === 'upload') {
+        const isStep1 = (m.task.step === 1);
+        return `
+            <div style="background:#14111f; border:3px solid var(--accent-yellow); border-radius:16px; padding:16px; margin-top:8px; text-align:center;">
+                <h3 style="color:var(--accent-yellow);">📂 ${isStep1 ? 'ETAP 1/2: POBIERANIE DANYCH' : `ETAP 2/2: WYSYŁANIE DANYCH W ${m.task.step2Room.toUpperCase()}`}</h3>
+                <div style="width:100%; max-width:340px; height:22px; background:#090d16; border:2px solid #475569; border-radius:999px; margin:10px auto; overflow:hidden;">
+                    <div id="au-upload-bar" style="width:${m.progress}%; height:100%; background:#22c55e; transition:width 0.2s;"></div>
+                </div>
+                <div id="au-upload-pct" style="font-family:monospace; font-weight:900; margin-bottom:8px;">${m.progress}%</div>
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button class="btn btn-green" onclick="startUploadProgress()">
+                        ${isStep1 ? '📥 Pobierz dane (Download)' : '📤 Wyślij dane (Upload)'}
+                    </button>
+                    <button class="btn btn-danger" onclick="among.activeTaskModal=null; renderAmongControlsUI();">Zamknij</button>
+                </div>
+            </div>
+        `;
+    }
+
+    if (m.mode === 'sliders') {
+        return `
+            <div style="background:#14111f; border:3px solid #22c55e; border-radius:16px; padding:16px; margin-top:8px; text-align:center;">
+                <h3 style="color:#22c55e;">⚡ KALIBRACJA MOCY: ${m.task.name}</h3>
+                <p style="margin:6px 0;">Ustaw suwak na wartość: <strong style="color:var(--accent-yellow); font-size:1.25rem;">${m.targetVal}%</strong></p>
+                <input type="range" id="au-slider-input" min="0" max="100" value="10" style="width:260px; margin:8px 0;" oninput="document.getElementById('au-slider-val').textContent=this.value+'%'">
+                <div id="au-slider-val" style="font-size:1.25rem; font-weight:900; color:#38bdf8;">10%</div>
+                ${errHtml}
+                <div style="margin-top:10px; display:flex; gap:10px; justify-content:center;">
+                    <button class="btn btn-green" onclick="verifySliderTask()">✅ Zatwierdź moc</button>
+                    <button class="btn btn-danger" onclick="among.activeTaskModal=null; renderAmongControlsUI();">Anuluj</button>
+                </div>
+            </div>
+        `;
+    }
+
+    return `
+        <div style="background:#14111f; border:3px solid var(--accent-yellow); border-radius:16px; padding:16px; margin-top:8px; text-align:center;">
+            <h3 style="color:var(--accent-yellow);">💳 KOD AUTORYZACJI: ${m.task.name}</h3>
+            <div style="font-size:2rem; font-family:monospace; font-weight:900; color:#38bdf8; letter-spacing:5px; margin:6px 0;">${m.code}</div>
+            <input type="text" id="au-code-input" placeholder="Kod..." maxlength="5" style="padding:8px; font-size:1.25rem; text-align:center; width:170px; border-radius:8px; background:#090d16; color:white; border:2px solid var(--accent-blue);">
+            ${errHtml}
+            <div style="margin-top:10px; display:flex; gap:10px; justify-content:center;">
+                <button class="btn btn-green" onclick="verifyCodeTask()">✅ Potwierdź kod</button>
+                <button class="btn btn-danger" onclick="among.activeTaskModal=null; renderAmongControlsUI();">Anuluj</button>
+            </div>
+        </div>
+    `;
+}
+
+function verifyAmongPin() {
+    const inp = document.getElementById('au-pin-input');
+    if (!inp || !among.activeSabotage) return;
+    if (inp.value.trim() === among.activeSabotage.pin) {
+        among.activeSabotage = null;
+        among.activeTaskModal = null;
+        among.statusBanner = '✅ Sabotaż naprawiony!';
+        renderAmongControlsUI();
+    } else {
+        among.activeTaskModal.errorMsg = '❌ Błędny kod PIN!';
+        renderAmongControlsUI();
+    }
+}
+
+function verifyMathTask() {
+    const inp = document.getElementById('au-math-input');
+    const m = among.activeTaskModal;
+    if (!inp || !m) return;
+    if (inp.value.trim() === m.answer) {
+        completeCrewTask(m.task.id);
+    } else {
+        m.errorMsg = '❌ Błędny wynik obliczeń!';
+        renderAmongControlsUI();
+    }
+}
+
+function verifyCodeTask() {
+    const inp = document.getElementById('au-code-input');
+    const m = among.activeTaskModal;
+    if (!inp || !m) return;
+    if (inp.value.trim() === m.code) {
+        completeCrewTask(m.task.id);
+    } else {
+        m.errorMsg = '❌ Nieprawidłowy kod!';
+        renderAmongControlsUI();
+    }
+}
+
+function verifySliderTask() {
+    const inp = document.getElementById('au-slider-input');
+    const m = among.activeTaskModal;
+    if (!inp || !m) return;
+    if (Math.abs(Number(inp.value) - m.targetVal) <= 3) {
+        completeCrewTask(m.task.id);
+    } else {
+        m.errorMsg = `❌ Ustaw suwak dokładniej (${m.targetVal}%)!`;
+        renderAmongControlsUI();
+    }
+}
+
+function startUploadProgress() {
+    const m = among.activeTaskModal;
+    if (!m || m.uploading) return;
+    m.uploading = true;
+    const timer = setInterval(() => {
+        if (!among.activeTaskModal) { clearInterval(timer); return; }
+        m.progress += 25;
+        const bar = document.getElementById('au-upload-bar');
+        const pct = document.getElementById('au-upload-pct');
+        if (bar) bar.style.width = m.progress + '%';
+        if (pct) pct.textContent = m.progress + '%';
+
+        if (m.progress >= 100) {
+            clearInterval(timer);
+            if (m.task.step === 1) {
+                m.task.step = 2;
+                among.activeTaskModal = null;
+                among.statusBanner = `📂 Pobrano dane (100%)! Idź teraz do pokoju ${m.task.step2Room}, aby je wysłać!`;
+                renderAmongControlsUI();
+            } else {
+                completeCrewTask(m.task.id);
+            }
+        }
+    }, 300);
+}
+
+function completeCrewTask(taskId) {
+    const me = among.players[0];
+    const t = me.tasks.find(x => x.id === taskId);
+    if (t && !t.done) {
+        t.done = true;
+        me.tasksDone++;
+        addPoints(state.mySlot, 10);
+        among.statusBanner = `✅ Zadanie ukończone (${me.tasksDone}/7)!`;
+    }
+    among.activeTaskModal = null;
+    checkAmongWinConditions();
+    renderAmongControlsUI();
+}
+
+function renderSabotageModal(map) {
+    return `
+        <div style="background:#14111f; border:3px solid #ef4444; border-radius:16px; padding:16px; margin-top:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="color:#ef4444;">⚡ MAPA SABOTAŻU IMPOSTORA</h3>
+                <button class="btn btn-danger" onclick="among.showSabotageModal=false; renderAmongControlsUI();">Zamknij</button>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;">
+                <button class="btn btn-danger" ${among.sabotageCooldown > 0 || among.activeSabotage ? 'disabled' : ''} onclick="triggerMajorSabotage('reactor')">
+                    ☢️ Sabotuj REAKTOR (30s na wpisanie PIN-u | CD: 20s)
+                </button>
+                <button class="btn btn-yellow" ${among.sabotageCooldown > 0 || among.activeSabotage ? 'disabled' : ''} onclick="triggerMajorSabotage('o2')">
+                    💧 Sabotuj O2 / H2O (30s na wpisanie PIN-u | CD: 20s)
+                </button>
+                <button class="btn btn-blue" onclick="among.lightsSabotaged=!among.lightsSabotaged; among.showSabotageModal=false; renderAmongControlsUI();">
+                    💡 ${among.lightsSabotaged ? 'Włącz Światła' : 'Zgaś Światła (Ogranicz wizję załogi!)'}
+                </button>
+            </div>
+
+            <h4 style="font-size:0.82rem; color:#cbd5e1; margin-bottom:6px;">🔒 Zamykanie drzwi w pokojach (na 10 sekund):</h4>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                ${map.rooms.map(r => `
+                    <button class="btn" style="font-size:0.74rem; padding:6px 10px; background:${among.closedDoors[r.id] ? '#ef4444' : '#334155'};" onclick="closeRoomDoors('${r.id}')">
+                        🚪 ${r.name} ${among.closedDoors[r.id] ? `(${among.closedDoors[r.id]}s)` : ''}
+                    </button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function triggerMajorSabotage(type) {
+    if (among.sabotageCooldown > 0 || among.activeSabotage) return;
+    const pin = String(Math.floor(1000 + Math.random() * 9000));
+    among.activeSabotage = { type, timer: 30, pin };
+    among.sabotageCooldown = 20;
+    among.showSabotageModal = false;
+    renderAmongControlsUI();
+}
+
+function closeRoomDoors(roomId) {
+    if (among.closedDoors[roomId]) return;
+    among.closedDoors[roomId] = 10;
+    renderAmongControlsUI();
+}
+
+function renderFloatingChatModal(me) {
+    const visibleMsgs = among.chat.filter(msg => !msg.ghost || !me.alive);
+    return `
+        <div style="background:#14111f; border:2px solid #4c436d; border-radius:16px; padding:12px; margin-top:8px;">
+            <h4 style="margin-bottom:6px; font-size:0.84rem; color:var(--accent-yellow);">
+                💬 Czat ${!me.alive ? '(👻 Czat Duchów — żywi gracze tego nie widzą!)' : '(Czat Żywych Graczy)'}
+            </h4>
+            <div style="max-height:120px; overflow-y:auto; background:#090d16; padding:8px; border-radius:8px; font-size:0.8rem; margin-bottom:8px;">
+                ${visibleMsgs.length === 0 ? '<div style="color:#64748b;">Brak wiadomości...</div>' : visibleMsgs.map(c => `
+                    <div><strong>${c.ghost ? '👻 [DUCH] ' : ''}${c.u}:</strong> ${c.t}</div>
+                `).join('')}
+            </div>
+            <div style="display:flex; gap:6px;">
+                <input type="text" id="au-chat-input" placeholder="Wpisz wiadomość..." style="flex:1; padding:7px; border-radius:8px; background:#1e293b; color:white; border:1px solid #475569;" onkeydown="if(event.key==='Enter') sendAmongChat();">
+                <button class="btn btn-blue" onclick="sendAmongChat()">Wyślij</button>
+            </div>
+        </div>
+    `;
+}
+
+function sendAmongChat() {
+    const inp = document.getElementById('au-chat-input');
+    if (!inp || !inp.value.trim()) return;
+    const me = among.players[0];
+    among.chat.push({
+        u: me.name,
+        t: inp.value.trim(),
+        ghost: !me.alive
+    });
+    inp.value = '';
+    renderAmongControlsUI();
+}
+
+function triggerAmongMeeting(reason) {
+    const map = AU_MAPS[among.mapKey];
+    among.phase = 'meeting';
+    among.meetingReason = reason;
+    among.meetingTimer = 45;
+    among.myVote = null;
+    among.votes = {};
+    among.watchingCams = false;
+    among.showMapModal = false;
+    among.activeTaskModal = null;
+    among.activeSabotage = null;
+    among.bodies = [];
+
+    among.players.forEach((p, idx) => {
+        p.inVent = false;
+        p.moving = false;
+        const angle = (idx / among.players.length) * Math.PI * 2;
+        p.x = map.table.x + Math.cos(angle) * 92;
+        p.y = map.table.y + Math.sin(angle) * 92;
+    });
+
+    if (!among.players[0].alive) {
+        setTimeout(() => {
+            castBotsVotesAndFinish();
+        }, 1500);
+    }
+
+    renderAmongControlsUI();
+}
+
+function castAmongVote(targetIdOrSkip) {
+    const me = among.players[0];
+    if (!me.alive || among.myVote !== null) return;
+    among.myVote = targetIdOrSkip;
+    among.votes[0] = targetIdOrSkip;
+
+    castBotsVotesAndFinish();
+}
+
+function castBotsVotesAndFinish() {
+    const aliveList = among.players.filter(p => p.alive);
+    aliveList.forEach(b => {
+        if (!b.isBot) return;
+        if (Math.random() < 0.35) {
+            among.votes[b.id] = 'skip';
+        } else {
+            const pick = aliveList[Math.floor(Math.random() * aliveList.length)];
+            among.votes[b.id] = pick.id;
+        }
+    });
+
+    renderAmongControlsUI();
+
+    const allAliveVoted = aliveList.every(p => among.votes[p.id] !== undefined);
+    if (allAliveVoted) {
+        setTimeout(() => {
+            finalizeAmongVoting();
+        }, 600);
+    }
+}
+
+function finalizeAmongVoting() {
+    if (among.phase !== 'meeting') return;
+
+    const counts = { skip: 0 };
+    Object.values(among.votes).forEach(v => {
+        counts[v] = (counts[v] || 0) + 1;
+    });
+
+    let topCandidate = 'skip';
+    let topVotes = counts.skip || 0;
+    let tie = false;
+
+    Object.keys(counts).forEach(k => {
+        if (k === 'skip') return;
+        if (counts[k] > topVotes) {
+            topVotes = counts[k];
+            topCandidate = k;
+            tie = false;
+        } else if (counts[k] === topVotes) {
+            tie = true;
+        }
+    });
+
+    let resultMsg = '';
+    if (topCandidate === 'skip' || tie) {
+        resultMsg = '⏭️ Głosowanie: Większość wybrała SKIP (lub remis) — Nikt nie został wyrzucony!';
+    } else {
+        const ejected = among.players.find(p => p.id === Number(topCandidate));
+        if (ejected) {
+            ejected.alive = false;
+            resultMsg = `🚀 Głosowanie: ${ejected.name} został wyrzucony w próżnię i zamienia się w ducha! (Rola nieznana)`;
+        }
+    }
+
+    among.statusBanner = resultMsg;
+    among.chat.push({ u: 'SYSTEM', t: resultMsg, ghost: false });
+    among.emergencyCooldown = 30;
+    among.killCooldown = 30;
+    among.phase = 'play';
+
+    checkAmongWinConditions();
+    renderAmongControlsUI();
+}
 let boardState = {};
 function startBoardGame(type) {
     const ui = document.getElementById('custom-game-ui'); ui.classList.remove('hidden');

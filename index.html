@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MegaParty Arena — Monopolia Ruda Śl. (40) & Duża Monopolia Świat (60)</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root {
             --bg-dark: #13111c;
@@ -740,6 +739,77 @@
             .entry-buttons, .online-setup-grid { grid-template-columns: 1fr; }
         }
     </style>
+    <script type="module">
+        import { initializeApp } from "https://gstatic.com";
+        import { getDatabase, ref, set, onValue, onDisconnect } from "https://gstatic.com";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMRkaNoevXX3BfezgSF_SEG67_G4_s-Rw",
+            authDomain: "://firebaseapp.com",
+            databaseURL: "https://firebasedatabase.app",
+            projectId: "game-online-multiplayer",
+            storageBucket: "game-online-multiplayer.firebasestorage.app",
+            messagingSenderId: "416475188310",
+            appId: "1:416475188310:web:21b1f8dd65c81448bcf7f7",
+            measurementId: "G-XMGZRLH51"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        const inputNick = document.getElementById("player-nick");
+        const myPlayerId = "Gracz_" + Math.floor(Math.random() * 10000);
+
+        let currentRoom = "lobby";
+        let currentGame = "brak";
+
+        window.joinMultiplayerGame = function(gameName, roomCode) {
+            currentGame = gameName;
+            currentRoom = roomCode;
+            const playerNick = (inputNick && inputNick.value.trim()) ? inputNick.value.trim() : myPlayerId;
+
+            const playerRef = ref(db, `gry/${currentGame}/pokoje/${currentRoom}/gracze/${myPlayerId}`);
+            onDisconnect(playerRef).remove();
+
+            set(playerRef, {
+                nick: playerNick,
+                x: 0, y: 0,
+                wynik: 0,
+                status: "w_lobby",
+                lastUpdate: Date.now()
+            });
+
+            onValue(ref(db, `gry/${currentGame}/pokoje/${currentRoom}/gracze`), (snapshot) => {
+                const wszyscyGracze = snapshot.val();
+                updateLobbyUI(wszyscyGracze);
+                if (typeof window.onMultiplayerUpdate === 'function') {
+                    window.onMultiplayerUpdate(wszyscyGracze, myPlayerId);
+                }
+            });
+        };
+
+        function updateLobbyUI(gracze) {
+            const slotsContainer = document.querySelector(".room-waiting-box"); 
+            if (!slotsContainer || !gracze) return;
+
+            let html = `<h3>Gracze w Lobby:</h3>`;
+            for (let id in  gracze) {
+                html += `
+                    <div class="player-slot-card connected">
+                        <span>👤 ${gracze[id].nick}</span>
+                        <small style="color: #22c55e;">● Gotowy</small>
+                    </div>`;
+            }
+            const listDiv = slotsContainer.querySelector(".player-slot-card") || slotsContainer;
+            listDiv.innerHTML = html;
+        }
+
+        window.sendPlayerData = function(dataObject) {
+            if (currentGame === "brak") return;
+            set(ref(db, `gry/${currentGame}/pokoje/${currentRoom}/gracze/${myPlayerId}`), dataObject);
+        };
+    </script>
+
 </head>
 <body>
 
@@ -775,7 +845,7 @@
                 <p style="font-size:0.82rem; color:var(--text-dim); margin:8px 0 16px;">
                     Zakładasz pokój (do 8 osób) i wysyłasz kod znajomym.
                 </p>
-                <button class="btn btn-green" style="width:100%; padding:13px;" onclick="createOnlineRoomAsHost()">
+                <button class="btn btn-green" style="width:100%; padding:15px;" onclick="const randomCode = 'POK' + Math.floor(100 + Math.random() * 900); document.getElementById('room-code-badge').innerText = randomCode; window.joinMultiplayerGame('MegaParty', randomCode);">
                     👑 Stwórz Pokój (Host)
                 </button>
             </div>
@@ -787,9 +857,9 @@
                     Wklej kod pokoju otrzymany od znajomego:
                 </p>
                 <input type="text" id="join-room-code-input" placeholder="NP. RUDA-7X2A" style="width:100%; padding:11px; border-radius:10px; border:2px solid var(--accent-blue); background:#090d16; color:white; text-align:center; font-family:monospace; font-size:1.1rem; font-weight:800; text-transform:uppercase; margin-bottom:10px;">
-                <button class="btn btn-blue" style="width:100%; padding:13px;" onclick="joinOnlineRoomAsGuest()">
-                    🔗 Połącz z Pokojem
-                </button>
+                <button class="btn btn-blue" style="width:100%; padding:15px;" onclick="const typedCode = document.getElementById('join-room-code-input').value.trim().toUpperCase(); if(typedCode) { document.getElementById('room-code-badge').innerText = typedCode; window.joinMultiplayerGame('MegaParty', typedCode); } else { alert('Wpisz najpierw kod pokoju!'); }">
+                🔗 Połącz z Pokojem</button>
+
             </div>
         </div>
     </section>
@@ -5130,6 +5200,5 @@ function handleTetrisKey(k) {
     if (k === 'ArrowRight') tetris.x = Math.min(8, tetris.x + 1);
 }
 </script>
-
 </body>
 </html>
